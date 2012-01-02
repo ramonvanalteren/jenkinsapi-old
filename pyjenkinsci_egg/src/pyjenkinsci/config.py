@@ -1,0 +1,3 @@
+JENKINS_API = r"api/python/"
+LOAD_TIMEOUT = 30
+LOAD_ATTEMPTS = 5
