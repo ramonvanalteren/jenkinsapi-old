@@ -1,15 +1,16 @@
-import artifact
-import config
-import jenkinsobject
-import time
+from pyjenkinsci.artifact import Artifact
+from pyjenkinsci import config
+from pyjenkinsci.jenkinsbase import JenkinsBase
+from pyjenkinsci.exceptions import NoResults, FailedNoResults
+from pyjenkinsci.constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE
+from pyjenkinsci.result_set import ResultSet
+
+from datetime import time
 import logging
-from exceptions import NoResults, FailedNoResults
-from constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE
-import result_set
 
 log = logging.getLogger(__name__)
 
-class build(jenkinsobject):
+class Build(JenkinsBase):
     """
     Represents a jenkins build, executed in context of a job.
     """
@@ -21,7 +22,7 @@ class build(jenkinsobject):
         assert type(buildno) == int
         self.buildno = buildno
         self.job = job
-        jenkinsobject.__init__( self, url )
+        JenkinsBase.__init__( self, url )
 
     def __str__(self):
         return self._data['fullDisplayName']
@@ -38,7 +39,7 @@ class build(jenkinsobject):
     def get_artifacts( self ):
         for afinfo in self._data["artifacts"]:
             url = "%sartifact/%s" % ( self.baseurl, afinfo["relativePath"] )
-            af = artifact( afinfo["fileName"], url, self )
+            af = Artifact( afinfo["fileName"], url, self )
             yield af
             del af, url
 
@@ -90,7 +91,7 @@ class build(jenkinsobject):
             raise FailedNoResults( self.STR_TPL_NOTESTS_ERR % ( str(self), buildstatus ) )
         if self.get_actions()[ self.STR_TOTALCOUNT ] == 0:
             raise NoResults( self.STR_TPL_NOTESTS_ERR % ( str(self), buildstatus ) )
-        obj_results = result_set( result_url, build=self )
+        obj_results = ResultSet( result_url, build=self )
         return obj_results
 
     def has_resultset(self):

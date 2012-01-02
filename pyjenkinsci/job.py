@@ -1,15 +1,15 @@
 import logging
 import urlparse
 import urllib2
-import time
-import build
-import jenkinsobject
+from datetime import time
+from pyjenkinsci.build import Build
+from pyjenkinsci.jenkinsbase import JenkinsBase
 
 from exceptions import NoBuildData
 
 log = logging.getLogger(__name__)
 
-class job(jenkinsobject):
+class Job(JenkinsBase):
     """
     Represents a jenkins job
     A job can hold N builds which are the actual execution environments
@@ -17,7 +17,7 @@ class job(jenkinsobject):
     def __init__( self, url, name, jenkins_obj ):
         self.name = name
         self.jenkins = jenkins_obj
-        jenkinsobject.__init__( self, url )
+        JenkinsBase.__init__( self, url )
 
     def id( self ):
         return self._data["name"]
@@ -156,7 +156,7 @@ class job(jenkinsobject):
     def get_build( self, buildnumber ):
         assert type(buildnumber) == int
         url = self.get_build_dict()[ buildnumber ]
-        return build( url, buildnumber, job=self )
+        return Build( url, buildnumber, job=self )
 
     def __getitem__( self, buildnumber ):
         return self.get_build(buildnumber)

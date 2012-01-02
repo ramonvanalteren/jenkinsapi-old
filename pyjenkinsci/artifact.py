@@ -5,15 +5,15 @@ import cStringIO
 import zipfile
 import cPickle
 import datetime
-import config
+from pyjenkinsci import config
 
-from utils.retry import retry_function
-from exceptions import ArtifactBroken
-from utils.md5hash import new_digest
+from pyjenkinsci.utils.retry import retry_function
+from pyjenkinsci.exceptions import ArtifactBroken
+from pyjenkinsci.utils.md5hash import new_digest
 
 log = logging.getLogger( __name__ )
 
-class artifact( object ):
+class Artifact(object):
 
     @staticmethod
     def timedelta_to_seconds( td ):

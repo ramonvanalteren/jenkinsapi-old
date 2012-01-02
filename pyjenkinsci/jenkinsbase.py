@@ -1,12 +1,12 @@
 import urllib2
 import logging
 import pprint
-import config
-from utils.retry import retry_function
+from pyjenkinsci import config
+from pyjenkinsci.utils.retry import retry_function
 
 log = logging.getLogger( __name__ )
 
-class jenkinsobject( object ):
+class JenkinsBase(object):
     """
     This appears to be the base object that all other jenkins objects are inherited from
     """
@@ -43,6 +43,10 @@ class jenkinsobject( object ):
         url = self.python_api_url( self.baseurl )
         return retry_function( self.RETRY_ATTEMPTS , self.get_data, url )
 
+    def get_jenkins_obj(self):
+        """Not implemented, abstract method implemented by child classes"""
+        raise NotImplemented("Abstract method, implemented by child classes")
+
     @classmethod
     def python_api_url( cls, url  ):
         if url.endswith( config.JENKINS_API ):
@@ -58,7 +62,7 @@ class jenkinsobject( object ):
         """
         Find out how to connect, and then grab the data.
         """
-        fn_urlopen = self.getHudsonObject().get_opener()
+        fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
             stream = fn_urlopen( url )
             result = eval( stream.read() )

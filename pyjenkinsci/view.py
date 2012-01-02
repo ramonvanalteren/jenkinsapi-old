@@ -1,12 +1,12 @@
-import jenkinsobject
-import job
+from pyjenkinsci.jenkinsbase import JenkinsBase
+from pyjenkinsci.job import Job
 
-class view(jenkinsobject):
+class View(JenkinsBase):
 
     def __init__(self, url, name, jenkins_obj):
         self.name = name
         self.jenkins_obj = jenkins_obj
-        jenkinsobject.__init__(self, url)
+        JenkinsBase.__init__(self, url)
 
     def __str__(self):
         return self.name
@@ -14,7 +14,7 @@ class view(jenkinsobject):
     def __getitem__(self, str_job_id ):
         assert isinstance( str_job_id, str )
         api_url = self.python_api_url( self.get_job_url( str_job_id ) )
-        return job( api_url, str_job_id, self.jenkins_obj )
+        return Job( api_url, str_job_id, self.jenkins_obj )
 
     def keys(self):
         return self.get_job_dict().keys()
@@ -22,7 +22,7 @@ class view(jenkinsobject):
     def iteritems(self):
         for name, url in self.get_job_dict().iteritems():
             api_url = self.python_api_url( url )
-            yield name, job( api_url, name, self.jenkins_obj )
+            yield name, Job( api_url, name, self.jenkins_obj )
 
     def values(self):
         return [ a[1] for a in self.iteritems() ]

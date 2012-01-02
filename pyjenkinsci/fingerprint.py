@@ -1,5 +1,5 @@
-import jenkinsobject
-from exceptions import ArtifactBroken
+from pyjenkinsci.jenkinsbase import JenkinsBase
+from pyjenkinsci.exceptions import ArtifactBroken
 
 import urllib2
 import re
@@ -8,18 +8,18 @@ import logging
 
 log = logging.getLogger( __name__ )
 
-class fingerprint(jenkinsobject):
+class Fingerprint(JenkinsBase):
     """
     Represents a jenkins fingerprint on a single artifact file ??
     """
     RE_MD5 = re.compile("^([0-9a-z]{32})$")
 
-    def __init__( self, baseurl, id, jenkins_obj ):
+    def __init__(self, baseurl, id, jenkins_obj):
         logging.basicConfig()
         self.jenkins_obj = jenkins_obj
         assert self.RE_MD5.search( id ), "%s does not look like a valid id" % id
         url =  "%s/fingerprint/%s/" % ( baseurl, id  )
-        jenkinsobject.__init__( self, url, poll=False )
+        JenkinsBase.__init__( self, url, poll=False )
         self.id = id
 
     def get_jenkins_obj(self):
@@ -72,11 +72,3 @@ class fingerprint(jenkinsobject):
         """
         self.poll()
         return self._data["original"]["name"], self._data["original"]["number"], self._data["fileName"]
-
-
-if __name__ == "__main__":
-    ff = fingerprint( "http://localhost:8080/hudson/", "0f37cbb6545b8778bc0700d90be66bf3" )
-    print repr(ff)
-    print ff.baseurl
-    print ff.valid()
-    print ff.get_info( )

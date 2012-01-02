@@ -1,18 +1,18 @@
-import jenkinsobject
-import result
+from pyjenkinsci.jenkinsbase import JenkinsBase
+from pyjenkinsci.result import Result
 
-class result_set(jenkinsobject):
+class ResultSet(JenkinsBase):
     """
     Represents a result from a completed Hudson run.
     """
-    def getHudsonObject(self):
+    def get_jenkins_obj(self):
         return self.build.job.get_jenkins_obj()
 
     def __init__(self, url, build ):
         """
         """
         self.build = build
-        jenkinsobject.__init__( self, url )
+        JenkinsBase.__init__( self, url )
 
     def __str__(self):
         return "Test Result for %s" % str( self.build )
@@ -26,13 +26,13 @@ class result_set(jenkinsobject):
     def iteritems(self):
         for suite in self._data.get("suites", [] ):
             for case in suite["cases"]:
-                R = result( **case )
+                R = Result( **case )
                 yield R.id(), R
 
         for report_set in self._data.get( "childReports", [] ):
             for suite in report_set["result"]["suites"]:
                 for case in suite["cases"]:
-                    R = result( **case )
+                    R = Result( **case )
                     yield R.id(), R
 
     def __len__(self):

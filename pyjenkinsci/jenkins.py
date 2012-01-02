@@ -1,15 +1,15 @@
-import fingerprint
-import jenkinsobject
-import job
+from pyjenkinsci.jenkinsbase import JenkinsBase
+from pyjenkinsci.fingerprint import Fingerprint
+from pyjenkinsci.job import Job
+from pyjenkinsci.view import View
 from exceptions import UnknownJob
 from utils.urlopener import mkurlopener
 import logging
 import time
-import view
 
 log = logging.getLogger(__name__)
 
-class jenkins(jenkinsobject):
+class Jenkins(JenkinsBase):
     """
     Represents a jenkins environment.
     """
@@ -18,7 +18,7 @@ class jenkins(jenkinsobject):
         self.proxyport = proxyport
         self.proxyuser = proxyuser
         self.proxypass = proxypass
-        jenkinsobject.__init__( self, baseurl )
+        JenkinsBase.__init__( self, baseurl )
 
     def get_proxy_auth(self):
         return (self.proxyhost, self.proxyport, self.proxyuser, self.proxypass)
@@ -27,17 +27,17 @@ class jenkins(jenkinsobject):
         return mkurlopener(*self.get_proxy_auth())
 
     def validate_fingerprint( self, id ):
-        obj_fingerprint = fingerprint(self.baseurl, id, jenkins_obj=self)
+        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
         obj_fingerprint.validate()
         log.info("Jenkins says %s is valid" % id)
 
     def get_artifact_data(self, id):
-        obj_fingerprint = fingerprint(self.baseurl, id, jenkins_obj=self)
+        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
         obj_fingerprint.validate()
         return obj_fingerprint.get_info()
 
     def validate_fingerprint_for_build(self, digest, filename, job, build ):
-        obj_fingerprint = fingerprint( self.baseurl, digest, jenkins_obj=self )
+        obj_fingerprint = Fingerprint( self.baseurl, digest, jenkins_obj=self )
         return obj_fingerprint.validate_for_build( filename, job, build )
 
     def get_jenkins_obj(self):
@@ -48,7 +48,7 @@ class jenkins(jenkinsobject):
         Fetch all the build-names on this Hudson server.
         """
         for info in self._data["jobs"]:
-            yield info["name"], job( info["url"], info["name"], jenkins_obj=self)
+            yield info["name"], Job( info["url"], info["name"], jenkins_obj=self)
 
     def iteritems(self):
         return self.get_jobs()
@@ -84,7 +84,7 @@ class jenkins(jenkinsobject):
     def get_view(self, str_view_name ):
         view_url = self.get_view_url( str_view_name )
         view_api_url = self.python_api_url( view_url )
-        return view(view_api_url , str_view_name, jenkins_obj=self)
+        return View(view_api_url , str_view_name, jenkins_obj=self)
 
     def __getitem__( self, buildname ):
         """
