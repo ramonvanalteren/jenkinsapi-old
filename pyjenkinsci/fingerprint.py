@@ -1,5 +1,5 @@
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.exceptions import ArtifactBroken
+import jenkinsobject
+from exceptions import ArtifactBroken
 
 import urllib2
 import re
@@ -8,7 +8,7 @@ import logging
 
 log = logging.getLogger( __name__ )
 
-class fingerprint( jenkinsobject ):
+class fingerprint(jenkinsobject):
     """
     Represents a jenkins fingerprint on a single artifact file ??
     """

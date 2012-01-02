@@ -1,7 +1,7 @@
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.result import result
+import jenkinsobject
+import result
 
-class result_set( jenkinsobject ):
+class result_set(jenkinsobject):
     """
     Represents a result from a completed Hudson run.
     """

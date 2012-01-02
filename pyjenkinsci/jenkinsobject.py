@@ -1,8 +1,8 @@
 import urllib2
 import logging
 import pprint
-from pyjenkinsci import config
-from pyjenkinsci.utils.retry import retry_function
+import config
+from utils.retry import retry_function
 
 log = logging.getLogger( __name__ )
 

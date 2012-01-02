@@ -2,14 +2,14 @@ import logging
 import urlparse
 import urllib2
 import time
+import build
+import jenkinsobject
 
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.build import build
-from pyjenkinsci.exceptions import NoBuildData
+from exceptions import NoBuildData
 
 log = logging.getLogger(__name__)
 
-class job( jenkinsobject ):
+class job(jenkinsobject):
     """
     Represents a jenkins job
     A job can hold N builds which are the actual execution environments

@@ -1,7 +1,7 @@
-from pyjenkinsci.jenkins import jenkins
-from pyjenkinsci.artifact import artifact
-from pyjenkinsci.exceptions import ArtifactsMissing, TimeOut, BadURL
-from pyjenkinsci import constants
+import artifact
+import constants
+import jenkins
+from exceptions import ArtifactsMissing, TimeOut, BadURL
 from urllib2 import urlparse
 
 import os

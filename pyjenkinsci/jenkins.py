@@ -1,15 +1,15 @@
-from pyjenkinsci.exceptions import UnknownJob
-from pyjenkinsci.fingerprint import fingerprint
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.job import job
-from pyjenkinsci.utils.urlopener import mkurlopener
-from pyjenkinsci.view import view
+import fingerprint
+import jenkinsobject
+import job
+from exceptions import UnknownJob
+from utils.urlopener import mkurlopener
 import logging
 import time
+import view
 
 log = logging.getLogger(__name__)
 
-class jenkins( jenkinsobject ):
+class jenkins(jenkinsobject):
     """
     Represents a jenkins environment.
     """

@@ -1,17 +1,16 @@
 import os
 import sys
 import logging
-
-from pyjenkinsci.command_line.base import base
-from pyjenkinsci.jenkins import jenkins
+import optparse
+import jenkins
 
 log = logging.getLogger(__name__)
 
-class jenkins_invoke( base ):
+class jenkins_invoke(object):
 
     @classmethod
     def mkparser(cls):
-        parser = base.mkparser( )
+        parser = optparse.OptionParser()
         DEFAULT_BASEURL=os.environ.get( "JENKINS_URL", "http://localhost/jenkins" )
         parser.help_text = "Execute a number of jenkins jobs on the server of your choice. Optionally block until the jobs are complete."
         parser.add_option("-J", "--jenkinsbase", dest="baseurl",

@@ -1,15 +1,15 @@
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.artifact import artifact
-from pyjenkinsci.result_set import result_set
+import artifact
+import config
+import jenkinsobject
 import time
 import logging
-from pyjenkinsci import config
-from pyjenkinsci.exceptions import NoResults, FailedNoResults
-from pyjenkinsci.constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE
+from exceptions import NoResults, FailedNoResults
+from constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE
+import result_set
 
 log = logging.getLogger(__name__)
 
-class build( jenkinsobject ):
+class build(jenkinsobject):
     """
     Represents a jenkins build, executed in context of a job.
     """

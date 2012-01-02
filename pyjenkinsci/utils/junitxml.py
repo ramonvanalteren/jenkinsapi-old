@@ -8,7 +8,7 @@ try:
 except Exception, e:
     import elementtree.ElementTree as ET
 
-from pyjenkinsci.utils.dates import timedelta_to_seconds
+from utils.dates import timedelta_to_seconds
 
 log = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
-from pyjenkinsci.jenkinsobject import jenkinsobject
-from pyjenkinsci.job import job
+import jenkinsobject
+import job
 
-class view( jenkinsobject ):
+class view(jenkinsobject):
 
     def __init__(self, url, name, jenkins_obj):
         self.name = name

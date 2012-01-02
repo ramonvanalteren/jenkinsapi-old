@@ -2,7 +2,7 @@ import unittest
 import sys
 import re
 from cStringIO import StringIO
-from pyjenkinsci.utils.xmlrunner import XmlTestRunner
+from utils.xmlrunner import XmlTestRunner
 
 class XmlTestRunnerTest(unittest.TestCase):
     def setUp(self):

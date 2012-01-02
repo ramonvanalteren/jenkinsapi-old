@@ -2,8 +2,8 @@ import optparse
 import os
 import random
 import logging
-from pyjenkinsci.utils import junitxml
-from pyjenkinsci.utils.id import mk_id
+from utils.id import mk_id
+from utils import junitxml
 
 log = logging.getLogger(__name__)
 

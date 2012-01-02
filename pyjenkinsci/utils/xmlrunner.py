@@ -4,6 +4,7 @@ XML Test Runner for PyUnit
 
 # Written by Sebastian Rittau <srittau@jroger.in-berlin.de> and placed in
 # the Public Domain.
+from utils import bufwrapper
 
 __revision__ = "$Id: /mirror/jroger/python/stdlib/xmlrunner.py 3506 2006-07-27T09:12:39.629878Z srittau  $"
 
@@ -16,8 +17,6 @@ from StringIO import StringIO
 from xml.sax.saxutils import escape
 
 log = logging.getLogger()
-
-from pyjenkinsci.utils.bufwrapper import bufwrapper
 
 class faketest( object ):
     """
