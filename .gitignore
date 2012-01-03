@@ -1,3 +1,5 @@
 .svn
 .project
 .pydevproject
+*.pyc
+*.egg-info
