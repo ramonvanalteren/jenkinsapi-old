@@ -33,6 +33,10 @@ class Build(JenkinsBase):
     def get_status(self):
         return self._data["result"]
 
+    def get_revision(self):
+        for set in self._data["changeSet"]["revisions"]:
+            return set["revision"]
+
     def get_duration(self):
         return self._data["duration"]
 

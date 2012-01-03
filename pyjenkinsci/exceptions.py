@@ -42,3 +42,8 @@ class BadURL(ValueError):
     """
     A URL appears to be broken
     """
+
+class NotFound(Exception):
+    """
+    Resource cannot be found
+    """
