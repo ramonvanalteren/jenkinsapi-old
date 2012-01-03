@@ -2,7 +2,8 @@ from pyjenkinsci.jenkinsbase import JenkinsBase
 from pyjenkinsci.fingerprint import Fingerprint
 from pyjenkinsci.job import Job
 from pyjenkinsci.view import View
-from exceptions import UnknownJob
+from pyjenkinsci.node import Node
+from pyjenkinsci.exceptions import UnknownJob
 from utils.urlopener import mkurlopener
 import logging
 import time
@@ -94,3 +95,18 @@ class Jenkins(JenkinsBase):
             if name == buildname:
                 return job
         raise UnknownJob(buildname)
+
+    def get_node_dict(self):
+        """Get registered slave nodes on this instance"""
+        url = self.python_api_url(self.get_node_url())
+        return dict(self.get_data(url))
+
+    def get_node(self, nodename):
+        """Get a node object for a specific node"""
+        node_url = self.python_api_url(self.get_node_url(nodename))
+        return Node(node_url, nodename, jenkins_obj=self)
+
+    def get_node_url(self, nodename=""):
+        """Return the url for nodes"""
+        url = "%(baseurl)s/computer/%(nodename)s" % {'baseurl': self.baseurl, 'nodename': nodename}
+        return url
