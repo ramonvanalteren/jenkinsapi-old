@@ -5,7 +5,7 @@ from datetime import time
 from pyjenkinsci.build import Build
 from pyjenkinsci.jenkinsbase import JenkinsBase
 
-from exceptions import NoBuildData
+from exceptions import NoBuildData, NotFound
 
 log = logging.getLogger(__name__)
 
@@ -126,6 +126,14 @@ class Job(JenkinsBase):
             raise NoBuildData( repr(self) )
         return dict( ( a["number"], a["url"] ) for a in self._data["builds"] )
 
+    def get_revision_dict(self):
+        """
+        Get dictionary of all revision:buildnumber available
+        """
+        if not self._data.has_key( "builds" ):
+            raise NoBuildData( repr(self) )
+        return dict( ( self.get_build(a["number"] ).get_revision(), a["number"] ) for a in self._data["builds"] ) 
+
     def get_build_ids(self):
         """
         Return a sorted list of all good builds as ints.
@@ -152,6 +160,18 @@ class Job(JenkinsBase):
         """
         bn = self.get_last_completed_buildnumber()
         return self.get_build( bn )
+
+    def get_buildnumber_for_revision(self, revision ):
+        """
+        Returns the buildnumber for a revision
+        """
+        if not isinstance(revision, int):
+            revision = int(revision)
+        revmap = self.get_revision_dict()
+        try:
+            return revmap[revision]
+        except KeyError:
+            raise NotFound("Couldn't find a build with that revision")
 
     def get_build( self, buildnumber ):
         assert type(buildnumber) == int
