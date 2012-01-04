@@ -39,7 +39,6 @@ class Jenkins(JenkinsBase):
         self.proxyuser = proxyuser
         self.proxypass = proxypass
         JenkinsBase.__init__( self, baseurl )
-        self._revmap = None
 
     def get_proxy_auth(self):
         return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass

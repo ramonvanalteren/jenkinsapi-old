@@ -17,6 +17,7 @@ class Job(JenkinsBase):
     def __init__( self, url, name, jenkins_obj ):
         self.name = name
         self.jenkins = jenkins_obj
+        self._revmap = None
         JenkinsBase.__init__( self, url )
 
     def id( self ):
