@@ -11,21 +11,21 @@ class PreemptiveBasicAuthHandler(urllib2.BaseHandler):
     even when there is no basic auth challenge from the server
     Jenkins does not challenge basic auth but expects it to be present
     """
-        def __init__(self, password_mgr=None):
-            if password_mgr is None:
-                password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            self.passwd = password_mgr
-            self.add_password = self.passwd.add_password
+    def __init__(self, password_mgr=None):
+        if password_mgr is None:
+            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        self.passwd = password_mgr
+        self.add_password = self.passwd.add_password
 
-        def http_request(self,req):
-            uri = req.get_full_url()
-            user, pw = self.passwd.find_user_password(None,uri)
-            log.debug('ADDING REQUEST HEADER for uri (%s): %s:%s' % (uri,user,pw))
-            if pw is None: return req
-            raw = "%s:%s" % (user, pw)
-            auth = 'Basic %s' % base64.b64encode(raw).strip()
-            req.add_unredirected_header('Authorization', auth)
-            return req
+    def http_request(self,req):
+        uri = req.get_full_url()
+        user, pw = self.passwd.find_user_password(None,uri)
+        log.debug('ADDING REQUEST HEADER for uri (%s): %s:%s' % (uri,user,pw))
+        if pw is None: return req
+        raw = "%s:%s" % (user, pw)
+        auth = 'Basic %s' % base64.b64encode(raw).strip()
+        req.add_unredirected_header('Authorization', auth)
+        return req
 
 def mkurlopener( jenkinsuser, jenkinspass, jenkinsurl, proxyhost, proxyport, proxyuser, proxypass ):
     """
