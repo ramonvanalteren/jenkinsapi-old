@@ -39,6 +39,7 @@ class Jenkins(JenkinsBase):
         self.proxyuser = proxyuser
         self.proxypass = proxypass
         JenkinsBase.__init__( self, baseurl )
+        self._revmap = None
 
     def get_proxy_auth(self):
         return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass
@@ -52,7 +53,6 @@ class Jenkins(JenkinsBase):
         auth_args.extend(self.get_proxy_auth())
         log.debug("args: %s" % auth_args)
         return auth_args
-
 
     def get_opener( self ):
         return mkurlopener(*self.get_auth())
