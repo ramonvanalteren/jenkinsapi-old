@@ -1,5 +1,4 @@
 import urllib2
-import urlparse
 import base64
 
 import logging

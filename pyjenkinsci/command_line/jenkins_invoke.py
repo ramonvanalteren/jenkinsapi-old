@@ -2,12 +2,11 @@ import os
 import sys
 import logging
 import optparse
-import jenkins
+from pyjenkinsci import jenkins
 
 log = logging.getLogger(__name__)
 
 class jenkins_invoke(object):
-
     @classmethod
     def mkparser(cls):
         parser = optparse.OptionParser()
@@ -31,33 +30,33 @@ class jenkins_invoke(object):
         parser = cls.mkparser()
         options, args = parser.parse_args()
         try:
-            assert len( args ) > 0, "Need to specify at least one job name"
+            assert len(args) > 0, "Need to specify at least one job name"
         except AssertionError, e:
-            log.critical( e[0] )
+            log.critical(e[0])
             parser.print_help()
             sys.exit(1)
-        invoker = cls( options, args )
+        invoker = cls(options, args)
         invoker()
 
-    def __init__( self, options, jobs ):
+    def __init__(self, options, jobs):
         self.options = options
         self.jobs = jobs
 
     def __call__(self):
         for job in self.jobs:
-            self.invokejob( job, block=self.options.block, baseurl=self.options.baseurl, token=self.options.token )
+            self.invokejob(job, block=self.options.block, baseurl=self.options.baseurl, token=self.options.token)
 
     def invokejob(self, jobname, block, baseurl, token ):
         assert type(block) == bool
         assert type(baseurl) == str
         assert type(jobname) == str
-        assert token is None or isinstance( token, str )
-        jenkinsserver = jenkins( baseurl )
-        job = jenkinsserver[ jobname ]
-        job.invoke( securitytoken=token, block=block )
+        assert token is None or isinstance(token, str)
+        jenkinsserver = jenkins.Jenkins( baseurl )
+        job = jenkinsserver[jobname]
+        job.invoke(securitytoken=token, block=block)
 
 
 def main(  ):
     logging.basicConfig()
-    logging.getLogger("").setLevel( logging.INFO )
+    logging.getLogger("").setLevel(logging.INFO)
     jenkins_invoke.main()
