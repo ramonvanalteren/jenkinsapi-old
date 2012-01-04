@@ -128,11 +128,15 @@ class Job(JenkinsBase):
 
     def get_revision_dict(self):
         """
-        Get dictionary of all revision:buildnumber available
+        Get dictionary of all revisions with a list of buildnumbers (int) that used that particular revision
         """
-        if not self._data.has_key( "builds" ):
-            raise NoBuildData( repr(self) )
-        return dict( ( self.get_build(a["number"] ).get_revision(), a["number"] ) for a in self._data["builds"] ) 
+        revs = {}
+        if 'builds' not in self._data:
+            raise NoBuildData( repr(self))
+        for buildnumber in self.get_build_ids():
+            rev = self.get_build(buildnumber).get_revision()
+            revs[rev] = revs.get(rev, []).append(buildnumber)
+        return revs
 
     def get_build_ids(self):
         """
@@ -161,15 +165,19 @@ class Job(JenkinsBase):
         bn = self.get_last_completed_buildnumber()
         return self.get_build( bn )
 
-    def get_buildnumber_for_revision(self, revision ):
+    def get_buildnumber_for_revision(self, revision, refresh=False):
         """
-        Returns the buildnumber for a revision
+
+        :param revision: subversion revision to look for, int
+        :param refresh: boolean, whether or not to refresh the revision -> buildnumber map
+        :return: list of buildnumbers, [int]
         """
         if not isinstance(revision, int):
             revision = int(revision)
-        revmap = self.get_revision_dict()
+        if self._revmap is None or refresh:
+            self._revmap = self.get_revision_dict()
         try:
-            return revmap[revision]
+            return self._revmap[revision]
         except KeyError:
             raise NotFound("Couldn't find a build with that revision")
 

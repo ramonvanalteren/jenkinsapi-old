@@ -5,11 +5,11 @@ import cStringIO
 import zipfile
 import cPickle
 import datetime
+import hashlib
 from pyjenkinsci import config
 
 from pyjenkinsci.utils.retry import retry_function
 from pyjenkinsci.exceptions import ArtifactBroken
-from pyjenkinsci.utils.md5hash import new_digest
 
 log = logging.getLogger( __name__ )
 
@@ -69,7 +69,7 @@ class Artifact(object):
         """
         Get the artifact as a stream
         """
-        artifact_digest = new_digest()
+        artifact_digest = hashlib.md5()
         tmp_buffer = cStringIO.StringIO()
 
         if self.build:
@@ -147,7 +147,7 @@ class Artifact(object):
         tmp_buffer_existing = cStringIO.StringIO()
         existingfile = open( fspath, "rb" )
         tmp_buffer_existing.write( existingfile.read() )
-        existing_digest = new_digest()
+        existing_digest = hashlib.md5()
         existing_digest.update(tmp_buffer_existing.getvalue())
         existing_hexdigest = existing_digest.hexdigest()
         return existing_hexdigest

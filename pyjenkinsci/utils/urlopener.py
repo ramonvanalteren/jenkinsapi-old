@@ -6,24 +6,40 @@ import logging
 log = logging.getLogger( __name__ )
 
 class PreemptiveBasicAuthHandler(urllib2.BaseHandler):
-
+    """
+    A BasicAuthHandler class that will add Basic Auth headers to a request
+    even when there is no basic auth challenge from the server
+    Jenkins does not challenge basic auth but expects it to be present
+    """
         def __init__(self, password_mgr=None):
-                if password_mgr is None:
-                        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                self.passwd = password_mgr
-                self.add_password = self.passwd.add_password
+            if password_mgr is None:
+                password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            self.passwd = password_mgr
+            self.add_password = self.passwd.add_password
 
         def http_request(self,req):
-                uri = req.get_full_url()
-                user, pw = self.passwd.find_user_password(None,uri)
-                log.debug('ADDING REQUEST HEADER for uri (%s): %s:%s' % (uri,user,pw))
-                if pw is None: return req
-                raw = "%s:%s" % (user, pw)
-                auth = 'Basic %s' % base64.b64encode(raw).strip()
-                req.add_unredirected_header('Authorization', auth)
-                return req
+            uri = req.get_full_url()
+            user, pw = self.passwd.find_user_password(None,uri)
+            log.debug('ADDING REQUEST HEADER for uri (%s): %s:%s' % (uri,user,pw))
+            if pw is None: return req
+            raw = "%s:%s" % (user, pw)
+            auth = 'Basic %s' % base64.b64encode(raw).strip()
+            req.add_unredirected_header('Authorization', auth)
+            return req
 
 def mkurlopener( jenkinsuser, jenkinspass, jenkinsurl, proxyhost, proxyport, proxyuser, proxypass ):
+    """
+     Creates an url opener that works with both jenkins auth and proxy auth
+     If no values are provided for the jenkins or proxy vars, a regular opener is returned
+    :param jenkinsuser: username for jenkins, str
+    :param jenkinspass: password for jenkins, str
+    :param jenkinsurl: jenkins url, str
+    :param proxyhost: proxy hostname, str
+    :param proxyport: proxy port, int
+    :param proxyuser: proxy username, str
+    :param proxypass: proxy password, str
+    :return: urllib2.opener configured for auth
+    """
     handlers = []
     for handler in get_jenkins_auth_handler(jenkinsuser=jenkinsuser, jenkinspass=jenkinspass, jenkinsurl=jenkinsurl):
         handlers.append(handler)
