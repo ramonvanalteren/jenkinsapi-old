@@ -1,6 +1,7 @@
 import logging
 import urlparse
 import urllib2
+from collections import defaultdict
 from datetime import time
 from pyjenkinsci.build import Build
 from pyjenkinsci.jenkinsbase import JenkinsBase
@@ -131,12 +132,11 @@ class Job(JenkinsBase):
         """
         Get dictionary of all revisions with a list of buildnumbers (int) that used that particular revision
         """
-        revs = {}
+        revs = defaultdict(list)
         if 'builds' not in self._data:
             raise NoBuildData( repr(self))
         for buildnumber in self.get_build_ids():
-            rev = self.get_build(buildnumber).get_revision()
-            revs[rev] = revs.get(rev, []).append(buildnumber)
+            revs[self.get_build(buildnumber).get_revision()].append(buildnumber)
         return revs
 
     def get_build_ids(self):
