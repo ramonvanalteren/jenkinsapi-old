@@ -63,7 +63,7 @@ class Artifact(object):
                      md5.update(chunk)
         except:
             raise
-        return md5.digest()
+        return md5.hexdigest()
 
     def savetodir( self, dirpath ):
         """
