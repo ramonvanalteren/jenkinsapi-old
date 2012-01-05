@@ -3,8 +3,8 @@ import urlparse
 import urllib2
 from collections import defaultdict
 from datetime import time
-from pyjenkinsci.build import Build
-from pyjenkinsci.jenkinsbase import JenkinsBase
+from jenkinsapi.build import Build
+from jenkinsapi.jenkinsbase import JenkinsBase
 
 from exceptions import NoBuildData, NotFound
 
@@ -46,6 +46,7 @@ class Job(JenkinsBase):
             html_result = stream.read()
         except urllib2.HTTPError, e:
             log.debug( "Error reading %s" % url )
+            log.exception(e)
             raise
         return html_result
 

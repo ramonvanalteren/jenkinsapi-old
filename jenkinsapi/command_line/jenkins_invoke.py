@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import optparse
-from pyjenkinsci import jenkins
+from jenkinsapi import jenkins
 
 log = logging.getLogger(__name__)
 

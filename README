@@ -1,2 +1,22 @@
-Cloned copy of http://pyjenkinsci.googlecode.com/ 
-This file was modified by PyCharm 2.0.1 for binding GitHub repository
+The original project is pyjenkinsci on googlecode: http://pyjenkinsci.googlecode.com/
+
+A number of refactoring has been done:
+ * uniform usage of jenkins instead of mixed jenkins/hudson
+ * import fixup, all imports are relative to packagename now
+ * downloading artifacts is simplified
+
+New features:
+ * username/password auth support for jenkins instances with auth turned on
+ * Ability to add/remove/query jenkins slaves
+ * Ability to retrieve/find builds by subversion revision
+
+Deletion:
+
+I've completely removed the test methods and the small amount of test cases
+All tests were tied to a specific local environment.
+
+Thanx to salimfadhley@gmail.com for the initial version which we based this on
+Thanx to ruslan@hyves.nl for the subversion revision patches
+
+Current code lives on github: https://github.com/ramonvanalteren/jenkinsapi.git
+

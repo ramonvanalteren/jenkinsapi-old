@@ -4,8 +4,8 @@ import os
 import logging
 import hashlib
 
-from pyjenkinsci.exceptions import ArtifactBroken
-from pyjenkinsci.fingerprint import Fingerprint
+from jenkinsapi.exceptions import ArtifactBroken
+from jenkinsapi.fingerprint import Fingerprint
 
 log = logging.getLogger( __name__ )
 

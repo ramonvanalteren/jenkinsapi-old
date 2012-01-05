@@ -31,7 +31,7 @@ def retry_function( tries, fn, *args, **kwargs ):
                 raise
             try:
                 fn_name = fn.__name__
-            except AttributeError, ae:
+            except AttributeError:
                 fn_name = "Anonymous Function"
             log.exception(e)
         log.warn( "%s failed at attempt %i, trying again." % ( fn_name , attemptno ) )

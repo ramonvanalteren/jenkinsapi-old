@@ -1,9 +1,9 @@
-from pyjenkinsci.jenkinsbase import JenkinsBase
-from pyjenkinsci.fingerprint import Fingerprint
-from pyjenkinsci.job import Job
-from pyjenkinsci.view import View
-from pyjenkinsci.node import Node
-from pyjenkinsci.exceptions import UnknownJob
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.fingerprint import Fingerprint
+from jenkinsapi.job import Job
+from jenkinsapi.view import View
+from jenkinsapi.node import Node
+from jenkinsapi.exceptions import UnknownJob
 from utils.urlopener import mkurlopener
 import logging
 import time
@@ -115,7 +115,8 @@ class Jenkins(JenkinsBase):
         try:
             view_dict = self.get_view_dict()
             return view_dict[ str_view_name ]
-        except KeyError, ke:
+        except KeyError:
+            #noinspection PyUnboundLocalVariable
             all_views = ", ".join( view_dict.keys() )
             raise KeyError("View %s is not known - available: %s" % ( str_view_name, all_views ) )
 
@@ -174,10 +175,10 @@ class Jenkins(JenkinsBase):
         url = "%s/doDelete" % self.get_node_url(nodename)
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
-            stream = fn_urlopen(url)
-            html_result = stream.read()
+            fn_urlopen(url).read()
         except urllib2.HTTPError, e:
             log.debug("Error reading %s" % url)
+            log.exception(e)
             raise
         return not self.has_node(nodename)
 
@@ -223,8 +224,7 @@ class Jenkins(JenkinsBase):
         print url
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
-            stream = fn_urlopen(url)
-            html_result = stream.read()
+            fn_urlopen(url).read()
         except urllib2.HTTPError, e:
             log.debug("Error reading %s" % url)
             log.exception(e)

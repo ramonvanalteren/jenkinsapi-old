@@ -1,4 +1,4 @@
-from pyjenkinsci.jenkinsbase import JenkinsBase
+from jenkinsapi.jenkinsbase import JenkinsBase
 import logging
 
 log = logging.getLogger(__name__)
