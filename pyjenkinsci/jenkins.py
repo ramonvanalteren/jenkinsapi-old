@@ -75,7 +75,7 @@ class Jenkins(JenkinsBase):
 
     def get_jobs(self):
         """
-        Fetch all the build-names on this Hudson server.
+        Fetch all the build-names on this Jenkins server.
         """
         for info in self._data["jobs"]:
             yield info["name"], Job( info["url"], info["name"], jenkins_obj=self)
@@ -184,7 +184,7 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        NODE_TYPE   = 'hudson.slaves.DumbSlave$DescriptorImpl'
+        NODE_TYPE   = 'jenkins.slaves.DumbSlave$DescriptorImpl'
         MODE = 'NORMAL'
         if self.has_node(name):
             return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
@@ -201,9 +201,9 @@ class Jenkins(JenkinsBase):
                 'labelString'     : labels,
                 'mode'            : MODE,
                 'type'            : NODE_TYPE,
-                'retentionStrategy' : { 'stapler-class'  : 'hudson.slaves.RetentionStrategy$Always' },
+                'retentionStrategy' : { 'stapler-class'  : 'jenkins.slaves.RetentionStrategy$Always' },
                 'nodeProperties'    : { 'stapler-class-bag' : 'true' },
-                'launcher'          : { 'stapler-class' : 'hudson.slaves.JNLPLauncher' }
+                'launcher'          : { 'stapler-class' : 'jenkins.slaves.JNLPLauncher' }
             })
         }
         url = "%(nodeurl)s/doCreateItem?%(params)s" % {

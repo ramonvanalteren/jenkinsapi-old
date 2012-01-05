@@ -64,7 +64,6 @@ class Artifact(object):
                     log.info( "Loaded %i of %i bytes %.2f kbit/s" % ( index, length, inst_bitrate ) )
                     last_time = now
 
-
     def getstream( self ):
         """
         Get the artifact as a stream
@@ -73,7 +72,7 @@ class Artifact(object):
         tmp_buffer = cStringIO.StringIO()
 
         if self.build:
-            fn_opener = self.build.job.hudson.get_opener()
+            fn_opener = self.build.job.jenkins.get_opener()
         else:
             fn_opener = urllib2.urlopen
 
@@ -101,7 +100,7 @@ class Artifact(object):
         log.info( "Got %s,  %i bytes, MD5: %s, type: %s" % ( self.filename, artifact_size, artifact_hexdigest, content_type ) )
 
         if self.build:
-            self.build.job.hudson.validate_fingerprint( artifact_hexdigest )
+            self.build.job.jenkins.validate_fingerprint( artifact_hexdigest )
 
         return tmp_buffer, artifact_hexdigest
 
@@ -128,16 +127,16 @@ class Artifact(object):
             existing_hexdigest = self.get_local_digest( fspath )
             if self.build:
                 try:
-                    valid = self.build.job.hudson.validate_fingerprint_for_build( existing_hexdigest, filename=self.filename, job=self.build.job.id(), build=self.build.id() )
+                    valid = self.build.job.jenkins.validate_fingerprint_for_build( existing_hexdigest, filename=self.filename, job=self.build.job.id(), build=self.build.id() )
 
                     if valid:
                         log.info( "Local copy of %s is already up to date. MD5 %s" % (self.filename, existing_hexdigest) )
                     else:
                         self.__do_download( fspath )
                 except ArtifactBroken, ab: #@UnusedVariable
-                    log.info("Hudson artifact could not be identified.")
+                    log.info("Jenkins artifact could not be identified.")
             else:
-                log.info("This file did not originate from Hudson, so cannot check.")
+                log.info("This file did not originate from Jenkins, so cannot check.")
                 self.__do_download( fspath )
         else:
             log.info("Local file is missing, downloading new.")

@@ -5,7 +5,7 @@ class ArtifactsMissing(Exception):
 
 class UnknownJob( KeyError ):
     """
-    Hudson does not recognize the job requested.
+    Jenkins does not recognize the job requested.
     """
 
 class ArtifactBroken(Exception):

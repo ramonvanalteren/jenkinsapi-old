@@ -73,7 +73,7 @@ class Job(JenkinsBase):
             html_result = self.hit_url( url )
             assert len( html_result ) > 0
         if invoke_pre_check_delay > 0:
-            log.info("Waiting for %is to allow Hudson to catch up" % invoke_pre_check_delay )
+            log.info("Waiting for %is to allow Jenkins to catch up" % invoke_pre_check_delay )
             time.sleep( invoke_pre_check_delay )
         if block:
             total_wait = 0

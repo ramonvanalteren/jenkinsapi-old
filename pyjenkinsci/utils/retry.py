@@ -37,15 +37,3 @@ def retry_function( tries, fn, *args, **kwargs ):
         log.warn( "%s failed at attempt %i, trying again." % ( fn_name , attemptno ) )
         time.sleep( DEFAULT_SLEEP_TIME )
         raise e
-
-if __name__ == "__main__":
-
-    def broken_function( a ):
-        return {}[a]
-
-    logging.basicConfig()
-
-    try:
-        retry_function( 3, broken_function, "x" )
-    except Exception, e:
-        print repr(e)

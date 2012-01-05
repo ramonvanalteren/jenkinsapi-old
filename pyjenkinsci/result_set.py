@@ -3,7 +3,7 @@ from pyjenkinsci.result import Result
 
 class ResultSet(JenkinsBase):
     """
-    Represents a result from a completed Hudson run.
+    Represents a result from a completed Jenkins run.
     """
     def get_jenkins_obj(self):
         return self.build.job.get_jenkins_obj()
