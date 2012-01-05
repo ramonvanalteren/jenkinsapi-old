@@ -86,7 +86,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of the job, str
         :return: Job obj
         """
-        return self['jobname']
+        return self[jobname]
 
     def iteritems(self):
         return self.get_jobs()
