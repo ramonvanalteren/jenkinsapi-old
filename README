@@ -1,22 +1,37 @@
-The original project is pyjenkinsci on googlecode: http://pyjenkinsci.googlecode.com/
+== About this library ==
 
-A number of refactoring has been done:
- * uniform usage of jenkins instead of mixed jenkins/hudson
- * import fixup, all imports are relative to packagename now
- * downloading artifacts is simplified
+Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi. This API makes Jenkins even easier to use by providing an easy to use conventional python interface.
 
-New features:
+Jenkins (and It's predecessor Hudson) are fantastic projects - but they are somewhat Java-centric. Thankfully the designers have provided an excellent and complete REST interface. This library wraps up that interface as more conventional python objects in order to make most Jenkins oriented tasks simpler.
+
+This library can help you:
+
+ * Query the test-results of a completed build
+ * Get a objects representing the latest builds of a job
+ * Search for artefacts by simple criteria
+ * Block until jobs are complete
+ * Install artefacts to custom-specified directory structures
  * username/password auth support for jenkins instances with auth turned on
+ * Ability to search for builds by subversion revision
  * Ability to add/remove/query jenkins slaves
- * Ability to retrieve/find builds by subversion revision
 
-Deletion:
+== Installing JenkinsAPI ===
 
-I've completely removed the test methods and the small amount of test cases
-All tests were tied to a specific local environment.
+Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or distribute to automatically install this project.
 
-Thanx to salimfadhley@gmail.com for the initial version which we based this on
-Thanx to ruslan@hyves.nl for the subversion revision patches
+Most users can do the following:
 
-Current code lives on github: https://github.com/ramonvanalteren/jenkinsapi.git
+easy_install jenkinsapi
+
+If you'd like to install in multi-version mode:
+
+easy_install -m jenkinsapi
+
+== Project Authors ==
+
+ * Salim Fadhley (sal@stodgge.org) - Project founder
+ * Ramon van Alteren (ramon@vanaleren.nl) - Significant refactoring, code-quality improvement & support for Jenkins authentication
+ * ruslan@hyves.nl - Subversion revision patches
+
+Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
