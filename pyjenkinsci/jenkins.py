@@ -80,6 +80,14 @@ class Jenkins(JenkinsBase):
         for info in self._data["jobs"]:
             yield info["name"], Job( info["url"], info["name"], jenkins_obj=self)
 
+    def get_job(self, jobname):
+        """
+        Get a job by name
+        :param jobname: name of the job, str
+        :return: Job obj
+        """
+        return self['jobname']
+
     def iteritems(self):
         return self.get_jobs()
 
@@ -116,14 +124,16 @@ class Jenkins(JenkinsBase):
         view_api_url = self.python_api_url( view_url )
         return View(view_api_url , str_view_name, jenkins_obj=self)
 
-    def __getitem__( self, buildname ):
+    def __getitem__(self, jobname):
         """
-        Get a build
+        Get a job by name
+        :param jobname: name of job, str
+        :return: Job obj
         """
         for name, job in self.get_jobs():
-            if name == buildname:
+            if name == jobname:
                 return job
-        raise UnknownJob(buildname)
+        raise UnknownJob(jobname)
 
     def get_node_dict(self):
         """Get registered slave nodes on this instance"""
