@@ -29,9 +29,9 @@ easy_install -m jenkinsapi
 
 == Project Authors ==
 
- * Salim Fadhley (sal@stodgge.org) - Project founder
- * Ramon van Alteren (ramon@vanaleren.nl) - Significant refactoring, code-quality improvement & support for Jenkins authentication
- * ruslan@hyves.nl - Subversion revision patches
+ * Salim Fadhley (sal@stodge.org) 
+ * Ramon van Alteren (ramon@vanalteren.nl) 
+ * Ruslan Lutsenko (ruslan.lutcenko@gmail.com) 
 
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
