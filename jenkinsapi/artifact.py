@@ -47,7 +47,7 @@ class Artifact(object):
         return filename
 
     def _do_download(self, fspath):
-        filename, headers = urllib.urlretrieve(self.url, filename=fspath)
+        filename, _ = urllib.urlretrieve(self.url, filename=fspath)
         return filename
 
     def _verify_download(self, fspath):
@@ -60,7 +60,7 @@ class Artifact(object):
         try:
             with open(fspath,'rb') as f:
                 for chunk in iter(lambda: f.read(chunksize), ''):
-                     md5.update(chunk)
+                    md5.update(chunk)
         except:
             raise
         return md5.hexdigest()
