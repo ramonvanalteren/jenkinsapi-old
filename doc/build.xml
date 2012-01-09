@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="calyon_egg" default="all">
 	<property file="build.properties"/>	
-	<target name="all" depends="clean,doc" />
 	
+	<target name="all" depends="clean, doc, doc_zip" />
 	<target name="clean" depends="doc_clean" />
 	
 	<target name="doc">
@@ -13,6 +13,7 @@
 				    <arg value="--name"/>
 			        <arg value="JenkinsAPI"/>
 				    <arg value="--config=epydoc.cfg"/>
+					<arg value="--debug"/>
 		</exec>
 	</target>
 	
@@ -20,6 +21,13 @@
 		<delete failonerror="false">
 			<fileset dir="doc"/>
 		</delete>
+		<delete failonerror="false">
+			<file dir="${docs.zipfile.filename}"/>
+		</delete>
+	</target>
+	
+	<target name="doc_zip">
+		<zip destfile="${docs.zipfile.filename}" basedir="html/" />
 	</target>
 	
 	
