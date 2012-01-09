@@ -8,15 +8,12 @@ Welcome to the JenkinsAPI project documentation
 
 Contents:
 
-.. toctree::
+.. toctree:: 
    :maxdepth: 2
-
-.. automodule:: jenkinsapi
-   :members:
    
-
-   
-
+   api
+   artifact
+   build
 
 Indices and tables
 ==================
