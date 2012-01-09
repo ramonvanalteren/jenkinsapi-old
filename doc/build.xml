@@ -14,6 +14,7 @@
 				    <arg value="--name"/>
 			        <arg value="JenkinsAPI"/>
 				    <arg value="--config=epydoc.cfg"/>
+				    <arg value="--debug"/>
 					<arg value="-v"/>
 		</exec>
 	</target>
