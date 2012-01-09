@@ -7,15 +7,11 @@
 	
 	<target name="doc" depends="doc_clean">
 		<mkdir dir="${docs.html.dir}" />
-		<exec executable="python" >
-			        <arg value="run_epydoc.py"/>
-					<arg value="--html"/>
-				    <arg value="-o${docs.html.dir}"/>
-				    <arg value="--name"/>
-			        <arg value="JenkinsAPI"/>
-				    <arg value="--config=epydoc.cfg"/>
-				    <arg value="--debug"/>
-					<arg value="-v"/>
+		<exec executable="sphinx-build" >
+			        <arg value="-b"/>
+					<arg value="html"/>
+				    <arg value="${docs.source.dir}"/>
+					<arg value="${docs.html.dir}"/>
 		</exec>
 	</target>
 	
