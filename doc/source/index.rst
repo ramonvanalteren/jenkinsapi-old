@@ -14,8 +14,7 @@ Contents:
 .. automodule:: jenkinsapi
    :members:
    
-.. automodule:: jenkinsapi.api
-   :members:
+
    
 
 
