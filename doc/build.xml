@@ -6,10 +6,10 @@
 	<target name="clean" depends="doc_clean" />
 	
 	<target name="doc">
-		<exec executable="python">
-			        <arg value="doc/run_epydoc.py"/>
+		<exec executable="python" >
+			        <arg value="run_epydoc.py"/>
 					<arg value="--html"/>
-				    <arg value="-o doc/html"/>
+				    <arg value="-o html"/>
 				    <arg value="--name"/>
 			        <arg value="JenkinsAPI"/>
 				    <arg value="--config=epydoc.cfg"/>
