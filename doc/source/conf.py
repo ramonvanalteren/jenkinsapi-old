@@ -22,6 +22,9 @@ PROJECT_DIR, _ = os.path.split( DOC_DIR )
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, PROJECT_DIR )
 
+#Sanity check
+import jenkinsapi
+
 # Config file
 import setup_config as jenkinsapi_setup_config
 
@@ -77,7 +80,7 @@ exclude_patterns = []
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -85,7 +88,7 @@ exclude_patterns = []
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

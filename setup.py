@@ -1,28 +1,16 @@
 from setuptools import setup, find_packages
 import sys, os
+from setup_config import DESCRIPTION, VERSION, PROJECT_NAME, PROJECT_AUTHORS, GLOBAL_ENTRY_POINTS, PROJECT_EMAILS, PROJECT_URL, SHORT_DESCRIPTION
 
-# Use the README file as the long-description for the project. 
-# This makes sure that the PyPi index page contains automatically
-# generated documentation.
-PROJECT_ROOT, _ = os.path.split(__file__) 
-DESCRIPTION = open( os.path.join(PROJECT_ROOT, "README") ).read()
-VERSION = REVISION = '0.1.1'
-PROJECT_NAME = 'jenkinsapi'
-PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren"
-
-GLOBAL_ENTRY_POINTS = {
-        "console_scripts":[ "jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main"]
-        }
-
-setup(name=PROJECT_NAME,
+setup(name=PROJECT_NAME.lower(),
       version=VERSION,
       author=PROJECT_AUTHORS,
-      author_email='salimfadhley@gmail.com, ramon@vanalteren.nl',
+      author_email=PROJECT_EMAILS,
       packages=find_packages('.'),
       zip_safe=True,
       include_package_data = False,
       entry_points = GLOBAL_ENTRY_POINTS,
-      url="https://github.com/salimfadhley/jenkinsapi",
-      description='A Python API for accessing resources on a Jenkins continuous-integration server.',
+      url=PROJECT_URL,
+      description=SHORT_DESCRIPTION,
       long_description=DESCRIPTION,
       )
