@@ -1,3 +1,12 @@
+"""
+Artifacts can be used to represent data created as a side-effect of running a Jenkins build.
+
+Artifacts are files which are associated with a single build. A build can have any number of
+artifacts associated with it.
+
+This module provides a class called Artifact which allows you to download objects from the server
+and also access them as a stream.
+"""
 from __future__ import with_statement
 import urllib
 import os
@@ -10,12 +19,16 @@ from jenkinsapi.fingerprint import Fingerprint
 log = logging.getLogger( __name__ )
 
 class Artifact(object):
-
+    """
+    Represents a single Jenkins artifact, usually some kind of file 
+    generated as a by-product of executing a Jenkins build.
+    """
+    
     def __init__( self, filename, url, build=None ):
         self.filename = filename
         self.url = url
         self.build = build
-
+    
     def save( self, fspath ):
         """
         Save the artifact to an explicit path. The containing directory must exist.
@@ -45,17 +58,27 @@ class Artifact(object):
         except ArtifactBroken:
             log.warning("fingerprint of the downloaded artifact could not be verified")
         return filename
-
+    
     def _do_download(self, fspath):
+        """
+        Download the the artifact to a path.
+        """
         filename, _ = urllib.urlretrieve(self.url, filename=fspath)
         return filename
 
     def _verify_download(self, fspath):
+        """
+        Verify that a downloaded object has a valid fingerprint.
+        """
         local_md5 = self._md5sum(fspath)
         fp = Fingerprint(self.build.job.jenkins.baseurl, local_md5, self.build.job.jenkins)
         return fp.validate_for_build(fspath, self.build.job, self.build)
 
     def _md5sum(self, fspath, chunksize=2**20):
+        """
+        A MD5 hashing function intended to produce the same results as that used by
+        Jenkins.
+        """
         md5 = hashlib.md5()
         try:
             with open(fspath,'rb') as f:
@@ -77,6 +100,9 @@ class Artifact(object):
 
 
     def __repr__( self ):
+        """
+        Produce a handy repr-string.
+        """
         return """<%s.%s %s>""" % ( self.__class__.__module__,
                                     self.__class__.__name__,
                                     self.url )
