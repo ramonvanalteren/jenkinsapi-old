@@ -48,14 +48,14 @@ def get_artifacts( jenkinsurl, jobid=None, build_no=None, proxyhost=None, proxyp
     log.info("Found %i artifacts in '%s'" % ( len(artifacts.keys() ), build_no ))
     return artifacts
 
-def search_artifacts(jenkinsurl, jobid, artifact_ids=None, same_build=True):
+def search_artifacts(jenkinsurl, jobid, artifact_ids=None ):
     """
     Search the entire history of a jenkins job for a list of artifact names. If same_build
     is true then ensure that all artifacts come from the same build of the job
     """
     if len(artifact_ids) == 0 or artifact_ids is None:
         return []
-    assert same_build, "same_build==False not supported yet"
+    
     jenkinsci = Jenkins( jenkinsurl )
     job = jenkinsci[ jobid ]
     build_ids = job.get_build_ids()
@@ -137,3 +137,31 @@ def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
                 theartifact.save(destpath)
                 installed.append(destpath)
         return installed
+    
+def search_artifact_by_regexp( jenkinsurl, jobid, artifactRegExp ): 
+    '''
+    @param jenkinsurl: The base URL of the jenkins server
+    @param jobid: The name of the job we are to search through
+    @param artifactRegExp: A compiled regular expression object (not a re-string)
+    '''
+    """
+    Search the entire history of a hudson job for a build which has an artifact whose
+    name matches a supplied regular expression. Return only that artifact.
+    """
+    J = Jenkins( jenkinsurl )
+    j = J[ jobid ] 
+    
+    build_ids = j.getBuildIds()
+    
+    for build_id in build_ids:
+        build = j.getBuild( build_id )
+        
+        artifacts = build.getArtifactDict()
+        
+        for name, art in artifacts.iteritems():
+            md_match = artifactRegExp.search( name )
+            
+            if md_match:
+                return art
+        
+    raise ArtifactsMissing( )
