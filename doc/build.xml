@@ -5,7 +5,17 @@
 	<target name="all" depends="clean, doc_zip" />
 	<target name="clean" depends="doc_clean" />
 	
-	<target name="doc" depends="doc_clean">
+	<target name="doc_api">
+			<property name="jenkinsapi.package.path" value="${basedir}/../jenkinsapi"/>
+			<exec executable="sphinx-apidoc" >
+				        <arg value="-o"/>
+						<arg value="source"/>
+					    <arg value="${jenkinsapi.package.path}"/>
+						<arg value="-f"/>
+			</exec>
+	</target>
+	
+	<target name="doc" depends="doc_clean,doc_api">
 		<mkdir dir="${docs.html.dir}" />
 		<exec executable="sphinx-build" >
 			        <arg value="-b"/>

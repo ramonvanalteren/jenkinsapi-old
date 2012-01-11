@@ -1,20 +1,51 @@
-..  JenkinsAPI documentation master file, created by
-   sphinx-quickstart on Mon Jan 09 16:35:17 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+JenkinsAPI
+==========
 
-Welcome to the JenkinsAPI project documentation
-===============================================
+Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi. This API makes Jenkins even easier to use by providing an easy to use conventional python interface.
 
-Contents:
+Jenkins (and It's predecessor Hudson) are fantastic projects - but they are somewhat Java-centric. Thankfully the designers have provided an excellent and complete REST interface. This library wraps up that interface as more conventional python objects in order to make most Jenkins oriented tasks simpler.
 
-.. toctree:: 
-   :maxdepth: 2
-   
-   api
-   artifact
-   build
-   urlopener
+This library can help you:
+
+ * Query the test-results of a completed build
+ * Get a objects representing the latest builds of a job
+ * Search for artifacts by simple criteria
+ * Block until jobs are complete
+ * Install artifacts to custom-specified directory structures
+ * Username/password auth support for jenkins instances with auth turned on
+ * Search for builds by subversion revision
+ * Add, remove and query jenkins slaves
+
+Installation
+============
+
+Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or distribute to automatically install this project.
+
+Most users can do the following:
+
+    easy_install jenkinsapi
+
+If you'd like to install in multi-version mode:
+
+    easy_install -m jenkinsapi
+
+Project Authors
+===============
+
+ * Salim Fadhley (sal@stodge.org) 
+ * Ramon van Alteren (ramon@vanalteren.nl) 
+ * Ruslan Lutsenko (ruslan.lutcenko@gmail.com) 
+
+Current code lives on github: https://github.com/salimfadhley/jenkinsapi
+
+Package Contents
+================
+
+.. toctree::
+   jenkinsapi
+   jenkinsapi.command_line
+   jenkinsapi.utils
+   modules
 	
 Indices and tables
 ==================
