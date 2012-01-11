@@ -16,6 +16,15 @@ This library can help you:
  * Search for builds by subversion revision
  * Add, remove and query jenkins slaves
 
+Important links
+===============
+
+Project source code: github: https://github.com/salimfadhley/jenkinsapi
+
+Releases: http://pypi.python.org/pypi/jenkinsapi
+
+This documentation: http://packages.python.org/jenkinsapi/
+
 Installation
 ============
 
@@ -36,7 +45,7 @@ Project Authors
  * Ramon van Alteren (ramon@vanalteren.nl) 
  * Ruslan Lutsenko (ruslan.lutcenko@gmail.com) 
 
-Current code lives on github: https://github.com/salimfadhley/jenkinsapi
+
 
 Package Contents
 ================

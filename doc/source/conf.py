@@ -24,6 +24,8 @@ sys.path.insert(0, PROJECT_DIR )
 
 #Sanity check
 import jenkinsapi
+import examples
+import jenkinsapi_tests
 
 # Config file
 import setup_config as jenkinsapi_setup_config
