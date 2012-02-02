@@ -96,7 +96,7 @@ class Artifact(object):
         assert os.path.exists( dirpath )
         assert os.path.isdir( dirpath )
         outputfilepath = os.path.join( dirpath, self.filename )
-        self.save( outputfilepath )
+        return self.save( outputfilepath )
 
 
     def __repr__( self ):
