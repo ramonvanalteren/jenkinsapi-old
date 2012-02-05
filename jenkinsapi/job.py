@@ -1,8 +1,9 @@
 import logging
 import urlparse
 import urllib2
+import urllib
 from collections import defaultdict
-from datetime import time
+from time import sleep
 from jenkinsapi.build import Build
 from jenkinsapi.jenkinsbase import JenkinsBase
 
@@ -30,12 +31,14 @@ class Job(JenkinsBase):
     def get_jenkins_obj(self):
         return self.jenkins
 
-    def get_build_triggerurl( self, token=None ):
+    def get_build_triggerurl( self, token=None, params={} ):
         if token is None:
             extra = "build"
         else:
             assert isinstance(token, str ), "token if provided should be a string."
-            extra = "build?token=%s" % token
+            extra = "build?" + urllib.urlencode({'token':token})
+        if params:
+            extra = "buildWithParameters?" + urllib.urlencode(params)
         buildurl = urlparse.urljoin( self.baseurl, extra )
         return buildurl
 
@@ -50,32 +53,28 @@ class Job(JenkinsBase):
             raise
         return html_result
 
-    def invoke( self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15 ):
+    def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15, params={}):
         assert isinstance( invoke_pre_check_delay, (int, float) )
         assert isinstance( invoke_block_delay, (int, float) )
         assert isinstance( block, bool )
         assert isinstance( skip_if_running, bool )
-        skip_build = False
         if self.is_queued():
             log.warn( "Will not request new build because %s is already queued" % self.id() )
-            skip_build = True
+            pass
         elif self.is_running():
             if skip_if_running:
                 log.warn( "Will not request new build because %s is already running" % self.id() )
-                skip_build = True
+                pass
             else:
                 log.warn("Will re-schedule %s even though it is already running" % self.id() )
         original_build_no = self.get_last_buildnumber()
-        if skip_build:
-            pass
-        else:
-            log.info( "Attempting to start %s on %s" % ( self.id(), repr(self.get_jenkins_obj()) ) )
-            url = self.get_build_triggerurl( securitytoken )
-            html_result = self.hit_url( url )
-            assert len( html_result ) > 0
+        log.info( "Attempting to start %s on %s" % ( self.id(), repr(self.get_jenkins_obj()) ) )
+        url = self.get_build_triggerurl( securitytoken, params)
+        html_result = self.hit_url(url)
+        assert len( html_result ) > 0
         if invoke_pre_check_delay > 0:
             log.info("Waiting for %is to allow Jenkins to catch up" % invoke_pre_check_delay )
-            time.sleep( invoke_pre_check_delay )
+            sleep( invoke_pre_check_delay )
         if block:
             total_wait = 0
             while self.is_queued():
