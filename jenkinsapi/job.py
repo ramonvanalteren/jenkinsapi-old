@@ -32,11 +32,12 @@ class Job(JenkinsBase):
         return self.jenkins
 
     def get_build_triggerurl( self, token=None, params={} ):
-        if token is None:
+        if token is None and not params:
             extra = "build"
         elif params:
-            assert isinstance(token, str ), "token if provided should be a string."
-            params['token'] = token
+            if token:
+                assert isinstance(token, str ), "token if provided should be a string."
+                params['token'] = token
             extra = "buildWithParameters?" + urllib.urlencode(params)
         else:
             assert isinstance(token, str ), "token if provided should be a string."
