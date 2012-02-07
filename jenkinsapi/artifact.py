@@ -72,7 +72,7 @@ class Artifact(object):
         """
         local_md5 = self._md5sum(fspath)
         fp = Fingerprint(self.build.job.jenkins.baseurl, local_md5, self.build.job.jenkins)
-        return fp.validate_for_build(fspath, self.build.job, self.build)
+        return fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
 
     def _md5sum(self, fspath, chunksize=2**20):
         """
