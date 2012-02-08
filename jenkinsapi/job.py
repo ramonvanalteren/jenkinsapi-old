@@ -45,17 +45,6 @@ class Job(JenkinsBase):
         buildurl = urlparse.urljoin( self.baseurl, extra )
         return buildurl
 
-    def hit_url(self, url ):
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen( url )
-            html_result = stream.read()
-        except urllib2.HTTPError, e:
-            log.debug( "Error reading %s" % url )
-            log.exception(e)
-            raise
-        return html_result
-
     def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15, params={}):
         assert isinstance( invoke_pre_check_delay, (int, float) )
         assert isinstance( invoke_block_delay, (int, float) )

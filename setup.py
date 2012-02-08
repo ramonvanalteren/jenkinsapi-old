@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-import sys, os
+from setuptools import setup
 from setup_config import DESCRIPTION, VERSION, PROJECT_NAME, PROJECT_AUTHORS, GLOBAL_ENTRY_POINTS, PROJECT_EMAILS, PROJECT_URL, SHORT_DESCRIPTION
 
 setup(name=PROJECT_NAME.lower(),
