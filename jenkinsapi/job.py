@@ -196,3 +196,7 @@ class Job(JenkinsBase):
         except NoBuildData:
             log.info("No build info available for %s, assuming not running." % str(self) )
             return False
+
+    def get_config(self):
+        '''Returns the config.xml from the job'''
+        return self.hit_url("%(baseurl)s/config.xml" % self.__dict__)
