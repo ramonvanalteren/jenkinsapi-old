@@ -15,12 +15,13 @@
 		</delete>
 	</target>
 
-	<target name="compile" depends="sdist,bdist_egg_26,bdist_egg_27,bdist_wininst_27" />
+	<target name="compile" depends="sdist,bdist_egg_26,bdist_egg_27" />
 
 	<target name="sdist">
 		<exec executable="python">
 			<arg value="setup.py" />
 			<arg value="sdist" />
+			<arg value="upload" />
 		</exec>
 	</target>
 	
@@ -36,6 +37,7 @@
 				<exec executable="python2.7">
 					<arg value="setup.py" />
 					<arg value="bdist_egg" />
+					<arg value="upload" />
 			</exec>
 	</target>
 	
@@ -43,7 +45,9 @@
 					<exec executable="python2.6">
 						<arg value="setup.py" />
 						<arg value="bdist_wininst" />
+						<arg value="upload" />
 				</exec>
-		</target>
+	</target>
+	
 
 </project>
