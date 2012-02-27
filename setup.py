@@ -3,7 +3,7 @@ import os
 
 PROJECT_ROOT, _ = os.path.split(__file__) 
 DESCRIPTION = open( os.path.join(PROJECT_ROOT, "README") ).read()
-VERSION = REVISION = '0.1.3'
+VERSION = REVISION = '0.1.4'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
