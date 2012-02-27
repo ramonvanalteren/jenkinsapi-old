@@ -160,7 +160,7 @@ class Jenkins(JenkinsBase):
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
-        url = "%(baseurl)s/computer/%(nodename)s" % {'baseurl': self.baseurl, 'nodename': nodename}
+        url = "%(baseurl)s/computer/%(nodename)s" % {'baseurl': self.baseurl, 'nodename': urllib.quote(nodename)}
         return url
 
     def has_node(self, nodename):
