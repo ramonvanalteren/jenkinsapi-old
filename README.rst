@@ -54,3 +54,8 @@ Project Authors
  * Salim Fadhley (sal@stodge.org) 
  * Ramon van Alteren (ramon@vanalteren.nl) 
  * Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
+
+Credits
+-------
+    
+ * Cleber J Santos (cleber at cleberjsantos dot com dot br)
