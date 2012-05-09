@@ -205,4 +205,4 @@ class Job(JenkinsBase):
 
     def update_config(self, config):
         '''Update the config.xml to the job'''
-        return self.post_data("%(baseurl)s/config.xml" % self.__dict__, jobconfig)
+        return self.post_data("%(baseurl)s/config.xml" % self.__dict__, config)
