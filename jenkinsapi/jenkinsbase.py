@@ -79,6 +79,7 @@ class JenkinsBase(object):
         except urllib2.HTTPError, e:
             log.warn("Error post data %s" % url)
             log.exception(e)
+            raise
         return result
 
     def hit_url(self, url ):
