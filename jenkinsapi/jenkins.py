@@ -106,14 +106,14 @@ class Jenkins(JenkinsBase):
         """
         copy_job_url = "%screateItem?name=%s&mode=copy&from=%s" % (self.baseurl, newjobname, jobname)
         self.post_data(copy_job_url, '')
-        return self[newjobname]
+        return Jenkins(self.baseurl).get_job(newjobname)
 
     def delete_job(self, jobname):
         """
         Delete a job by name
         :param jobname: name of a exist job, str
         """
-        delete_job_url = "%sdoDelete" % self.[jobname].baseurl
+        delete_job_url = "%sdoDelete" % self[jobname].baseurl
         self.post_data(delete_job_url, '')
         return self
 
