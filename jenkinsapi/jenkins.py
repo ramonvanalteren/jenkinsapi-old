@@ -112,10 +112,11 @@ class Jenkins(JenkinsBase):
         """
         Delete a job by name
         :param jobname: name of a exist job, str
+        :return: new jenkins_obj
         """
-        delete_job_url = "%sdoDelete" % self[jobname].baseurl
+        delete_job_url = "%sdoDelete" % Jenkins(self.baseurl).get_job(jobname).baseurl
         self.post_data(delete_job_url, '')
-        return self
+        return Jenkins(self.baseurl)
 
     def iteritems(self):
         return self.get_jobs()
