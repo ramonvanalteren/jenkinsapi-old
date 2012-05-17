@@ -155,6 +155,12 @@ class Jenkins(JenkinsBase):
         view_api_url = self.python_api_url(view_url)
         return View(view_api_url , str_view_name, jenkins_obj=self)
 
+    def get_view_by_url(self, str_url):
+        view_url = str_url
+        view_api_url = "%s/api/python/" % str_url
+        str_view_name = view_url.replace(self.baseurl, '')
+        return View(view_api_url, str_view_name, jenkins_obj=self)
+
     def __getitem__(self, jobname):
         """
         Get a job by name
