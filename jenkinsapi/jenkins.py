@@ -161,6 +161,11 @@ class Jenkins(JenkinsBase):
         str_view_name = view_url.replace(self.baseurl, '')
         return View(view_api_url, str_view_name, jenkins_obj=self)
 
+    def delete_view_by_url(self, str_url):
+        url = "%s/doDelete" %str_url
+        self.post_data(url, '')
+        return Jenkins(self.baseurl)
+
     def __getitem__(self, jobname):
         """
         Get a job by name
