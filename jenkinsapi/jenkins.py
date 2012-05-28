@@ -89,6 +89,15 @@ class Jenkins(JenkinsBase):
         for info in self._data["jobs"]:
             yield info["name"], Job(info["url"], info["name"], jenkins_obj=self)
 
+    def get_jobs_list(self):
+        """
+        return jobs dict,'name:url'
+        """
+        jobs = []
+        for info in self._data["jobs"]:
+            jobs.append(info["name"])
+        return jobs
+
     def get_job(self, jobname):
         """
         Get a job by name
@@ -96,6 +105,14 @@ class Jenkins(JenkinsBase):
         :return: Job obj
         """
         return self[jobname]
+
+    def has_job(self, jobname):
+        """
+        Does a job by the name specified exist
+        :param jobname: string
+        :return: boolean
+        """
+        return jobname in self.get_jobs_list()
 
     def copy_job(self, jobname, newjobname):
         """
@@ -194,6 +211,26 @@ class Jenkins(JenkinsBase):
                 log.debug("Error post_data %s" % url)
                 log.exception(e)
             return Jenkins(self.baseurl).get_view(str_view_name)
+
+    def add_job_to_view(self, str_view_name, jobnamelist):
+        data = {
+                "description":"",
+                "statusFilter":"",
+                "useincluderegex":"on",
+                "includeRegex":"",
+                "columns": [{"stapler-class": "hudson.views.StatusColumn", "kind": "hudson.views.StatusColumn"}, 
+                            {"stapler-class": "hudson.views.WeatherColumn", "kind": "hudson.views.WeatherColumn"}, 
+                            {"stapler-class": "hudson.views.JobColumn", "kind": "hudson.views.JobColumn"}, 
+                            {"stapler-class": "hudson.views.LastSuccessColumn", "kind": "hudson.views.LastSuccessColumn"}, 
+                            {"stapler-class": "hudson.views.LastFailureColumn", "kind": "hudson.views.LastFailureColumn"}, 
+                            {"stapler-class": "hudson.views.LastDurationColumn", "kind": "hudson.views.LastDurationColumn"}, 
+                            {"stapler-class": "hudson.views.BuildButtonColumn", "kind": "hudson.views.BuildButtonColumn"}],
+                "Submit":"OK",
+            }
+        data["name"]="str_view_name"
+        for jobname in jobnamelist:
+            # check job is avaliave
+            data[jobname]="on"
 
 
     def __getitem__(self, jobname):
