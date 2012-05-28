@@ -167,6 +167,11 @@ class Jenkins(JenkinsBase):
         return Jenkins(self.baseurl)
 
     def create_view(self, str_view_name):
+        """
+        Create a view, viewExistsCheck
+        :param str_view_name: name of new view, str
+        :return: new view obj
+        """
         viewExistsCheck_url = "%s/viewExistsCheck?value=%s" %(self.baseurl, str_view_name)
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
@@ -175,7 +180,8 @@ class Jenkins(JenkinsBase):
             log.debug("Error reading %s" % url)
             log.exception(e)
             raise
-        if len(r) > 7:
+        """<div/>"""
+        if len(r) > 7: 
             return 'A view already exists with the name "%s"' % (str_view_name)
         else:
             data = {"mode":"hudson.model.ListView", "Submit": "OK"}
