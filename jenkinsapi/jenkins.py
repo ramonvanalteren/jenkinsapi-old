@@ -166,6 +166,30 @@ class Jenkins(JenkinsBase):
         self.post_data(url, '')
         return Jenkins(self.baseurl)
 
+    def create_view(self, str_view_name):
+        viewExistsCheck_url = "%s/viewExistsCheck?value=%s" %(self.baseurl, str_view_name)
+        fn_urlopen = self.get_jenkins_obj().get_opener()
+        try:
+            r = fn_urlopen(viewExistsCheck_url).read()
+        except urllib2.HTTPError, e:
+            log.debug("Error reading %s" % url)
+            log.exception(e)
+            raise
+        if len(r) > 7:
+            return 'A view already exists with the name "%s"' % (str_view_name)
+        else:
+            data = {"mode":"hudson.model.ListView", "Submit": "OK"}
+            data['name']=str_view_name
+            data['json'] = data.copy()
+            params = urllib.urlencode(data)
+            try:
+                result = self.post_data('%s/createView' % self.baseurl, params)
+            except urllib2.HTTPError, e:
+                log.debug("Error post_data %s" % url)
+                log.exception(e)
+            return Jenkins(self.baseurl).get_view(str_view_name)
+
+
     def __getitem__(self, jobname):
         """
         Get a job by name
