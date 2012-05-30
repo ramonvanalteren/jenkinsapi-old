@@ -182,13 +182,18 @@ class Jenkins(JenkinsBase):
         self.post_data(url, '')
         return Jenkins(self.baseurl)
 
-    def create_view(self, str_view_name):
+    def create_view(self, str_view_name, people=None):
         """
         Create a view, viewExistsCheck
         :param str_view_name: name of new view, str
         :return: new view obj
         """
-        viewExistsCheck_url = "%s/viewExistsCheck?value=%s" %(self.baseurl, str_view_name)
+        
+        if people:
+            url = "%s/user/%s/my-views" %(self.baseurl, people)
+        else:
+            url = self.baseurl
+        viewExistsCheck_url = "%s/viewExistsCheck?value=%s" %(url, str_view_name)
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
             r = fn_urlopen(viewExistsCheck_url).read()
@@ -205,11 +210,11 @@ class Jenkins(JenkinsBase):
             data['json'] = data.copy()
             params = urllib.urlencode(data)
             try:
-                result = self.post_data('%s/createView' % self.baseurl, params)
+                result = self.post_data('%s/createView' % url, params)
             except urllib2.HTTPError, e:
                 log.debug("Error post_data %s" % url)
                 log.exception(e)
-            return Jenkins(self.baseurl).get_view(str_view_name)
+            return url
 
     def __getitem__(self, jobname):
         """
