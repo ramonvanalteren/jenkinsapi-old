@@ -15,7 +15,7 @@
 		</delete>
 	</target>
 
-	<target name="compile" depends="sdist,bdist_egg_26,bdist_egg_27" />
+	<target name="compile" depends="sdist,bdist_egg_27" />
 
 	<target name="sdist">
 		<exec executable="python">
