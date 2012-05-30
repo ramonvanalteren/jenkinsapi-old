@@ -77,10 +77,12 @@ class View(JenkinsBase):
                 "Submit":"OK",
                 }
             data["name"] = self.name
+            for job in self.get_job_dict().keys():
+                data[job]='on'
             data[str_job_name] = "on"
             data['json'] = data.copy()
             self.post_data('%sconfigSubmit' % self.baseurl, urllib.urlencode(data))
-            return "Job %s is add in View %s " % (str_job_name, self.name)
+            return "Job %s is add in View %s successful" % (str_job_name, self.baseurl)
 
     def id(self):
         """
