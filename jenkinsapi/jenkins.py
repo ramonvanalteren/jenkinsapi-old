@@ -170,13 +170,12 @@ class Jenkins(JenkinsBase):
     def get_view(self, str_view_name):
         view_url = self.get_view_url(str_view_name)
         view_api_url = self.python_api_url(view_url)
-        return View(view_api_url , str_view_name, jenkins_obj=self)
+        return View(view_url , str_view_name, jenkins_obj=self)
 
-    def get_view_by_url(self, str_url):
-        view_url = str_url
-        view_api_url = "%s/api/python/" % str_url
-        str_view_name = view_url.replace(self.baseurl, '')
-        return View(view_api_url, str_view_name, jenkins_obj=self)
+    def get_view_by_url(self, str_view_url):
+        #for nested view
+        str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
+        return View(str_view_url , str_view_name, jenkins_obj=self)
 
     def delete_view_by_url(self, str_url):
         url = "%s/doDelete" %str_url
@@ -211,27 +210,6 @@ class Jenkins(JenkinsBase):
                 log.debug("Error post_data %s" % url)
                 log.exception(e)
             return Jenkins(self.baseurl).get_view(str_view_name)
-
-    def add_job_to_view(self, str_view_name, jobnamelist):
-        data = {
-                "description":"",
-                "statusFilter":"",
-                "useincluderegex":"on",
-                "includeRegex":"",
-                "columns": [{"stapler-class": "hudson.views.StatusColumn", "kind": "hudson.views.StatusColumn"}, 
-                            {"stapler-class": "hudson.views.WeatherColumn", "kind": "hudson.views.WeatherColumn"}, 
-                            {"stapler-class": "hudson.views.JobColumn", "kind": "hudson.views.JobColumn"}, 
-                            {"stapler-class": "hudson.views.LastSuccessColumn", "kind": "hudson.views.LastSuccessColumn"}, 
-                            {"stapler-class": "hudson.views.LastFailureColumn", "kind": "hudson.views.LastFailureColumn"}, 
-                            {"stapler-class": "hudson.views.LastDurationColumn", "kind": "hudson.views.LastDurationColumn"}, 
-                            {"stapler-class": "hudson.views.BuildButtonColumn", "kind": "hudson.views.BuildButtonColumn"}],
-                "Submit":"OK",
-            }
-        data["name"]="str_view_name"
-        for jobname in jobnamelist:
-            # check job is avaliave
-            data[jobname]="on"
-
 
     def __getitem__(self, jobname):
         """
