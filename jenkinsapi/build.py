@@ -58,7 +58,7 @@ class Build(JenkinsBase):
         :return: String or None
         """
         try:
-    		return self.get_actions()['causes'][0]['upstreamProject']
+            return self.get_actions()['causes'][0]['upstreamProject']
         except KeyError:
             return None
 
@@ -78,7 +78,7 @@ class Build(JenkinsBase):
         :return: int or None
         """
         try:
-    		return int(self.get_actions()['causes'][0]['upstreamBuild'])
+            return int(self.get_actions()['causes'][0]['upstreamBuild'])
         except KeyError:
             return None
 
@@ -88,7 +88,7 @@ class Build(JenkinsBase):
         :return: String or None
         """
         try:
-    		return self.get_actions()['parameters'][0]['value']
+            return self.get_actions()['parameters'][0]['value']
         except KeyError:
             return None
 
@@ -108,7 +108,7 @@ class Build(JenkinsBase):
         :return: int or None
         """
         try:
-    		return int(self.get_actions()['parameters'][1]['value'])
+            return int(self.get_actions()['parameters'][1]['value'])
         except KeyError:
             return None
 
