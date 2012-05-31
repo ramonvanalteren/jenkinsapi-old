@@ -56,6 +56,8 @@ class Jenkins(JenkinsBase):
         return auth_args
 
     def get_opener(self):
+        if self.formauth:
+            return self.get_login_opener()
         return mkurlopener(*self.get_auth())
 
     def get_login_opener(self):
@@ -81,13 +83,6 @@ class Jenkins(JenkinsBase):
         res = urlopen(loginurl, data=formdata)
         self._cookies = [c for c in mcj]
         return res.getcode() == 302
-
-    def build(self, jobname):
-        assert jobname
-        buildurl = urlparse.urljoin(self.baseurl, 'job/%s/build' % jobname)
-        urlopen = self.get_login_opener()
-        res = urlopen(buildurl)
-        return res.code == 200
 
     def validate_fingerprint(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
