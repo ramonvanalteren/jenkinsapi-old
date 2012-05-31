@@ -162,7 +162,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of a exist job, str
         :return: new jenkins_obj
         """
-        delete_job_url = "%sdoDelete" % Jenkins(self.baseurl).get_job(jobname).baseurl
+        delete_job_url = urlparse.urljoin(Jenkins(self.baseurl).get_job(jobname).baseurl, "sdoDelete" )
         self.post_data(delete_job_url, '')
         return Jenkins(self.baseurl)
 
@@ -221,10 +221,11 @@ class Jenkins(JenkinsBase):
         """
         
         if people:
-            url = "%s/user/%s/my-views" %(self.baseurl, people)
+            url = urlparse.urljoin(self.baseurl, "user/%s/my-views" % people)
         else:
             url = self.baseurl
-        viewExistsCheck_url = "%s/viewExistsCheck?value=%s" %(url, str_view_name)
+        qs = urllib.urlencode({'value': str_view_name})
+        viewExistsCheck_url = urlparse.urljoin(url, "viewExistsCheck?%s" % qs)
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
             r = fn_urlopen(viewExistsCheck_url).read()
@@ -241,11 +242,12 @@ class Jenkins(JenkinsBase):
             data['json'] = data.copy()
             params = urllib.urlencode(data)
             try:
-                result = self.post_data('%s/createView' % url, params)
+                createView_url = urlparse.urljoin(url, "createView")
+                result = self.post_data(createView_url, params)
             except urllib2.HTTPError, e:
                 log.debug("Error post_data %s" % url)
                 log.exception(e)
-            return url
+            return urlparse.urljoin(url, "view/%s" % str_view_name)
 
     def __getitem__(self, jobname):
         """
