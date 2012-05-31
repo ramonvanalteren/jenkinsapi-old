@@ -20,7 +20,7 @@ if __name__ == "__main__":
 log = logging.getLogger(__name__)
 
 # CHANGE THIS
-VERSION = REVISION = '0.1.7'
+VERSION = REVISION = '0.1.8'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
