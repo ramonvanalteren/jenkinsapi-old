@@ -4,11 +4,13 @@ from jenkinsapi.job import Job
 from jenkinsapi.view import View
 from jenkinsapi.node import Node
 from jenkinsapi.exceptions import UnknownJob, NotAuthorized
-from utils.urlopener import mkurlopener
+from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
 import logging
 import time
 import urllib2
 import urllib
+import urlparse
+import cookielib
 try:
     import json
 except ImportError:
@@ -20,7 +22,7 @@ class Jenkins(JenkinsBase):
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, proxyhost=None, proxyport=None, proxyuser=None, proxypass=None):
+    def __init__(self, baseurl, username=None, password=None, proxyhost=None, proxyport=None, proxyuser=None, proxypass=None, formauth=False):
         """
 
         :param baseurl: baseurl for jenkins instance including port, str
@@ -38,7 +40,7 @@ class Jenkins(JenkinsBase):
         self.proxyport = proxyport
         self.proxyuser = proxyuser
         self.proxypass = proxypass
-        JenkinsBase.__init__(self, baseurl)
+        JenkinsBase.__init__(self, baseurl, poll=not formauth)
 
     def get_proxy_auth(self):
         return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass
@@ -54,7 +56,33 @@ class Jenkins(JenkinsBase):
         return auth_args
 
     def get_opener(self):
+        if self.formauth:
+            return self.get_login_opener()
         return mkurlopener(*self.get_auth())
+
+    def get_login_opener(self):
+        hdrs = []
+        if getattr(self, '_cookies', False):
+            mcj = cookielib.MozillaCookieJar()
+            for c in self._cookies:
+                mcj.set_cookie(c)
+            hdrs.append(urllib2.HTTPCookieProcessor(mcj))
+        return mkopener(*hdrs)
+
+    def login(self):
+        formdata = dict(j_username=self.username, j_password=self.password,
+                        remember_me=True, form='/')
+        formdata.update(dict(json=json.dumps(formdata), Submit='log in'))
+        formdata = urllib.urlencode(formdata)
+
+        loginurl = urlparse.urljoin(self.baseurl, 'j_acegi_security_check')
+        mcj = cookielib.MozillaCookieJar()
+        cookiehandler = urllib2.HTTPCookieProcessor(mcj)
+
+        urlopen = mkopener(NoAuto302Handler, cookiehandler)
+        res = urlopen(loginurl, data=formdata)
+        self._cookies = [c for c in mcj]
+        return res.getcode() == 302
 
     def validate_fingerprint(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
