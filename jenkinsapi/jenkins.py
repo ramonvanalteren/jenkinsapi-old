@@ -40,7 +40,7 @@ class Jenkins(JenkinsBase):
         self.proxyport = proxyport
         self.proxyuser = proxyuser
         self.proxypass = proxypass
-        JenkinsBase.__init__(self, baseurl, poll=not formauth)
+        JenkinsBase.__init__(self, baseurl, formauth=formauth)
 
     def get_proxy_auth(self):
         return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass
@@ -149,7 +149,10 @@ class Jenkins(JenkinsBase):
         :param newjobname: name of new job, str
         :return: new Job obj
         """
-        copy_job_url = "%screateItem?name=%s&mode=copy&from=%s" % (self.baseurl, newjobname, jobname)
+        qs = urllib.urlencode({'name': newjobname,
+                               'mode': 'copy',
+                               'from': jobname})
+        copy_job_url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
         self.post_data(copy_job_url, '')
         return Jenkins(self.baseurl).get_job(newjobname)
 
