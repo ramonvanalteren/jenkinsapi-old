@@ -154,7 +154,11 @@ class Jenkins(JenkinsBase):
                                'from': jobname})
         copy_job_url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
         self.post_data(copy_job_url, '')
-        return Jenkins(self.baseurl).get_job(newjobname)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk.get_job(newjobname)
 
     def delete_job(self, jobname):
         """
