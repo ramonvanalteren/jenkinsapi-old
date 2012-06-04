@@ -168,7 +168,11 @@ class Jenkins(JenkinsBase):
         """
         delete_job_url = urlparse.urljoin(Jenkins(self.baseurl).get_job(jobname).baseurl, "doDelete" )
         self.post_data(delete_job_url, '')
-        return Jenkins(self.baseurl)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk
 
     def iteritems(self):
         return self.get_jobs()
@@ -215,7 +219,11 @@ class Jenkins(JenkinsBase):
     def delete_view_by_url(self, str_url):
         url = "%s/doDelete" %str_url
         self.post_data(url, '')
-        return Jenkins(self.baseurl)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk
 
     def create_view(self, str_view_name, people=None):
         """
