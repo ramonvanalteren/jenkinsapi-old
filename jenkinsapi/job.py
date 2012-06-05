@@ -2,6 +2,7 @@ import logging
 import urlparse
 import urllib2
 import urllib
+from bs4 import BeautifulSoup
 from collections import defaultdict
 from time import sleep
 from jenkinsapi.build import Build
@@ -20,6 +21,7 @@ class Job(JenkinsBase):
         self.name = name
         self.jenkins = jenkins_obj
         self._revmap = None
+        self._config = None
         JenkinsBase.__init__( self, url )
 
     def id( self ):
@@ -202,6 +204,21 @@ class Job(JenkinsBase):
     def get_config(self):
         '''Returns the config.xml from the job'''
         return self.hit_url("%(baseurl)s/config.xml" % self.__dict__)
+
+    def load_config(self):
+        self._config = self.get_config()
+
+    def get_vcs(self):
+        if self._config is None:
+            self.load_config()
+
+        bs = BeautifulSoup(self._config, 'xml')
+        vcsmap = {
+            'hudson.scm.SubversionSCM': 'svn',
+            'hudson.plugins.git.GitSCM': 'git',
+            'hudson.plugins.mercurial.MercurialSCM': 'hg',
+            }
+        return vcsmap.get(bs.project.scm.attrs['class'])
 
     def update_config(self, config):
         '''Update the config.xml to the job'''
