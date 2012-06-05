@@ -169,7 +169,7 @@ class Job(JenkinsBase):
         :param refresh: boolean, whether or not to refresh the revision -> buildnumber map
         :return: list of buildnumbers, [int]
         """
-        if not isinstance(revision, int):
+        if self.get_vcs() == 'svn' and not isinstance(revision, int):
             revision = int(revision)
         if self._revmap is None or refresh:
             self._revmap = self.get_revision_dict()
