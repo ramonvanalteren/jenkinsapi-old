@@ -34,10 +34,8 @@ class Build(JenkinsBase):
         return self._data["result"]
 
     def get_revision(self):
-        vcs = self.job.get_vcs()
-        if vcs:
-            return getattr(self, '_get_%s_rev' % vcs, lambda: None)()
-        raise NotSupportVCS
+        vcs = self._data['changeSet']['kind'] or 'git'
+        return getattr(self, '_get_%s_rev' % vcs, lambda: None)()
 
     def _get_svn_rev(self):
         maxRevision = 0
