@@ -117,6 +117,14 @@ class Jenkins(JenkinsBase):
         for info in self._data["jobs"]:
             yield info["name"], Job(info["url"], info["name"], jenkins_obj=self)
 
+    def get_jobs_info(self):
+        """
+        Get the jobs information
+        :return url, name
+        """
+        for info in self._data["jobs"]:
+            yield info["url"], info["name"]
+
     def get_jobs_list(self):
         """
         return jobs dict,'name:url'
@@ -154,7 +162,11 @@ class Jenkins(JenkinsBase):
                                'from': jobname})
         copy_job_url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
         self.post_data(copy_job_url, '')
-        return Jenkins(self.baseurl).get_job(newjobname)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk.get_job(newjobname)
 
     def delete_job(self, jobname):
         """
@@ -162,9 +174,13 @@ class Jenkins(JenkinsBase):
         :param jobname: name of a exist job, str
         :return: new jenkins_obj
         """
-        delete_job_url = urlparse.urljoin(Jenkins(self.baseurl).get_job(jobname).baseurl, "sdoDelete" )
+        delete_job_url = urlparse.urljoin(Jenkins(self.baseurl).get_job(jobname).baseurl, "doDelete" )
         self.post_data(delete_job_url, '')
-        return Jenkins(self.baseurl)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk
 
     def iteritems(self):
         return self.get_jobs()
@@ -211,7 +227,11 @@ class Jenkins(JenkinsBase):
     def delete_view_by_url(self, str_url):
         url = "%s/doDelete" %str_url
         self.post_data(url, '')
-        return Jenkins(self.baseurl)
+        newjk = Jenkins(self.baseurl, username=self.username,
+                        password=self.password, proxyhost=self.proxyhost,
+                        proxyport=self.proxyport, proxyuser=self.proxyuser,
+                        proxypass=self.proxypass, formauth=self.formauth)
+        return newjk
 
     def create_view(self, str_view_name, people=None):
         """
@@ -219,18 +239,14 @@ class Jenkins(JenkinsBase):
         :param str_view_name: name of new view, str
         :return: new view obj
         """
-        
-        if people:
-            url = urlparse.urljoin(self.baseurl, "user/%s/my-views" % people)
-        else:
-            url = self.baseurl
+        url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % people) if people else self.baseurl
         qs = urllib.urlencode({'value': str_view_name})
         viewExistsCheck_url = urlparse.urljoin(url, "viewExistsCheck?%s" % qs)
         fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
             r = fn_urlopen(viewExistsCheck_url).read()
         except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % url)
+            log.debug("Error reading %s" % viewExistsCheck_url)
             log.exception(e)
             raise
         """<div/>"""
@@ -245,9 +261,9 @@ class Jenkins(JenkinsBase):
                 createView_url = urlparse.urljoin(url, "createView")
                 result = self.post_data(createView_url, params)
             except urllib2.HTTPError, e:
-                log.debug("Error post_data %s" % url)
+                log.debug("Error post_data %s" % createView_url)
                 log.exception(e)
-            return urlparse.urljoin(url, "view/%s" % str_view_name)
+            return urlparse.urljoin(url, "view/%s/" % str_view_name)
 
     def __getitem__(self, jobname):
         """
@@ -255,9 +271,9 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        for name, job in self.get_jobs():
+        for url, name in self.get_jobs_info():
             if name == jobname:
-                return job
+                return Job(url, name, jenkins_obj=self)
         raise UnknownJob(jobname)
 
     def get_node_dict(self):
