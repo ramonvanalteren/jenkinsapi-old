@@ -25,14 +25,6 @@
 		</exec>
 	</target>
 	
-	<target name="bdist_egg_26">
-			<exec executable="python2.6">
-				<arg value="setup.py" />
-				<arg value="bdist_egg" />
-				<arg value="upload" />
-			</exec>
-	</target>
-	
 	<target name="bdist_egg_27">
 				<exec executable="python2.7">
 					<arg value="setup.py" />
@@ -40,14 +32,5 @@
 					<arg value="upload" />
 			</exec>
 	</target>
-	
-	<target name="bdist_wininst_27">
-					<exec executable="python2.6">
-						<arg value="setup.py" />
-						<arg value="bdist_wininst" />
-						<arg value="upload" />
-				</exec>
-	</target>
-	
 
 </project>

@@ -20,7 +20,7 @@ if __name__ == "__main__":
 log = logging.getLogger(__name__)
 
 # CHANGE THIS
-VERSION = REVISION = '0.1.8'
+VERSION = REVISION = '0.1.11'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -30,7 +30,13 @@ SHORT_DESCRIPTION = 'A Python API for accessing resources on a Jenkins continuou
 
 REQUIRE_STRING = "%s==%s" % (PROJECT_NAME.lower(), VERSION)
 
-pkg_resources.require(REQUIRE_STRING)
+try:
+    pkg_resources.require(REQUIRE_STRING)
+except pkg_resources.VersionConflict:
+    import setuptools.command.easy_install
+    setuptools.command.easy_install.main(["-Zma", REQUIRE_STRING])
+    pkg_resources.require(REQUIRE_STRING)
+
 distrib = pkg_resources.get_distribution(REQUIRE_STRING)
 #Sanity check
 import jenkinsapi
@@ -58,8 +64,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u' JenkinsAPI'
-copyright = u'2012, %s' % PROJECT_AUTHORS
+project = ' JenkinsAPI'
+copyright = '2012, %s' % PROJECT_AUTHORS
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -201,8 +207,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'JenkinsAPI.tex', u' JenkinsAPI Documentation',
-   u'xxx', 'manual'),
+  ('index', 'JenkinsAPI.tex', ' JenkinsAPI Documentation',
+   'xxx', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,8 +237,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'jenkinsapi', u' JenkinsAPI Documentation',
-     [u'xxx'], 1)
+    ('index', 'jenkinsapi', ' JenkinsAPI Documentation',
+     ['xxx'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,8 +251,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'JenkinsAPI', u' JenkinsAPI Documentation',
-   u'xxx', 'JenkinsAPI', 'One line description of project.',
+  ('index', 'JenkinsAPI', ' JenkinsAPI Documentation',
+   'xxx', 'JenkinsAPI', 'One line description of project.',
    'Miscellaneous'),
 ]
 

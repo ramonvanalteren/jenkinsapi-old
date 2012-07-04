@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-VERSION = REVISION = '0.1.9'
+VERSION = REVISION = '0.1.11'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -11,7 +11,7 @@ SHORT_DESCRIPTION = 'A Python API for accessing resources on a Jenkins continuou
 
 try:
     DESCRIPTION = open(os.path.join(PROJECT_ROOT, "README.rst")).read()
-except IOError, _:
+except IOError as _:
     DESCRIPTION = SHORT_DESCRIPTION
     
 GLOBAL_ENTRY_POINTS = {

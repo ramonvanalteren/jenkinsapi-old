@@ -25,7 +25,7 @@ def retry_function( tries, fn, *args, **kwargs ):
             if attempt > 0:
                 log.info( "Result obtained after attempt %i" % attemptno )
             return result
-        except Exception, e:
+        except Exception as e:
             if type(e) in IGNORE_EXCEPTIONS:
                 # Immediatly raise in some cases.
                 raise

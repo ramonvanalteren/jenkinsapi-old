@@ -1,14 +1,14 @@
 import logging
-import urlparse
-import urllib2
-import urllib
+import urllib.parse
+import urllib.request, urllib.error, urllib.parse
+import urllib.request, urllib.parse, urllib.error
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from time import sleep
 from jenkinsapi.build import Build
 from jenkinsapi.jenkinsbase import JenkinsBase
 
-from exceptions import NoBuildData, NotFound
+from .exceptions import NoBuildData, NotFound
 
 log = logging.getLogger(__name__)
 
@@ -40,11 +40,11 @@ class Job(JenkinsBase):
             if token:
                 assert isinstance(token, str ), "token if provided should be a string."
                 params['token'] = token
-            extra = "buildWithParameters?" + urllib.urlencode(params)
+            extra = "buildWithParameters?" + urllib.parse.urlencode(params)
         else:
             assert isinstance(token, str ), "token if provided should be a string."
-            extra = "build?" + urllib.urlencode({'token':token})
-        buildurl = urlparse.urljoin( self.baseurl, extra )
+            extra = "build?" + urllib.parse.urlencode({'token':token})
+        buildurl = urllib.parse.urljoin( self.baseurl, extra )
         return buildurl
 
     def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15, params={}):
@@ -118,7 +118,7 @@ class Job(JenkinsBase):
         return self._buildid_for_type(buildtype="lastCompletedBuild")
 
     def get_build_dict(self):
-        if not self._data.has_key( "builds" ):
+        if "builds" not in self._data:
             raise NoBuildData( repr(self) )
         return dict( ( a["number"], a["url"] ) for a in self._data["builds"] )
 
