@@ -1,6 +1,6 @@
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.job import Job
-import urllib.request, urllib.parse, urllib.error
+import urllib
 
 class View(JenkinsBase):
 
@@ -18,21 +18,21 @@ class View(JenkinsBase):
         return Job( api_url, str_job_id, self.jenkins_obj )
 
     def keys(self):
-        return list(self.get_job_dict().keys())
+        return self.get_job_dict().keys()
 
     def iteritems(self):
-        for name, url in self.get_job_dict().items():
+        for name, url in self.get_job_dict().iteritems():
             api_url = self.python_api_url( url )
             yield name, Job( api_url, name, self.jenkins_obj )
 
     def values(self):
-        return [ a[1] for a in self.items() ]
+        return [ a[1] for a in self.iteritems() ]
 
     def items(self):
-        return [ a for a in self.items() ]
+        return [ a for a in self.iteritems() ]
 
     def _get_jobs( self ):
-        if "jobs" not in self._data:
+        if not self._data.has_key( "jobs" ):
             pass
         else:
             for viewdict in self._data["jobs"]:
@@ -42,7 +42,7 @@ class View(JenkinsBase):
         return dict( self._get_jobs() )
 
     def __len__(self):
-        return len( list(self.get_job_dict().keys()) )
+        return len( self.get_job_dict().keys() )
 
     def get_job_url( self, str_job_name ):
         try:
@@ -50,7 +50,7 @@ class View(JenkinsBase):
             return job_dict[ str_job_name ]
         except KeyError:
             #noinspection PyUnboundLocalVariable
-            all_views = ", ".join( list(job_dict.keys()) )
+            all_views = ", ".join( job_dict.keys() )
             raise KeyError("Job %s is not known - available: %s" % ( str_job_name, all_views ) )
 
     def get_jenkins_obj(self):
@@ -77,11 +77,11 @@ class View(JenkinsBase):
                 "Submit":"OK",
                 }
             data["name"] = self.name
-            for job in list(self.get_job_dict().keys()):
+            for job in self.get_job_dict().keys():
                 data[job]='on'
             data[str_job_name] = "on"
             data['json'] = data.copy()
-            self.post_data('%sconfigSubmit' % self.baseurl, urllib.parse.urlencode(data))
+            self.post_data('%sconfigSubmit' % self.baseurl, urllib.urlencode(data))
             return "Job %s is add in View %s successful" % (str_job_name, self.baseurl)
 
     def id(self):

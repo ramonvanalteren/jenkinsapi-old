@@ -21,10 +21,10 @@ class ResultSet(JenkinsBase):
         return "Test Result for %s" % str( self.build )
 
     def keys(self):
-        return [ a[0] for a in self.items() ]
+        return [ a[0] for a in self.iteritems() ]
 
     def items(self):
-        return [a for a in self.items()]
+        return [a for a in self.iteritems()]
 
     def iteritems(self):
         for suite in self._data.get("suites", [] ):
@@ -39,4 +39,4 @@ class ResultSet(JenkinsBase):
                     yield R.id(), R
 
     def __len__(self):
-        return len(list(self.items()))
+        return len(self.items())
