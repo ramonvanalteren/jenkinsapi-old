@@ -326,3 +326,13 @@ class Job(JenkinsBase):
         bs = self._get_beautiful_soup()
         bs.project.scm.source.contents[0].replaceWith(new_source)
         self.update_config(bs.renderContents())
+
+    def disable(self):
+        '''Disable job'''
+        disableurl = urlparse.urljoin( self.baseurl, 'disable' )
+        return self.post_data(disableurl, '')
+
+    def enable(self):
+        '''Enable job'''
+        enableurl = urlparse.urljoin( self.baseurl, 'enable' )
+        return self.post_data(enableurl, '')
