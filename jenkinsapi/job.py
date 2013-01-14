@@ -2,7 +2,6 @@ import logging
 import urlparse
 import urllib2
 import urllib
-#from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from time import sleep
