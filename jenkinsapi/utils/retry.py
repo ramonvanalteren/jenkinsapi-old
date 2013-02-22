@@ -29,17 +29,18 @@ def retry_function( tries, fn, *args, **kwargs ):
         except urllib2.HTTPError, e:
             if e.code == 404:
                 raise
-
             log.exception(e)
         except Exception, e:
             if type(e) in IGNORE_EXCEPTIONS:
                 # Immediatly raise in some cases.
                 raise
-            try:
-                fn_name = fn.__name__
-            except AttributeError:
-                fn_name = "Anonymous Function"
-            log.exception(e)
+        try:
+            fn_name = fn.__name__
+        except AttributeError:
+            fn_name = "Anonymous Function"
+        log.exception(e)
+        if attemptno == tries:
+            log.error( "%s failed at attempt %i, give up." % ( fn_name , attemptno ) )
+            raise
         log.warn( "%s failed at attempt %i, trying again." % ( fn_name , attemptno ) )
         time.sleep( DEFAULT_SLEEP_TIME )
-        raise e
