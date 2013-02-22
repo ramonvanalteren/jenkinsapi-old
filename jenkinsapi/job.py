@@ -325,7 +325,7 @@ class Job(JenkinsBase):
     def update_config(self, config):
         """
         Update the config.xml to the job
-        Also refresh the BeautifulSoup object since the config has changed
+        Also refresh the ElementTree object since the config has changed
         """
         post_data = self.post_data("%(baseurl)s/config.xml" % self.__dict__, config)
         self._element_tree = ET.fromstring(config)
