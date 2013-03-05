@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-VERSION = REVISION = '0.1.12'
+VERSION = REVISION = '0.1.13'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -18,8 +18,6 @@ GLOBAL_ENTRY_POINTS = {
         "console_scripts": ["jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main"]
         }
 
-# Actual setup
-
 setup(name=PROJECT_NAME.lower(),
       version=VERSION,
       author=PROJECT_AUTHORS,
@@ -27,7 +25,10 @@ setup(name=PROJECT_NAME.lower(),
       packages=["jenkinsapi", 'jenkinsapi.utils', 'jenkinsapi.command_line'],
       zip_safe=True,
       include_package_data=False,
-      install_requires=['kerberos'],
+      install_requires=[],
+      extras_require={
+        'kerberos': ['kerberos']
+      },
       entry_points=GLOBAL_ENTRY_POINTS,
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,

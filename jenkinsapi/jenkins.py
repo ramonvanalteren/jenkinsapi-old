@@ -1,20 +1,28 @@
-from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.fingerprint import Fingerprint
-from jenkinsapi.job import Job
-from jenkinsapi.view import View
-from jenkinsapi.node import Node
 from jenkinsapi.exceptions import UnknownJob, NotAuthorized
-from utils.urlopener import mkurlopener, mkkrbopener, mkopener, NoAuto302Handler
+from jenkinsapi.fingerprint import Fingerprint
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.job import Job
+from jenkinsapi.node import Node
+from jenkinsapi.view import View
+from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
+import cookielib
 import logging
 import time
-import urllib2
 import urllib
+import urllib2
 import urlparse
-import cookielib
+
 try:
     import json
 except ImportError:
     import simplejson as json
+
+try:
+    # Kerberos is now an extras_require - please see
+    # http://pythonhosted.org/distribute/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies
+    from utils.urlopener_kerberos import mkkrbopener
+except ImportError:
+    mkkrbopener = None
 
 log = logging.getLogger(__name__)
 
@@ -78,6 +86,8 @@ class Jenkins(JenkinsBase):
         return mkopener(*hdrs)
 
     def get_krb_opener(self):
+        if not mkkrbopener:
+            raise NotImplementedError('JenkinsAPI was installed without Kerberos support.')
         return mkkrbopener(self.baseurl)
 
     def login(self):
