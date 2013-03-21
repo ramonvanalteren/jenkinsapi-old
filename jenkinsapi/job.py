@@ -9,7 +9,7 @@ from jenkinsapi.build import Build
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi import exceptions
 
-from exceptions import NoBuildData, NotFound
+from exceptions import NoBuildData, NotFound, NotInQueue
 
 log = logging.getLogger(__name__)
 
@@ -385,10 +385,25 @@ class Job(JenkinsBase):
 
     def disable(self):
         '''Disable job'''
-        disableurl = urlparse.urljoin( self.baseurl, 'disable' )
+        disableurl = urlparse.urljoin(self.baseurl, 'disable' )
         return self.post_data(disableurl, '')
 
     def enable(self):
         '''Enable job'''
-        enableurl = urlparse.urljoin( self.baseurl, 'enable' )
+        enableurl = urlparse.urljoin(self.baseurl, 'enable' )
         return self.post_data(enableurl, '')
+
+    def delete_from_queue(self):
+        if not self.is_queued():
+            raise NotInQueue()
+        queue_id = self._data['queueItem']['id']
+        cancelurl = urlparse.urljoin(self.get_jenkins_obj().get_base_server_url(),
+                                     'queue/cancelItem?id=%s' % queue_id)
+        try:
+            self.post_data(cancelurl, '')
+        except urllib2.HTTPError:
+            # The request doesn't have a response, so it returns 404,
+            # it's the expected behaviour
+            pass
+        return True
+
