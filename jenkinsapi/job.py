@@ -394,6 +394,10 @@ class Job(JenkinsBase):
         return self.post_data(enableurl, '')
 
     def delete_from_queue(self):
+        """
+        Delete a job from the queue only if it's enqueued
+        :raise NotInQueue if the job is not in the queue
+        """
         if not self.is_queued():
             raise NotInQueue()
         queue_id = self._data['queueItem']['id']
