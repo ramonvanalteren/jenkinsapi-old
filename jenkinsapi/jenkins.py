@@ -68,7 +68,6 @@ class Jenkins(JenkinsBase):
         auth_args = []
         auth_args.extend(self.get_jenkins_auth())
         auth_args.extend(self.get_proxy_auth())
-        log.debug("args: %s" % auth_args)
         return auth_args
 
     def get_base_server_url(self):
