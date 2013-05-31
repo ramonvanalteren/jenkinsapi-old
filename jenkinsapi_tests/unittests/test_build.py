@@ -27,7 +27,7 @@ class TestTimestamps(unittest.TestCase):
 			 'url': 'http://localhost:8080/job/foo/1/'}
 
 	@mock.patch.object(Build, '_poll')
-	def testTimestamp(self, _poll):
+	def test_timestamp(self, _poll):
 		_poll.return_value = self.DATA
 
 		j = mock.MagicMock()

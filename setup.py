@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-VERSION = REVISION = '0.1.14'
+VERSION = REVISION = '0.1.15'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -22,10 +22,12 @@ setup(name=PROJECT_NAME.lower(),
       version=VERSION,
       author=PROJECT_AUTHORS,
       author_email=PROJECT_EMAILS,
-      packages=["jenkinsapi", 'jenkinsapi.utils', 'jenkinsapi.command_line'],
+      packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],
       zip_safe=True,
       include_package_data=False,
       install_requires=[],
+      test_suite='jenkinsapi_tests',
+      tests_require=['mock', 'nose'],
       extras_require={
         'kerberos': ['kerberos']
       },

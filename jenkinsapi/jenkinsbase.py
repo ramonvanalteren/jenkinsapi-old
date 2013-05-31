@@ -72,8 +72,7 @@ class JenkinsBase(object):
         except urllib2.HTTPError, e:
             if e.code == 404:
                 raise
-            log.warn("Error reading %s" % url)
-            log.exception(e)
+            log.exception("Error reading %s" % url)
             raise
         return result
 
@@ -81,9 +80,8 @@ class JenkinsBase(object):
         try:
             urlopen = self.get_jenkins_obj().get_opener()
             result = urlopen(url, data=content).read().strip()
-        except urllib2.HTTPError, e:
-            log.warn("Error post data %s" % url)
-            log.exception(e)
+        except urllib2.HTTPError:
+            log.exception("Error post data %s" % url)
             raise
         return result
 
@@ -93,8 +91,7 @@ class JenkinsBase(object):
             if params: stream = fn_urlopen( url, urllib.urlencode(params) )
             else: stream = fn_urlopen( url )
             html_result = stream.read()
-        except urllib2.HTTPError, e:
-            log.debug( "Error reading %s" % url )
-            log.exception(e)
+        except urllib2.HTTPError:
+            log.exception("Error reading %s" % url)
             raise
         return html_result

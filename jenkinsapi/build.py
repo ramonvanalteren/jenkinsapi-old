@@ -1,10 +1,12 @@
+import time
 import urlparse
 import urllib2
+import datetime
 from jenkinsapi.artifact import Artifact
 from jenkinsapi import config
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.exceptions import NoResults, FailedNoResults
-from jenkinsapi.constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE, STATUS_SUCCESS
+from jenkinsapi.exceptions import NoResults
+from jenkinsapi.constants import STATUS_SUCCESS
 from jenkinsapi.result_set import ResultSet
 
 from time import sleep
@@ -261,7 +263,8 @@ class Build(JenkinsBase):
         return all_actions
 
     def get_timestamp(self):
-        return self._data['timestamp']
+        # Java timestamps are given in miliseconds since the epoch start!
+        return datetime.datetime(*time.localtime(self._data['timestamp']/1000.0)[:6])
 
     def stop(self):
         """
