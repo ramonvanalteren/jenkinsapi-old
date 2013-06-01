@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-VERSION = REVISION = '0.1.15'
+REVISION = '0.1.16'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -19,7 +19,7 @@ GLOBAL_ENTRY_POINTS = {
         }
 
 setup(name=PROJECT_NAME.lower(),
-      version=VERSION,
+      version=REVISION,
       author=PROJECT_AUTHORS,
       author_email=PROJECT_EMAILS,
       packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],

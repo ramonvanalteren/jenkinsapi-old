@@ -5,7 +5,6 @@
 	<target name="all" depends="clean, compile" />
 
 	<target name="clean">
-
 		<delete failonerror="false">
 			<fileset dir="build" />
 		</delete>
@@ -13,9 +12,27 @@
 		<delete failonerror="false">
 			<fileset dir="dist" />
 		</delete>
+
+		<delete failonerror="false">
+			<fileset dir="doc/build" />
+		</delete>
 	</target>
 
-	<target name="compile" depends="sdist,bdist_egg_27" />
+	<target name="compile" depends="install,test,sdist,doc" />
+
+	<target name="install">
+		<exec executable="python">
+			<arg value="setup.py" />
+			<arg value="develop" />
+		</exec>
+	</target>
+
+	<target name="test">
+		<exec executable="python">
+			<arg value="setup.py" />
+			<arg value="test" />
+		</exec>
+	</target>
 
 	<target name="sdist">
 		<exec executable="python">
@@ -23,31 +40,14 @@
 			<arg value="sdist" />
 			<arg value="upload" />
 		</exec>
+	</target>	
+
+	<target name="doc">
+		<exec executable="python">
+			<arg value="setup.py" />
+			<arg value="build_sphinx" />
+			<arg value="upload_sphinx" />
+		</exec>
 	</target>
-	
-	<target name="bdist_egg_26">
-			<exec executable="python2.6">
-				<arg value="setup.py" />
-				<arg value="bdist_egg" />
-				<arg value="upload" />
-			</exec>
-	</target>
-	
-	<target name="bdist_egg_27">
-				<exec executable="python2.7">
-					<arg value="setup.py" />
-					<arg value="bdist_egg" />
-					<arg value="upload" />
-			</exec>
-	</target>
-	
-	<target name="bdist_wininst_27">
-					<exec executable="python2.6">
-						<arg value="setup.py" />
-						<arg value="bdist_wininst" />
-						<arg value="upload" />
-				</exec>
-	</target>
-	
 
 </project>
