@@ -36,17 +36,31 @@ Releases: http://pypi.python.org/pypi/jenkinsapi
 Installation
 -------------
 
-Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or distribute to automatically install this project.
+Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or setuptools to automatically install this project.
 
 Most users can do the following:
 ::
+    pip install jenkinsapi
 
+Or..
+::
     easy_install jenkinsapi
 
-If you'd like to install in multi-version mode:
+Example
+-------
 ::
-
-    easy_install -m jenkinsapi
+	Python 2.7.4 (default, Apr 19 2013, 18:28:01) 
+	[GCC 4.7.3] on linux2
+	Type "help", "copyright", "credits" or "license" for more information.
+	>>> import jenkinsapi
+	>>> from jenkinsapi.jenkins import Jenkins
+	>>> J = Jenkins('http://localhost:8080')
+	>>> J.keys()
+	['foo', 'test_jenkinsapi']
+	>>> J['test_jenkinsapi']
+	<jenkinsapi.job.Job test_jenkinsapi>
+	>>> J['test_jenkinsapi'].get_last_good_build()
+	<jenkinsapi.build.Build test_jenkinsapi #77>
 
 Project Authors
 ----------------
