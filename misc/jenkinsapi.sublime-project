@@ -2,7 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "src"
+			"path": "src",
+			"file_exclude_patterns": ["*.pyc"]
 		}
 	],
 	
@@ -32,11 +33,20 @@
 		},
 		{
 
-			"name":"Nose 2.7",
+			"name":"Nose 2.7 Unittests",
 			"working_dir": "${project_path:${folder}}/src",
 			"cmd":
 			[
 				"${project_path}/bin/nosetests", "${project_path}/src/jenkinsapi_tests/unittests"
+			]
+		},
+		{
+
+			"name":"Nose 2.7 All tests",
+			"working_dir": "${project_path:${folder}}/src",
+			"cmd":
+			[
+				"${project_path}/bin/nosetests", "${project_path}/src/jenkinsapi_tests"
 			]
 		},
 		{
