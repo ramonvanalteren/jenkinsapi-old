@@ -48,7 +48,9 @@ Or..
 
 Example
 -------
-::
+
+JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) into easily managed Python objects::
+
 	Python 2.7.4 (default, Apr 19 2013, 18:28:01) 
 	[GCC 4.7.3] on linux2
 	Type "help", "copyright", "credits" or "license" for more information.
