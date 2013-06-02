@@ -24,11 +24,8 @@ class Node(JenkinsBase):
     def get_jenkins_obj(self):
         return self.jenkins
 
-    def id(self):
-        return self.name
-
     def __str__(self):
-        return self.id()
+        return self.name
 
     def get_node_data(self):
         return self._data

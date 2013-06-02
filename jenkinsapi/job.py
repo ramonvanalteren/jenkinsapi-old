@@ -43,10 +43,7 @@ class Job(JenkinsBase):
             None : lambda element_tree: []
             }
         JenkinsBase.__init__( self, url )
-
-    def id( self ):
-        return self._data["name"]
-
+        
     def __str__(self):
         return self._data["name"]
 

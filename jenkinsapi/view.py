@@ -120,9 +120,3 @@ class View(JenkinsBase):
                 
     def get_nested_view_dict(self):
         return dict( self._get_nested_views() )
-
-    def id(self):
-        """
-        Calculate an ID for this object.
-        """
-        return "%s.%s" % ( self.className, self.name )

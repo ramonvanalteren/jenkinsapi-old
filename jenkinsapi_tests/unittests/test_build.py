@@ -27,11 +27,18 @@ class TestTimestamps(unittest.TestCase):
 			 'url': 'http://localhost:8080/job/foo/1/'}
 
 	@mock.patch.object(Build, '_poll')
-	def test_timestamp(self, _poll):
+	def setUp(self, _poll):
 		_poll.return_value = self.DATA
+		self.j = mock.MagicMock() # Job
+		self.j.name = 'FooJob'
 
-		j = mock.MagicMock()
-		b = Build('http://', 0, j)
+		self.b = Build('http://', 97, self.j)
 
-		self.assertIsInstance(b.get_timestamp(), datetime.datetime)
-		self.assertEqual(b.get_timestamp(), datetime.datetime(2013, 5, 31, 23, 15, 40))
+	def test_timestamp(self):
+		self.assertIsInstance(self.b.get_timestamp(), datetime.datetime)
+		self.assertEqual(self.b.get_timestamp(), datetime.datetime(2013, 5, 31, 23, 15, 40))
+
+	def testName(self):
+		with self.assertRaises(AttributeError):
+			_ = self.b.id()
+		self.assertEquals(self.b.name, 'foo #1')

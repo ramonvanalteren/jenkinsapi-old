@@ -31,7 +31,11 @@ class Build(JenkinsBase):
     def __str__(self):
         return self._data['fullDisplayName']
 
-    def id(self):
+    @property
+    def name(self):
+        return str(self)
+
+    def get_number(self):
         return self._data["number"]
 
     def get_status(self):
