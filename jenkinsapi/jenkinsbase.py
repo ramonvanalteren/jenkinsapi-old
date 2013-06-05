@@ -24,31 +24,40 @@ class JenkinsBase(object):
     def __str__(self):
         raise NotImplemented
 
-    def __init__(self, baseurl, poll=True, formauth=False, krbauth=False):
+    def __init__(self, baseurl, poll=True):
         """
         Initialize a jenkins connection
         """
         self.baseurl = baseurl
-        self.formauth = formauth
-        self.krbauth = krbauth
-        if poll and not self.formauth:
+        if poll:
             try:
                 self.poll()
-            except urllib2.HTTPError, hte:
+            except urllib2.HTTPError, hte: #TODO: Wrong exception
                 log.exception(hte)
                 log.warn( "Failed to connect to %s" % baseurl )
                 raise
+
+    def __eq__(self, other):
+        """
+        Return true if the other object represents a connection to the same server
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        if not other.baseurl == self.baseurl:
+            return False
+        return True
 
     def poll(self):
         self._data = self._poll()
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
-        return retry_function(self.RETRY_ATTEMPTS , self.get_data, url)
-
-    def get_jenkins_obj(self):
-        """Not implemented, abstract method implemented by child classes"""
-        raise NotImplemented("Abstract method, implemented by child classes")
+        requester = self.get_jenkins_obj().requester
+        content = retry_function(self.RETRY_ATTEMPTS , requester.hit_url, url)
+        try:
+            return eval(content)
+        except SyntaxError:
+            log.exception('Inappropriate content found at %s' % url)
 
     @classmethod
     def python_api_url(cls, url):
@@ -60,38 +69,3 @@ class JenkinsBase(object):
             else:
                 fmt = "%s/%s"
             return fmt % (url, config.JENKINS_API)
-
-    def get_data(self, url):
-        """
-        Find out how to connect, and then grab the data.
-        """
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen(url)
-            result = eval(stream.read())
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise
-            log.exception("Error reading %s" % url)
-            raise
-        return result
-
-    def post_data(self, url, content):
-        try:
-            urlopen = self.get_jenkins_obj().get_opener()
-            result = urlopen(url, data=content).read().strip()
-        except urllib2.HTTPError:
-            log.exception("Error post data %s" % url)
-            raise
-        return result
-
-    def hit_url(self, url, params = None):
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            if params: stream = fn_urlopen( url, urllib.urlencode(params) )
-            else: stream = fn_urlopen( url )
-            html_result = stream.read()
-        except urllib2.HTTPError:
-            log.exception("Error reading %s" % url)
-            raise
-        return html_result

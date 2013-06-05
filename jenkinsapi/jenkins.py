@@ -1,18 +1,22 @@
-from jenkinsapi.exceptions import UnknownJob, NotAuthorized
-from jenkinsapi.fingerprint import Fingerprint
-from jenkinsapi.jenkinsbase import JenkinsBase
+import time
+import urllib
+import urllib2
+import logging
+import urlparse
+import requests
+import StringIO
+import cookielib
+from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
+
+from jenkinsapi import config
 from jenkinsapi.job import Job
 from jenkinsapi.node import Node
 from jenkinsapi.queue import Queue
 from jenkinsapi.view import View
-from jenkinsapi import config
-from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
-import cookielib
-import logging
-import time
-import urllib
-import urllib2
-import urlparse
+from jenkinsapi.fingerprint import Fingerprint
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.utils.requester import Requester
+from jenkinsapi.exceptions import UnknownJob, NotAuthorized
 
 try:
     import json
@@ -32,83 +36,28 @@ class Jenkins(JenkinsBase):
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, proxyhost=None, proxyport=None, proxyuser=None, proxypass=None, formauth=False, krbauth=False):
+    def __init__(self, baseurl, username=None, password=None, requester=None):
         """
-
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
         :param password: password for jenkins auth, str
-        :param proxyhost: proxyhostname, str
-        :param proxyport: proxyport, int
-        :param proxyuser: proxyusername for proxy auth, str
-        :param proxypass: proxypassword for proxyauth, str
         :return: a Jenkins obj
         """
         self.username = username
         self.password = password
-        self.proxyhost = proxyhost
-        self.proxyport = proxyport
-        self.proxyuser = proxyuser
-        self.proxypass = proxypass
-        JenkinsBase.__init__(self, baseurl, formauth=formauth, krbauth=krbauth)
+        self.requester = requester or Requester(username, password)
+        JenkinsBase.__init__(self, baseurl)
 
     def _clone(self):
-        return Jenkins(self.baseurl, username=self.username,
-                       password=self.password, proxyhost=self.proxyhost,
-                       proxyport=self.proxyport, proxyuser=self.proxyuser,
-                       proxypass=self.proxypass, formauth=self.formauth, krbauth=self.krbauth)
-
-    def get_proxy_auth(self):
-        return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass
-
-    def get_jenkins_auth(self):
-        return self.username, self.password, self.baseurl
-
-    def get_auth(self):
-        auth_args = []
-        auth_args.extend(self.get_jenkins_auth())
-        auth_args.extend(self.get_proxy_auth())
-        log.debug("auth_args: %s" % auth_args)
-        return auth_args
+        return Jenkins(self.baseurl, username=self.username, password=self.password, requester=self.requester)
 
     def get_base_server_url(self):
         return self.baseurl[:-(len(config.JENKINS_API))] 
-
-    def get_opener(self):
-        if self.formauth:
-            return self.get_login_opener()
-        if self.krbauth:
-            return self.get_krb_opener()
-        return mkurlopener(*self.get_auth())
-
-    def get_login_opener(self):
-        hdrs = []
-        if getattr(self, '_cookies', False):
-            mcj = cookielib.MozillaCookieJar()
-            for c in self._cookies:
-                mcj.set_cookie(c)
-            hdrs.append(urllib2.HTTPCookieProcessor(mcj))
-        return mkopener(*hdrs)
 
     def get_krb_opener(self):
         if not mkkrbopener:
             raise NotImplementedError('JenkinsAPI was installed without Kerberos support.')
         return mkkrbopener(self.baseurl)
-
-    def login(self):
-        formdata = dict(j_username=self.username, j_password=self.password,
-                        remember_me=True, form='/')
-        formdata.update(dict(json=json.dumps(formdata), Submit='log in'))
-        formdata = urllib.urlencode(formdata)
-
-        loginurl = urlparse.urljoin(self.baseurl, 'j_acegi_security_check')
-        mcj = cookielib.MozillaCookieJar()
-        cookiehandler = urllib2.HTTPCookieProcessor(mcj)
-
-        urlopen = mkopener(NoAuto302Handler, cookiehandler)
-        res = urlopen(loginurl, data=formdata)
-        self._cookies = [c for c in mcj]
-        return res.getcode() == 302
 
     def validate_fingerprint(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
@@ -184,10 +133,8 @@ class Jenkins(JenkinsBase):
         :return: new Job obj
         """
         headers = {'Content-Type': 'text/xml'}
-        qs = urllib.urlencode({'name': jobname})
-        url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
-        request = urllib2.Request(url, config, headers)
-        self.post_data(request, None)
+        params = {'name': jobname}
+        self.requester.hit_url(self.baseurl, data=config, params=params, headers=headers)
         newjk = self._clone()
         return newjk.get_job(jobname)
 
@@ -230,12 +177,21 @@ class Jenkins(JenkinsBase):
         newjk = self._clone()
         return newjk.get_job(newjobname)
 
-    def iteritems(self):
-        return self.get_jobs()
-
     def iterkeys(self):
         for info in self._data["jobs"]:
             yield info["name"]
+
+    def iteritems(self):
+        """
+        :param return: An iterator of pairs. Each pair will be (job name, Job object)
+        """
+        return self.get_jobs()
+
+    def items(self):
+        """
+        :param return: A list of pairs. Each pair will be (job name, Job object)
+        """
+        return list(self.get_jobs())
 
     def keys(self):
         return [ a for a in self.iterkeys() ]

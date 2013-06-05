@@ -9,9 +9,9 @@ jenkinsapi
 About this library
 -------------------
 
-Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi. This API makes Jenkins even easier to use by providing an easy to use conventional python interface.
+Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi. 
 
-Jenkins (and It's predecessor Hudson) are useful projects for automating common development tasks (e.g. unit-testing, production batches) - but they are somewhat Java-centric. Thankfully the designers have provided an excellent and complete REST interface. This library wraps up that interface as more conventional python objects in order to make most Jenkins oriented tasks simpler.
+Jenkins (and It's predecessor Hudson) are useful projects for automating common development tasks (e.g. unit-testing, production batches) - but they are somewhat Java-centric. Thankfully the designers have provided an excellent and complete REST interface. This library wraps up that interface as more conventional python objects in order to make many Jenkins oriented tasks easier to automate.
 
 This library can help you:
 
@@ -22,7 +22,8 @@ This library can help you:
  * Install artefacts to custom-specified directory structures
  * username/password auth support for jenkins instances with auth turned on
  * Ability to search for builds by subversion revision
- * Ability to add/remove/query jenkins slaves
+ * Ability to add/remove/query Jenkins slaves
+ * Ability to add/remove/modify Jenkins views
 
 Important Links
 ----------------
@@ -57,7 +58,7 @@ JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) 
 	>>> import jenkinsapi
 	>>> from jenkinsapi.jenkins import Jenkins
 	>>> J = Jenkins('http://localhost:8080')
-	>>> J.keys()
+	>>> J.keys() # Jenkins objects appear to be dict-like, mapping keys (job-names) to 
 	['foo', 'test_jenkinsapi']
 	>>> J['test_jenkinsapi']
 	<jenkinsapi.job.Job test_jenkinsapi>

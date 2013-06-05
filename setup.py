@@ -25,7 +25,7 @@ setup(name=PROJECT_NAME.lower(),
       packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],
       zip_safe=True,
       include_package_data=False,
-      install_requires=[],
+      install_requires=['requests==1.2.3'],
       test_suite='jenkinsapi_tests',
       tests_require=['mock', 'nose'],
       extras_require={
