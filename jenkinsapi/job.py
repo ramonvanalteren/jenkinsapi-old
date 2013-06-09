@@ -8,12 +8,13 @@ from time import sleep
 from jenkinsapi.build import Build
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi import exceptions
+from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
 
 from exceptions import NoBuildData, NotFound, NotInQueue
 
 log = logging.getLogger(__name__)
 
-class Job(JenkinsBase):
+class Job(JenkinsBase, MutableJenkinsThing):
     """
     Represents a jenkins job
     A job can hold N builds which are the actual execution environments
@@ -43,7 +44,7 @@ class Job(JenkinsBase):
             None : lambda element_tree: []
             }
         JenkinsBase.__init__( self, url )
-        
+
     def __str__(self):
         return self._data["name"]
 
@@ -260,12 +261,12 @@ class Job(JenkinsBase):
             raise exceptions.NotSupportSCM("SCM class \"%s\" not supported by API, job \"%s\"" % (scm_class, self.name))
         if scm == 'NullSCM':
             raise exceptions.NotConfiguredSCM("SCM does not configured, job \"%s\"" % self.name)
-        return scm 
+        return scm
 
     def get_scm_url(self):
         """
         Get list of project SCM urls
-        For some SCM's jenkins allow to configure and use number of SCM url's 
+        For some SCM's jenkins allow to configure and use number of SCM url's
         : return: list of SCM urls
         """
         element_tree = self._get_config_element_tree()
@@ -285,10 +286,10 @@ class Job(JenkinsBase):
     def modify_scm_branch(self, new_branch, old_branch=None):
         """
         Modify SCM ("Source Code Management") branch name for configured job.
-        :param new_branch : new repository branch name to set. 
-                            If job has multiple branches configured and "old_branch" 
+        :param new_branch : new repository branch name to set.
+                            If job has multiple branches configured and "old_branch"
                             not provided - method will allways modify first url.
-        :param old_branch (optional): exact value of branch name to be replaced. 
+        :param old_branch (optional): exact value of branch name to be replaced.
                             For some SCM's jenkins allow set multiple branches per job
                             this parameter intended to indicate which branch need to be modified
         """
@@ -308,8 +309,8 @@ class Job(JenkinsBase):
     def modify_scm_url(self, new_source_url, old_source_url=None):
         """
         Modify SCM ("Source Code Management") url for configured job.
-        :param new_source_url : new repository url to set. 
-                                If job has multiple repositories configured and "old_source_url" 
+        :param new_source_url : new repository url to set.
+                                If job has multiple repositories configured and "old_source_url"
                                 not provided - method will allways modify first url.
         :param old_source_url (optional): for some SCM's jenkins allow set multiple repositories per job
                                 this parameter intended to indicate which repository need to be modified
@@ -322,7 +323,7 @@ class Job(JenkinsBase):
             self.update_config(ET.tostring(element_tree))
         else:
             for scm_url in scm_url_list:
-                if scm_url.text == old_source_url: 
+                if scm_url.text == old_source_url:
                     scm_url.text = new_source_url
                     self.update_config(ET.tostring(element_tree))
 

@@ -45,7 +45,7 @@ class TestJob(unittest.TestCase):
         # def __init__( self, url, name, jenkins_obj ):
 
         self.J = mock.MagicMock()  # Jenkins object
-        self.j = Job('http://', 'foo', self.J)
+        self.j = Job('http://halob:8080/job/foo/', 'foo', self.J)
 
     def testRepr(self):
         # Can we produce a repr string for this object
@@ -55,3 +55,13 @@ class TestJob(unittest.TestCase):
         with self.assertRaises(AttributeError):
         	self.j.id()
     	self.assertEquals(self.j.name, 'foo')
+
+    def test_special_urls(self):
+        self.assertEquals(self.j.baseurl, 'http://halob:8080/job/foo')
+
+        self.assertEquals(self.j.get_delete_url(), 'http://halob:8080/job/foo/doDelete')
+
+        self.assertEquals(self.j.get_rename_url(), 'http://halob:8080/job/foo/doRename')
+
+if __name__ == '__main__':
+    unittest.main()

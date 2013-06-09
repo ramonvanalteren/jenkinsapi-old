@@ -16,7 +16,7 @@ from jenkinsapi.view import View
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.exceptions import UnknownJob, NotAuthorized
+from jenkinsapi.exceptions import UnknownJob, NotAuthorized, JenkinsAPIException
 
 try:
     import json
@@ -52,12 +52,7 @@ class Jenkins(JenkinsBase):
         return Jenkins(self.baseurl, username=self.username, password=self.password, requester=self.requester)
 
     def get_base_server_url(self):
-        return self.baseurl[:-(len(config.JENKINS_API))] 
-
-    def get_krb_opener(self):
-        if not mkkrbopener:
-            raise NotImplementedError('JenkinsAPI was installed without Kerberos support.')
-        return mkkrbopener(self.baseurl)
+        return self.baseurl[:-(len(config.JENKINS_API))]
 
     def validate_fingerprint(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
@@ -84,6 +79,10 @@ class Jenkins(JenkinsBase):
 
     def get_jenkins_obj(self):
         return self
+
+    def get_create_url(self):
+        # This only ever needs to work on the base object
+        return '%s/createItem' % self.baseurl
 
     def get_jobs(self):
         """
@@ -132,11 +131,15 @@ class Jenkins(JenkinsBase):
         :param config: configuration of new job, xml
         :return: new Job obj
         """
-        headers = {'Content-Type': 'text/xml'}
+        try:
+            job = self[jobname]
+            raise JenkinsAPIException('Job %s already exists!' % jobname)
+        except KeyError:
+            pass
         params = {'name': jobname}
-        self.requester.hit_url(self.baseurl, data=config, params=params, headers=headers)
-        newjk = self._clone()
-        return newjk.get_job(jobname)
+        self.requester.post_xml_and_confirm_status(self.get_create_url(), data=config, params=params)
+        self.poll()
+        return self[jobname]
 
     def copy_job(self, jobname, newjobname):
         """
@@ -145,13 +148,16 @@ class Jenkins(JenkinsBase):
         :param newjobname: name of new job, str
         :return: new Job obj
         """
-        qs = urllib.urlencode({'name': newjobname,
-                               'mode': 'copy',
-                               'from': jobname})
-        copy_job_url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
-        self.post_data(copy_job_url, '')
-        newjk = self._clone()
-        return newjk.get_job(newjobname)
+        params = { 'name': newjobname,
+                   'mode': 'copy',
+                   'from': jobname}
+
+        self.requester.post_and_confirm_status(
+            self.get_create_url(),
+            params=params,
+            data='')
+        self.poll()
+        return self[jobname]
 
     def delete_job(self, jobname):
         """
@@ -159,10 +165,13 @@ class Jenkins(JenkinsBase):
         :param jobname: name of a exist job, str
         :return: new jenkins_obj
         """
-        delete_job_url = urlparse.urljoin(self._clone().get_job(jobname).baseurl, "doDelete" )
-        self.post_data(delete_job_url, '')
-        newjk = self._clone()
-        return newjk
+        delete_job_url = self[jobname].get_delete_url()
+        response = self.requester.post_and_confirm_status(
+            delete_job_url,
+            data='some random bytes...'
+        )
+        self.poll()
+        return self
 
     def rename_job(self, jobname, newjobname):
         """
@@ -171,11 +180,12 @@ class Jenkins(JenkinsBase):
         :param newjobname: name of new job, str
         :return: new Job obj
         """
-        qs = urllib.urlencode({'newName': newjobname})
-        rename_job_url = urlparse.urljoin(self._clone().get_job(jobname).baseurl, "doRename?%s" % qs)
-        self.post_data(rename_job_url, '')
-        newjk = self._clone()
-        return newjk.get_job(newjobname)
+        params = {'newName': newjobname}
+        rename_job_url = self[jobname].get_rename_url()
+        response = self.requester.post_and_confirm_status(
+            rename_job_url, params=params, data='')
+        self.poll()
+        return self[newjobname]
 
     def iterkeys(self):
         for info in self._data["jobs"]:
@@ -229,9 +239,9 @@ class Jenkins(JenkinsBase):
         return View(str_view_url , str_view_name, jenkins_obj=self)
 
     def delete_view_by_url(self, str_url):
-        url = "%s/doDelete" %str_url
-        self.post_data(url, '')
-        self.poll()
+        url = "%s/doDelete" % str_url
+        response = self.requester.post_xml_and_confirm_status(self.url, params=params, data='')
+        self._poll
         return self
 
     def create_view(self, str_view_name, person=None):
@@ -248,7 +258,7 @@ class Jenkins(JenkinsBase):
         result = self.hit_url(viewExistsCheck_url)
         log.debug('result=%s' % result)
         # Jenkins returns "<div/>" if view does not exist
-        if len(result) > len('<div/>'): 
+        if len(result) > len('<div/>'):
             log.error('A view "%s" already exists' % (str_view_name))
             return None
         else:
@@ -285,9 +295,9 @@ class Jenkins(JenkinsBase):
         result = self.hit_url(viewExistsCheck_url)
         log.debug('result=%s' % result)
         # Jenkins returns "<div/>" if view does not exist
-        if len(result) == len('<div/>'): 
+        if len(result) == len('<div/>'):
             log.error('A view the name "%s" does not exist' % (str_view_name))
-            return False 
+            return False
         else:
             self.delete_view_by_url(urlparse.urljoin(url, 'view/%s' % str_view_name))
             # We changed Jenkins config - need to update ourself

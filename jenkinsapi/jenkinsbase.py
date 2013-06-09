@@ -3,7 +3,6 @@ import urllib2
 import logging
 import pprint
 from jenkinsapi import config
-from jenkinsapi.utils.retry import retry_function
 
 log = logging.getLogger(__name__)
 
@@ -11,7 +10,7 @@ class JenkinsBase(object):
     """
     This appears to be the base object that all other jenkins objects are inherited from
     """
-    RETRY_ATTEMPTS = 5
+    RETRY_ATTEMPTS = 1
 
     def __repr__(self):
         return """<%s.%s %s>""" % (self.__class__.__module__,
@@ -28,7 +27,7 @@ class JenkinsBase(object):
         """
         Initialize a jenkins connection
         """
-        self.baseurl = baseurl
+        self.baseurl = self.strip_trailing_slash(baseurl)
         if poll:
             try:
                 self.poll()
@@ -47,17 +46,27 @@ class JenkinsBase(object):
             return False
         return True
 
+    @classmethod
+    def strip_trailing_slash(cls, url):
+        while url.endswith('/'):
+            url = url[:-1]
+        return url
+
     def poll(self):
         self._data = self._poll()
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
+
         requester = self.get_jenkins_obj().requester
-        content = retry_function(self.RETRY_ATTEMPTS , requester.hit_url, url)
+        response = requester.get_url(url)
         try:
-            return eval(content)
+            return eval(response.text)
         except SyntaxError:
             log.exception('Inappropriate content found at %s' % url)
+            raise
+        except TypeError:
+            raise
 
     @classmethod
     def python_api_url(cls, url):
