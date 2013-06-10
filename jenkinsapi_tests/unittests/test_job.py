@@ -56,6 +56,9 @@ class TestJob(unittest.TestCase):
         	self.j.id()
     	self.assertEquals(self.j.name, 'foo')
 
+    def testNextBuildNumber(self):
+        self.assertEquals(self.j.get_next_build_number(), 4)
+
     def test_special_urls(self):
         self.assertEquals(self.j.baseurl, 'http://halob:8080/job/foo')
 

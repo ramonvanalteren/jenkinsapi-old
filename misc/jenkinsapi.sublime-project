@@ -6,17 +6,23 @@
 			"file_exclude_patterns": ["*.pyc"]
 		}
 	],
-	
-	"settings": 
-    {   
-        "python_test_runner": 
+
+	"settings":
+    {
+        "python_test_runner":
         {
             "before_test": "source .env/bin/activate",
             "after_test": "deactivate",
             "test_root": "src/pythonmoo/tests",
             "test_delimeter": ":",
             "test_command": "nosetests"
+        },
+        "pylinter":
+        {
+        	"ignore":["C"],
+            "use_icons":true
         }
+
     },
 
 	"build_systems":

@@ -10,7 +10,7 @@ from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi import exceptions
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
 
-from jenkinsapi.exceptions import NoBuildData, NotFound, NotInQueue
+from jenkinsapi.exceptions import NoBuildData, NotFound, NotInQueue, WillNotBuild
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             self._element_tree = ET.fromstring(self._config)
         return self._element_tree
 
-    def get_build_triggerurl(self, token=None, params=None):
+    def get_build_triggerurl(self):
         return "%s/build" % self.baseurl
 
     def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15, params=None, cause=None):
@@ -78,7 +78,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         params = params and dict(params.items()) or {}
 
         if self.is_queued():
-            log.warn( "Will not request new build because %s is already queued", self.name )
+            raise WillNotBuild('%s is already queued' % repr(self))
+
         elif self.is_running():
             if skip_if_running:
                 log.warn( "Will not request new build because %s is already running", self.name )
@@ -86,6 +87,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 log.warn("Will re-schedule %s even though it is already running", self.name )
         original_build_no = self.get_last_buildnumber()
         log.info( "Attempting to start %s on %s", self.name, repr(self.get_jenkins_obj()) )
+
         url  = self.get_build_triggerurl()
 
         if cause:
@@ -98,12 +100,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         assert len( response.text ) > 0
         if invoke_pre_check_delay > 0:
-            log.info("Waiting for %is to allow Jenkins to catch up" % invoke_pre_check_delay )
+            log.info("Waiting for %is to allow Jenkins to catch up" , invoke_pre_check_delay )
             sleep( invoke_pre_check_delay )
         if block:
             total_wait = 0
             while self.is_queued():
-                log.info( "Waited %is for %s to begin..." % ( total_wait, self.name  ))
+                log.info( "Waited %is for %s to begin...", total_wait, self.name  )
                 sleep( invoke_block_delay )
                 total_wait += invoke_block_delay
             if self.is_running():
@@ -112,11 +114,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
             assert self.get_last_buildnumber() > original_build_no, "Job does not appear to have run."
         else:
             if self.is_queued():
-                log.info( "%s has been queued." % self.name )
+                log.info( "%s has been queued.", self.name )
             elif self.is_running():
-                log.info( "%s is running." % self.name )
+                log.info( "%s is running.", self.name )
             elif original_build_no < self.get_last_buildnumber():
-                log.info( "%s has completed." % self.name )
+                log.info( "%s has completed.", self.name )
             else:
                 raise AssertionError("The job did not schedule.")
 
@@ -169,6 +171,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Return a sorted list of all good builds as ints.
         """
         return reversed( sorted( self.get_build_dict().keys() ) )
+
+    def get_next_build_number(self):
+        """
+        Return the next build number that Jenkins will assign.
+        """
+        return self._data.get('nextBuildNumber', 0)
 
     def get_last_good_build( self ):
         """
@@ -238,12 +246,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
             if build is not None:
                 return build.is_running()
         except NoBuildData:
-            log.info("No build info available for %s, assuming not running." % str(self) )
+            log.info("No build info available for %s, assuming not running.", str(self) )
         return False
 
     def get_config(self):
         '''Returns the config.xml from the job'''
-        return self.jenkins.requester.get_and_confirm_status("%(baseurl)s/config.xml" % self.__dict__)
+        response = self.jenkins.requester.get_and_confirm_status("%(baseurl)s/config.xml" % self.__dict__)
+        return response.text
 
     def load_config(self):
         self._config = self.get_config()
