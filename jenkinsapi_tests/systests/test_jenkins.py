@@ -13,6 +13,12 @@ class JobTests(BaseSystemTest):
         self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
         self.assertJobIsPresent(job_name)
 
+    def test_invoke_job(self):
+        job_name = 'create_%s' % random_string()
+        job = self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+
+        build = job.invoke()
+
     def test_get_jobs_list(self):
         job1_name = 'first_%s' % random_string()
         job2_name = 'second_%s' % random_string()
