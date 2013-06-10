@@ -10,6 +10,7 @@ from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
+from jenkinsapi.nodes import Nodes
 from jenkinsapi.node import Node
 from jenkinsapi.queue import Queue
 from jenkinsapi.view import View
@@ -83,6 +84,10 @@ class Jenkins(JenkinsBase):
     def get_create_url(self):
         # This only ever needs to work on the base object
         return '%s/createItem' % self.baseurl
+
+    def get_nodes_url(self):
+        # This only ever needs to work on the base object
+        return '%s/computer' % self.baseurl
 
     def get_jobs(self):
         """
@@ -243,6 +248,10 @@ class Jenkins(JenkinsBase):
         response = self.requester.post_xml_and_confirm_status(self.url, params=params, data='')
         self._poll
         return self
+
+    def get_nodes(self):
+        url = self.get_nodes_url()
+        return Nodes(url, self)
 
     def create_view(self, str_view_name, person=None):
         """

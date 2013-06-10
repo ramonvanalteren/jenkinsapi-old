@@ -3,7 +3,7 @@ import urllib2
 import logging
 import pprint
 from jenkinsapi import config
-
+from jenkinsapi.exceptions import JenkinsAPIException
 log = logging.getLogger(__name__)
 
 class JenkinsBase(object):
@@ -62,11 +62,9 @@ class JenkinsBase(object):
         response = requester.get_url(url)
         try:
             return eval(response.text)
-        except SyntaxError:
+        except Exception:
             log.exception('Inappropriate content found at %s' % url)
-            raise
-        except TypeError:
-            raise
+            raise JenkinsAPIException('Cannot parse %s' % url)
 
     @classmethod
     def python_api_url(cls, url):
