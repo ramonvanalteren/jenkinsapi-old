@@ -331,14 +331,18 @@ class Job(JenkinsBase, MutableJenkinsThing):
                     scm_url.text = new_source_url
                     self.update_config(ET.tostring(element_tree))
 
+    def get_config_xml_url(self):
+        return '%s/config.xml' % self.baseurl
+
     def update_config(self, config):
         """
         Update the config.xml to the job
         Also refresh the ElementTree object since the config has changed
         """
-        post_data = self.post_data("%(baseurl)s/config.xml" % self.__dict__, config)
+        url = self.get_config_xml_url()
+        response = self.jenkins.requester.post_url(url, params={}, data='')
         self._element_tree = ET.fromstring(config)
-        return post_data
+        return response.text
 
     def get_downstream_jobs(self):
         """

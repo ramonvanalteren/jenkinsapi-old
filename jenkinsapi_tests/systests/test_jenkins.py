@@ -14,12 +14,13 @@ class JobTests(BaseSystemTest):
         self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
         self.assertJobIsPresent(job_name)
 
-    def test_get_job_config(self):
+    def test_get_job_and_update_config(self):
         job_name = 'config_%s' % random_string()
         self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
         self.assertJobIsPresent(job_name)
         config = self.jenkins[job_name].get_config()
         self.assertEquals(config.strip(), EMPTY_JOB_CONFIG.strip())
+        self.jenkins[job_name].update_config(EMPTY_JOB_CONFIG)
 
     def test_invoke_job(self):
         job_name = 'create_%s' % random_string()
