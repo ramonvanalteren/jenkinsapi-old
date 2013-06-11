@@ -24,7 +24,7 @@ class Artifact(object):
     generated as a by-product of executing a Jenkins build.
     """
 
-    def __init__(self, filename, url, build=None):
+    def __init__(self, filename, url, build):
         self.filename = filename
         self.url = url
         self.build = build
@@ -52,27 +52,30 @@ class Artifact(object):
                 log.info("This file did not originate from Jenkins, so cannot check.")
         else:
             log.info("Local file is missing, downloading new.")
-        filename = self._do_download(fspath)
+        filepath = self._do_download(fspath)
         try:
-            self._verify_download(filename)
+            self._verify_download(filepath)
         except ArtifactBroken:
             log.warning("fingerprint of the downloaded artifact could not be verified")
-        return filename
+        return fspath
+
+    def get_jenkins_obj(self):
+        return self.build.get_jenkins_obj()
+
+    def getData(self):
+        """
+        Grab the text of the artifact
+        """
+        response = self.get_jenkins_obj().requester.get_and_confirm_status(self.url)
+        return response.text
 
     def _do_download(self, fspath):
         """
         Download the the artifact to a path.
         """
-        if self.build:
-            opener = self.build.get_jenkins_obj().get_opener()
-            f = opener(self.url)
-            with open(fspath, "wb") as out:
-                out.write(f.read())
-
-            return fspath
-        else:
-            filename, _ = urllib.urlretrieve(self.url, filename=fspath)
-            return filename
+        with open(fspath, "wb") as out:
+            out.write(self.getData())
+        return fspath
 
     def _verify_download(self, fspath):
         """
@@ -96,7 +99,7 @@ class Artifact(object):
             raise
         return md5.hexdigest()
 
-    def savetodir(self, dirpath):
+    def save_to_dir(self, dirpath):
         """
         Save the artifact to a folder. The containing directory must be exist, but use the artifact's
         default filename.

@@ -1,7 +1,10 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
+import os
 import time
+import shutil
+import tempfile
 import unittest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.base import BaseSystemTest
@@ -30,6 +33,10 @@ PINGER_JOB_CONFIG = """
       <artifacts>*.txt</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Fingerprinter>
+      <targets></targets>
+      <recordBuildArtifacts>true</recordBuildArtifacts>
+    </hudson.tasks.Fingerprinter>
   </publishers>
   <buildWrappers/>
 </project>""".strip()
@@ -49,7 +56,19 @@ class TestPingerJob(BaseSystemTest):
         artifacts = b.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
 
-        outfile = artifacts['out.txt']
+        artifact = artifacts['out.txt']
+
+        tempDir = tempfile.mkdtemp()
+
+        try:
+            tf = tempfile.NamedTemporaryFile(mode='wb')
+            artifact.save_to_dir(tempDir)
+            readBackText = open(os.path.join(tempDir, artifact.filename), 'rb').read().strip()
+            self.assertTrue(readBackText.startswith('PING localhost'))
+            self.assertTrue(readBackText.endswith('ms'))
+        finally:
+            shutil.rmtree(tempDir)
+
 
         # TODO: Actually verify the download
 
