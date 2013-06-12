@@ -71,9 +71,6 @@ class TestParameterizedBuilds(BaseSystemTest):
         artifacts = b.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
 
-        import ipdb
-        ipdb.set_trace()
-
         artB = artifacts['b.txt']
 
         self.assertTrue(artB.get_data().strip(), param_B)

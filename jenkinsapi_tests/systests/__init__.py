@@ -1,13 +1,17 @@
 import os
 import time
 import shutil
+import logging
 import tempfile
 import subprocess
 
+log = logging.getLogger(__name__)
 
 class Timeout(RuntimeError):
     pass
 
+class FailedToLaunch(RuntimeError):
+    pass
 
 class JenkinsLauncher(object):
 
@@ -27,6 +31,7 @@ class JenkinsLauncher(object):
         '''
         Launches jenkins and waits while it's ready.
         '''
+        log.info("Atempting to launch Jenkins...")
         self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
         os.environ['JENKINS_HOME'] = self.jenkins_home
         jenkins_command = 'java -jar jenkins.war'
@@ -36,6 +41,11 @@ class JenkinsLauncher(object):
         start_time = time.time()
         while time.time() - start_time < self.timeout:
             line = self.jenkins_process.stderr.readline().strip()
+            log.info('Jenkins: %s' % line)
+
+            if 'Winstone shutdown successfully' in line:
+                raise FailedToLaunch()
+
             if line == 'INFO: Jenkins is fully up and running':
                 return
         raise Timeout('Timeout error occured while waiting for Jenkins start.')
