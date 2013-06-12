@@ -13,7 +13,7 @@ try:
     DESCRIPTION = open(os.path.join(PROJECT_ROOT, "README.rst")).read()
 except IOError, _:
     DESCRIPTION = SHORT_DESCRIPTION
-    
+
 GLOBAL_ENTRY_POINTS = {
         "console_scripts": ["jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main"]
         }
@@ -25,7 +25,7 @@ setup(name=PROJECT_NAME.lower(),
       packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],
       zip_safe=True,
       include_package_data=False,
-      install_requires=['requests==1.2.3'],
+      install_requires=['requests==1.2.3', 'pytz'],
       test_suite='jenkinsapi_tests',
       tests_require=['mock', 'nose'],
       extras_require={
