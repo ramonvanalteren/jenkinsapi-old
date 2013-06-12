@@ -13,4 +13,4 @@ dependencies:
 ## Customize test commands
 test:
   override:
-    - nosetests jenkinsapi_tests/unittests --with-coverage --cover-html --with-xunit
+    - nosetests jenkinsapi_tests --with-coverage --cover-html --with-xunit
