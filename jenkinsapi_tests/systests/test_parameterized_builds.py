@@ -37,18 +37,18 @@ JOB_CONFIG = """
   <builders>
     <hudson.tasks.Shell>
       <command>ping -c 1 localhost | tee out.txt
-cat $A &gt; a.txt
-cat $B &gt; b.txt</command>
+echo $A &gt; a.txt
+echo $B &gt; b.txt</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts></artifacts>
+      <artifacts>*</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Fingerprinter>
       <targets></targets>
-      <recordBuildArtifacts>false</recordBuildArtifacts>
+      <recordBuildArtifacts>true</recordBuildArtifacts>
     </hudson.tasks.Fingerprinter>
   </publishers>
   <buildWrappers/>
@@ -71,8 +71,12 @@ class TestParameterizedBuilds(BaseSystemTest):
         artifacts = b.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
 
-        artA = artifacts['A.txt']
-        artB = artifacts['B.txt']
+        import ipdb
+        ipdb.set_trace()
+
+        artB = artifacts['b.txt']
+
+        self.assertTrue(artB.get_data().strip(), param_B)
 
         # TODO: Actually verify the download
 

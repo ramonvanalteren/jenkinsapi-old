@@ -114,7 +114,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         response = self.jenkins.requester.post_and_confirm_status(
             url,
-            data=self.mk_json_from_build_parameters(build_params), # See above - build params have to be JSON encoded & posted.
+            data={'json':self.mk_json_from_build_parameters(build_params)}, # See above - build params have to be JSON encoded & posted.
             params=params
         )
 

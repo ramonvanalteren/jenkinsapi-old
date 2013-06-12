@@ -55,7 +55,7 @@ class Requester(object):
         return self.post_and_confirm_status(url, params, data, headers)
 
     def post_and_confirm_status(self, url, params=None, data=None, headers=None):
-        assert isinstance(data, str)
+        assert isinstance(data, (str,dict)), "Unexpected data type: %s" % repr(data)
 
         if not headers:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
