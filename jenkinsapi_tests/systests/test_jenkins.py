@@ -14,6 +14,19 @@ class JobTests(BaseSystemTest):
         self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
         self.assertJobIsPresent(job_name)
 
+    def test_enable_disable_job(self):
+        job_name = 'create_%s' % random_string()
+        self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        self.assertJobIsPresent(job_name)
+
+        j = self.jenkins[job_name]
+        j.invoke(block=True) # run this at least once
+
+        j.disable()
+        self.assertEquals(j.is_enabled(), False, 'A disabled job is reporting incorrectly')
+        j.enable()
+        self.assertEquals(j.is_enabled(), True, 'An enabled job is reporting incorrectly')
+
     def test_get_job_and_update_config(self):
         job_name = 'config_%s' % random_string()
         self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
