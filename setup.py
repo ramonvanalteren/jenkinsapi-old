@@ -35,4 +35,5 @@ setup(name=PROJECT_NAME.lower(),
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,
       long_description=DESCRIPTION,
+      use_2to3 = True, # Experimental support for Python 3
       )
