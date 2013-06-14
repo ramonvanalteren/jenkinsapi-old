@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.1.16'
+REVISION = '0.2.0'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'
@@ -35,5 +35,14 @@ setup(name=PROJECT_NAME.lower(),
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,
       long_description=DESCRIPTION,
-      use_2to3 = True, # Experimental support for Python 3
+      classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development :: Testing',
+    ],
       )
