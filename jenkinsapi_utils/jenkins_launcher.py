@@ -54,13 +54,6 @@ class JenkinsLancher(object):
         self.q = Queue.Queue()
 
     def update_war(self):
-        if not os.path.exists(self.war_path):
-            with io.open(self.war_path, 'wb') as war_file:
-                log.info("Downloading the Jenkins WAR file")
-                war_response = requests.get(self.JENKINS_WAR_URL)
-                war_file.write(war_response.text)
-            log.info('Done!')
-
         os.chdir(self.war_directory)
         subprocess.check_call('./get-jenkins-war.sh')
 
@@ -102,6 +95,9 @@ class JenkinsLancher(object):
             else:
                 if line:
                     if 'Failed to initialize Jenkins' in line:
+                        raise FailedToStart(line)
+
+                    if 'Invalid or corrupt jarfile' in line:
                         raise FailedToStart(line)
 
                     if 'is fully up and running' in line:
