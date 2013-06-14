@@ -7,8 +7,6 @@ launcher = None
 
 def setUpPackage():
     global launcher
-    import ipdb
-    ipdb.set_trace()
 
     systests_dir, _ = os.path.split(__file__)
     war_path = os.path.join(systests_dir, 'jenkins.war' )
