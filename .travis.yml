@@ -8,5 +8,5 @@ install:
     - "easy_install nose"
 # command to run tests, e.g. python setup.py test
 script:
-    - "nosetests jenkinsapi_tests/unittests"
+    - "nosetests jenkinsapi_tests"
 #    - "nosetests jenkinsapi_tests/systests"
