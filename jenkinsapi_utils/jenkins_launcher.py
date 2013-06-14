@@ -1,11 +1,13 @@
 import os
+import io
 import time
+import Queue
 import shutil
 import logging
-import subprocess
+import requests
 import tempfile
-import Queue
 import threading
+import subprocess
 
 log = logging.getLogger(__name__)
 
@@ -15,12 +17,16 @@ class TimeOut(Exception): pass
 
 class StreamThread(threading.Thread):
 
+
+
     def __init__(self, name, q, stream, fn_log):
         threading.Thread.__init__(self)
         self.name = name
         self.q = q
         self.stream = stream
         self.fn_log = fn_log
+
+
 
     def run(self):
         log.info("Starting %s", self.name)
@@ -38,12 +44,25 @@ class JenkinsLancher(object):
     """
     Launch jenkins
     """
+    JENKINS_WAR_URL="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
+
     def __init__(self, war_path):
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
         self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
         self.jenkins_process = None
         self.q = Queue.Queue()
+
+    def update_war(self):
+        if not os.path.exists(self.war_path):
+            with io.open(self.war_path, 'wb') as war_file:
+                log.info("Downloading the Jenkins WAR file")
+                war_response = requests.get(self.JENKINS_WAR_URL)
+                war_file.write(war_response.read())
+            log.info('Done!')
+
+        os.chdir(self.war_directory)
+        subprocess.check_call('./get-jenkins-war.sh')
 
     def stop(self):
         log.info("Shutting down jenkins.")
@@ -52,15 +71,17 @@ class JenkinsLancher(object):
         shutil.rmtree(self.jenkins_home)
 
     def start(self, timeout=30):
+        self.update_war()
+
         os.environ['JENKINS_HOME'] = self.jenkins_home
         os.chdir(self.war_directory)
 
-        jenkins_command = 'java -jar %s' % self.war_filename
+        jenkins_command = ['java', '-jar', self.war_filename]
 
         log.info("About to start Jenkins...")
-        log.info("%s> %s", os.getcwd(), jenkins_command)
+        log.info("%s> %s", os.getcwd(), " ".join(jenkins_command))
         self.jenkins_process = subprocess.Popen(
-            jenkins_command.split(), stdin=subprocess.PIPE,
+            jenkins_command, stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         threads = [
@@ -75,6 +96,10 @@ class JenkinsLancher(object):
         while True:
             try:
                 streamName, line = self.q.get(block=True, timeout=timeout)
+            except Queue.Empty:
+                log.warn("Input ended unexpectedly")
+                break
+            else:
                 if line:
                     if 'Failed to initialize Jenkins' in line:
                         raise FailedToStart(line)
@@ -85,9 +110,7 @@ class JenkinsLancher(object):
                 else:
                     log.warn('Stream %s has terminated', streamName)
 
-            except Queue.Empty:
-                print "unexpected end!"
-                break
+
 
 if __name__ == '__main__':
     logging.basicConfig()
