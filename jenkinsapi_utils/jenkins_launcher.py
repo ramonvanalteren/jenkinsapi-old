@@ -58,7 +58,7 @@ class JenkinsLancher(object):
             with io.open(self.war_path, 'wb') as war_file:
                 log.info("Downloading the Jenkins WAR file")
                 war_response = requests.get(self.JENKINS_WAR_URL)
-                war_file.write(war_response.read())
+                war_file.write(war_response.text)
             log.info('Done!')
 
         os.chdir(self.war_directory)
