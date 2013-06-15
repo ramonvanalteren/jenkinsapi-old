@@ -1,11 +1,7 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
-import os
 import time
-import shutil
-import random
-import tempfile
 import unittest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.base import BaseSystemTest
@@ -57,7 +53,6 @@ echo $B &gt; b.txt</command>
 class TestParameterizedBuilds(BaseSystemTest):
 
     def test_invoke_job_parameterized(self):
-
         param_B = random_string()
 
         job_name = 'create_%s' % random_string()
@@ -70,13 +65,8 @@ class TestParameterizedBuilds(BaseSystemTest):
 
         artifacts = b.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
-
         artB = artifacts['b.txt']
-
         self.assertTrue(artB.get_data().strip(), param_B)
-
-        # TODO: Actually verify the download
-
 
 if __name__ == '__main__':
     unittest.main()
