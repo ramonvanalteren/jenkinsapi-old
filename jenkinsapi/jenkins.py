@@ -6,7 +6,6 @@ import urlparse
 import requests
 import StringIO
 import cookielib
-from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
 
 from jenkinsapi import config
 from jenkinsapi.job import Job

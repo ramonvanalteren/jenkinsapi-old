@@ -28,8 +28,8 @@ setup(name=PROJECT_NAME.lower(),
       install_requires=['requests==1.2.3', 'pytz'],
       test_suite='jenkinsapi_tests',
       tests_require=['mock', 'nose', 'coverage'],
-      extras_require={
-        'kerberos': ['kerberos']
+      # extras_require={
+      #   'kerberos': ['kerberos']
       },
       entry_points=GLOBAL_ENTRY_POINTS,
       url=PROJECT_URL,
