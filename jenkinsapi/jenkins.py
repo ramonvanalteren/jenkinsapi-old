@@ -164,7 +164,7 @@ class Jenkins(JenkinsBase):
             data='')
         self.poll()
         return self[jobname]
-    
+
     def build_job(self, jobname, params={}):
         """
         Invoke a build by job name
@@ -226,7 +226,7 @@ class Jenkins(JenkinsBase):
         return "Jenkins server at %s" % self.baseurl
 
     def _get_views(self):
-        log.debug('_get_views: self._data.has_key[views] %s' % 
+        log.debug('_get_views: self._data.has_key[views] %s' %
                 self._data.has_key('views'))
         if not self._data.has_key("views"):
             pass
@@ -440,12 +440,6 @@ class Jenkins(JenkinsBase):
             })
         }
         url = self.get_node_url() + "doCreateItem?%s" % urllib.urlencode(params)
+        self.requester.get_and_confirm_status(url)
 
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            fn_urlopen(url).read()
-        except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % url)
-            log.exception(e)
-            raise
         return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
