@@ -27,9 +27,10 @@ class BaseSystemTest(unittest.TestCase):
 
     def setUp(self):
         self.jenkins = Jenkins('http://localhost:8080')
+        self._delete_all_jobs()
 
     def tearDown(self):
-        self._delete_all_jobs()
+        pass
 
     def _delete_all_jobs(self):
         self.jenkins.poll()
