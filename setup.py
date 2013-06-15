@@ -27,7 +27,7 @@ setup(name=PROJECT_NAME.lower(),
       include_package_data=False,
       install_requires=['requests==1.2.3', 'pytz'],
       test_suite='jenkinsapi_tests',
-      tests_require=['mock', 'nose'],
+      tests_require=['mock', 'nose', 'coverage'],
       extras_require={
         'kerberos': ['kerberos']
       },
