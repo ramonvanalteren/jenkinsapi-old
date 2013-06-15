@@ -1,23 +1,24 @@
 import os
-import io
 import time
 import Queue
 import shutil
 import logging
-import requests
 import tempfile
 import threading
 import subprocess
 
 log = logging.getLogger(__name__)
 
-class FailedToStart(Exception): pass
 
-class TimeOut(Exception): pass
+class FailedToStart(Exception):
+    pass
+
+
+class TimeOut(Exception):
+    pass
+
 
 class StreamThread(threading.Thread):
-
-
 
     def __init__(self, name, q, stream, fn_log):
         threading.Thread.__init__(self)
@@ -25,8 +26,6 @@ class StreamThread(threading.Thread):
         self.q = q
         self.stream = stream
         self.fn_log = fn_log
-
-
 
     def run(self):
         log.info("Starting %s", self.name)
@@ -40,11 +39,13 @@ class StreamThread(threading.Thread):
                 break
         self.q.put((self.name, None))
 
+
 class JenkinsLancher(object):
+
     """
     Launch jenkins
     """
-    JENKINS_WAR_URL="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
+    JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
     def __init__(self, war_path):
         self.war_path = war_path
@@ -107,14 +108,14 @@ class JenkinsLancher(object):
                     log.warn('Stream %s has terminated', streamName)
 
 
-
 if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger('').setLevel(logging.INFO)
 
     log.info("Hello!")
 
-    jl = JenkinsLancher('/home/sal/workspace/jenkinsapi/src/jenkinsapi_tests/systests/jenkins.war')
+    jl = JenkinsLancher(
+        '/home/sal/workspace/jenkinsapi/src/jenkinsapi_tests/systests/jenkins.war')
     jl.start()
     log.info("Jenkins was launched...")
 
