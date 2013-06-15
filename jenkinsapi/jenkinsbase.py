@@ -21,20 +21,16 @@ class JenkinsBase(object):
         pprint.pprint(self._data)
 
     def __str__(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def __init__(self, baseurl, poll=True):
         """
         Initialize a jenkins connection
         """
+        self._data = None
         self.baseurl = self.strip_trailing_slash(baseurl)
         if poll:
-            try:
-                self.poll()
-            except urllib2.HTTPError, hte: #TODO: Wrong exception
-                log.exception(hte)
-                log.warn( "Failed to connect to %s" % baseurl )
-                raise
+            self.poll()
 
     def __eq__(self, other):
         """
@@ -65,7 +61,7 @@ class JenkinsBase(object):
         try:
             return eval(response.text)
         except Exception:
-            log.exception('Inappropriate content found at %s' % url)
+            log.exception('Inappropriate content found at %s', url)
             raise JenkinsAPIException('Cannot parse %s' % url)
 
     @classmethod

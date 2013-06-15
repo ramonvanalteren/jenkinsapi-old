@@ -2,7 +2,6 @@
 System tests for `jenkinsapi.jenkins` module.
 '''
 import unittest
-from jenkinsapi.build import Build
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.base import BaseSystemTest, EMPTY_JOB_CONFIG
 

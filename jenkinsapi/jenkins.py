@@ -385,6 +385,7 @@ class Jenkins(JenkinsBase):
         :param nodename: string, hostname
         :return: boolean
         """
+        self.poll()
         return nodename in self.get_node_dict()
 
     def delete_node(self, nodename):
@@ -398,14 +399,7 @@ class Jenkins(JenkinsBase):
         assert self.has_node(nodename), "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            fn_urlopen(url).read()
-        except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % url)
-            log.exception(e)
-            raise
-        return not self.has_node(nodename)
+        self.requester.get_and_confirm_status(url)
 
     def create_node(self, name, num_executors=2, node_description=None,
                     remote_fs='/var/lib/jenkins', labels=None, exclusive=False):

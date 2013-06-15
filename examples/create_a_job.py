@@ -1,27 +1,15 @@
+import logging
+logging.basicConfig()
+
 from jenkinsapi.jenkins import Jenkins
+from pkg_resources import resource_string
 J = Jenkins('http://localhost:8080')
+jobName = 'foo_job2'
+xml = resource_string('examples', 'addjob.xml')
 
-EMPTY_JOB_CONFIG = '''\
-<?xml version='1.0' encoding='UTF-8'?>
-<project>
-  <actions/>
-  <description></description>
-  <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.scm.NullSCM"/>
-  <canRoam>true</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector"/>
-  <concurrentBuild>false</concurrentBuild>
-  <builders/>
-  <publishers/>
-  <buildWrappers/>
-</project>
-'''
+print xml
 
-new_job = J.create_job(jobname='foo_job', config=EMPTY_JOB_CONFIG)
+j = J.create_job(jobname=jobName, config=xml)
 
-j= J['foo_job']
+j2= J[jobName]
 print j
