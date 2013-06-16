@@ -30,7 +30,7 @@ setup(name=PROJECT_NAME.lower(),
       tests_require=['mock', 'nose', 'coverage'],
       # extras_require={
       #   'kerberos': ['kerberos']
-      },
+      #},
       entry_points=GLOBAL_ENTRY_POINTS,
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,
