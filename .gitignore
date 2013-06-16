@@ -8,3 +8,4 @@
 .settings
 *.DS_Store
 jenkins.war
+.coverage/
