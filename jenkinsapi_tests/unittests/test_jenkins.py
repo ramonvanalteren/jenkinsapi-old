@@ -1,12 +1,9 @@
 import mock
 import unittest
-import datetime
-import urllib2
 
-from jenkinsapi.jenkins import Jenkins, JenkinsBase, View, Job
+from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.exceptions import UnknownJob, NotAuthorized, JenkinsAPIException
-
+from jenkinsapi.exceptions import JenkinsAPIException
 
 class TestJenkins(unittest.TestCase):
 
@@ -304,16 +301,6 @@ class TestJenkinsURLs(unittest.TestCase):
                     username='foouser', password='foopassword')
         self.assertEquals(
             J.get_create_url(), 'http://localhost:8080/createItem')
-
-    @mock.patch.object(Jenkins, '_poll')
-    def test_get_base_server_url(self, _poll):
-        _poll.return_value = {}
-        J = Jenkins('http://localhost:8080/',
-                    username='foouser', password='foopassword')
-        self.assertEquals(J.baseurl, 'http://localhost:8080')
-        self.assertEquals(
-            J.get_base_server_url(), 'http://localhost:8080')
-
 
 if __name__ == '__main__':
     unittest.main()
