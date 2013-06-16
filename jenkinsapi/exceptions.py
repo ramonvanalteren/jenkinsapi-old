@@ -18,6 +18,11 @@ class UnknownView( KeyError, JenkinsAPIException):
     Jenkins does not recognize the view requested.
     """
 
+class UnknownQueueItem( KeyError, JenkinsAPIException):
+    """
+    Jenkins does not recognize the requested queue item
+    """
+
 class ArtifactBroken(JenkinsAPIException):
     """
     An artifact is broken, wrong
