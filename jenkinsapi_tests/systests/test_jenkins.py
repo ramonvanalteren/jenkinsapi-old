@@ -74,13 +74,5 @@ class JobTests(BaseSystemTest):
         self.assertJobIsPresent(template_job_name)
         self.assertJobIsPresent(copied_job_name)
 
-class NodeTests(BaseSystemTest):
-    """
-    """
-
-    # def test_get_node_dict(self):
-    #     self.assertEqual(self.jenkins.get_node_dict(), {
-    #         'master': 'http://localhost:8080/computer/master/api/python/'})
-
 if __name__ == '__main__':
     unittest.main()

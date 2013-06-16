@@ -13,6 +13,11 @@ class UnknownJob( KeyError, JenkinsAPIException):
     Jenkins does not recognize the job requested.
     """
 
+class UnknownView( KeyError, JenkinsAPIException):
+    """
+    Jenkins does not recognize the view requested.
+    """
+
 class ArtifactBroken(JenkinsAPIException):
     """
     An artifact is broken, wrong

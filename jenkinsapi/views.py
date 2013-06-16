@@ -1,6 +1,7 @@
 import json
 import urllib
 from jenkinsapi.view import View
+from jenkinsapi.exceptions import UnknownView
 
 class Views(object):
     """
@@ -10,6 +11,19 @@ class Views(object):
     def __init__(self, jenkins):
         self.jenkins = jenkins
 
+    def __len__(self):
+        return len(self.keys())
+
+    def __delitem__(self, view_name):
+        if view_name == 'All':
+            raise ValueError('Cannot delete this view: %s' % view_name)
+
+        self[view_name].delete()
+        self.jenkins.poll
+
+    def __setitem__(self, name, value):
+        raise NotImplementedError()
+
     def __getitem__(self, view_name):
         for row in self.jenkins._data['views']:
             if row['name'] == view_name:
@@ -17,7 +31,7 @@ class Views(object):
                     row['url'],
                     row['name'],
                     self.jenkins)
-        raise KeyError(view_name)
+        raise UnknownView(view_name)
 
     def __iteritems__(self):
         """
@@ -52,7 +66,7 @@ class Views(object):
     def delete_view_by_url(self, str_url):
         url = "%s/doDelete" % str_url
         response = self.requester.get_url(url, data='')
-        self.poll()
+        self.jenkins.poll()
         return self
 
     def create(self, str_view_name):

@@ -32,6 +32,9 @@ class JenkinsBase(object):
         if poll:
             self.poll()
 
+    def get_jenkins_obj(self):
+        raise NotImplementedError('Please implement this method on %s' % self.__class__.__name__)
+
     def __eq__(self, other):
         """
         Return true if the other object represents a connection to the same server

@@ -221,43 +221,15 @@ class Jenkins(JenkinsBase):
         url = self.get_nodes_url()
         return Nodes(url, self)
 
-    def delete_view(self, str_view_name, view=None, person=None):
-        """
-        Delete a view
-        :param str_view_name: name of the view, str
-        :param view: View object to be deleted, jenkinsapi.View
-        :param person: Person name (to create personal view), str
-        :return: True if view has been deleted, False if view does not exist
-        """
-        url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % person) if person else self.baseurl
-        qs = urllib.urlencode({'value': str_view_name})
-        viewExistsCheck_url = urlparse.urljoin(url, "viewExistsCheck?%s" % qs)
-        log.debug('viewExistsCheck_url=%s' % viewExistsCheck_url)
-        result = self.requester.get_url(viewExistsCheck_url)
-        log.debug('result=%s' % result)
-        # Jenkins returns "<div/>" if view does not exist
-        if len(result) == len('<div/>'):
-            log.error('A view the name "%s" does not exist' % (str_view_name))
-            return False
-        else:
-            self.delete_view_by_url(urlparse.urljoin(url, 'view/%s' % str_view_name))
-            # We changed Jenkins config - need to update ourself
-            self.poll()
-            # TODO: add check here that the view actually been deleted
-            return True
-
     def __getitem__(self, jobname):
         """
         Get a job by name
         :param jobname: name of job, str
         :return: Job obj
         """
-        for url, name in self.get_jobs_info():
+        for name, job in self.get_jobs():
             if name == jobname:
-                preferred_scheme = urlparse.urlsplit(self.baseurl).scheme
-                url_split = urlparse.urlsplit(url)
-                preferred_url = urlparse.urlunsplit([preferred_scheme, url_split.netloc, url_split.path, url_split.query, url_split.fragment])
-                return Job(preferred_url, name, jenkins_obj=self)
+                return job
         raise UnknownJob(jobname)
 
     def __contains__(self, jobname):
