@@ -10,3 +10,5 @@
 jenkins.war
 .coverage/
 .coverage
+nosetests.xml
+coverage*/
