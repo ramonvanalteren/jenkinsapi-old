@@ -1,7 +1,6 @@
 import json
 import urllib
 import logging
-import urlparse
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
