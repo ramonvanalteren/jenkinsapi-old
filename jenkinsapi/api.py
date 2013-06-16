@@ -2,15 +2,15 @@
 This module is a collection of helpful, high-level functions for automating common tasks.
 Many of these functions were designed to be exposed to the command-line, hence the have simple string arguments.
 """
-from jenkinsapi.artifact import Artifact
-from jenkinsapi import constants
-from jenkinsapi.jenkins import Jenkins
-from jenkinsapi.exceptions import ArtifactsMissing, TimeOut, BadURL
-from urllib2 import urlparse
-
 import os
 import time
 import logging
+
+from urllib2 import urlparse
+from jenkinsapi import constants
+from jenkinsapi.jenkins import Jenkins
+from jenkinsapi.artifact import Artifact
+from jenkinsapi.exceptions import ArtifactsMissing, TimeOut, BadURL
 
 log = logging.getLogger(__name__)
 
