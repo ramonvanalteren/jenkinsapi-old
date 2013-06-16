@@ -1,34 +1,21 @@
-import time
+import json
 import urllib
-import urllib2
 import logging
 import urlparse
-import requests
-import StringIO
-import cookielib
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
-from jenkinsapi.nodes import Nodes
 from jenkinsapi.node import Node
-from jenkinsapi.queue import Queue
 from jenkinsapi.view import View
+from jenkinsapi.nodes import Nodes
+from jenkinsapi.views import Views
+from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.exceptions import UnknownJob, NotAuthorized, JenkinsAPIException
+from jenkinsapi.exceptions import UnknownJob, JenkinsAPIException
 
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
-try:
-    # Kerberos is now an extras_require - please see
-    # http://pythonhosted.org/distribute/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies
-    from utils.urlopener_kerberos import mkkrbopener
-except ImportError:
-    mkkrbopener = None
 
 log = logging.getLogger(__name__)
 
@@ -62,14 +49,9 @@ class Jenkins(JenkinsBase):
         obj_fingerprint.validate()
         log.info("Jenkins says %s is valid" % id)
 
-    def reload(self):
-        '''Try and reload the configuration from disk'''
-        try:
-            self.requester.get_url("%(baseurl)s/reload" % self.__dict__)
-        except urllib2.HTTPError, e:
-            if e.code == 403:
-                raise NotAuthorized("You are not authorized to reload this server")
-            raise
+    # def reload(self):
+    #     '''Try and reload the configuration from disk'''
+    #     self.requester.get_url("%(baseurl)s/reload" % self.__dict__)
 
     def get_artifact_data(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
@@ -184,7 +166,7 @@ class Jenkins(JenkinsBase):
         :return: new jenkins_obj
         """
         delete_job_url = self[jobname].get_delete_url()
-        response = self.requester.post_and_confirm_status(
+        self.requester.post_and_confirm_status(
             delete_job_url,
             data='some random bytes...'
         )
@@ -200,7 +182,7 @@ class Jenkins(JenkinsBase):
         """
         params = {'newName': newjobname}
         rename_job_url = self[jobname].get_rename_url()
-        response = self.requester.post_and_confirm_status(
+        self.requester.post_and_confirm_status(
             rename_job_url, params=params, data='')
         self.poll()
         return self[newjobname]
@@ -227,83 +209,17 @@ class Jenkins(JenkinsBase):
     def __str__(self):
         return "Jenkins server at %s" % self.baseurl
 
-    def _get_views(self):
-        log.debug('_get_views: self._data.has_key[views] %s' %
-                self._data.has_key('views'))
-        if not self._data.has_key("views"):
-            pass
-        else:
-            for viewdict in self._data["views"]:
-                yield viewdict["name"], viewdict["url"]
-
-    def get_view_dict(self):
-        return dict(self._get_views())
-
-    def get_view_url(self, str_view_name):
-        try:
-            view_dict = self.get_view_dict()
-            log.debug('view_dict=%s' % view_dict)
-            return view_dict[ str_view_name ]
-        except KeyError:
-            #noinspection PyUnboundLocalVariable
-            all_views = ", ".join(view_dict.keys())
-            raise KeyError("View %s is not known - available: %s" % (str_view_name, all_views))
-
-    def get_view(self, str_view_name):
-        view_url = self.get_view_url(str_view_name)
-        view_api_url = self.python_api_url(view_url)
-        return View(view_url , str_view_name, jenkins_obj=self)
+    def views(self):
+        return Views(self)
 
     def get_view_by_url(self, str_view_url):
         #for nested view
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
         return View(str_view_url , str_view_name, jenkins_obj=self)
 
-    def delete_view_by_url(self, str_url):
-        url = "%s/doDelete" % str_url
-        response = self.requester.get_url(url, data='')
-        self.poll()
-        return self
-
     def get_nodes(self):
         url = self.get_nodes_url()
         return Nodes(url, self)
-
-    def create_view(self, str_view_name, person=None):
-        """
-        Create a view
-        :param str_view_name: name of new view, str
-        :param person: Person name (to create personal view), str
-        :return: new View obj or None if view was not created
-        """
-        url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % person) if person else self.baseurl
-        qs = urllib.urlencode({'value': str_view_name})
-        viewExistsCheck_url = urlparse.urljoin(url, "viewExistsCheck?%s" % qs)
-        log.debug('viewExistsCheck_url=%s' % viewExistsCheck_url)
-        result = self.requester.get_url(viewExistsCheck_url)
-        log.debug('result=%s' % result)
-        # Jenkins returns "<div/>" if view does not exist
-        if len(result) > len('<div/>'):
-            log.error('A view "%s" already exists' % (str_view_name))
-            return None
-        else:
-            data = {"mode":"hudson.model.ListView", "Submit": "OK"}
-            data['name'] = str_view_name
-            # data['json'] = data.copy()
-            # log.debug('json data=%s' % data)
-            # params = urllib.urlencode(data)
-            try:
-                createView_url = urlparse.urljoin(url, "createView")
-                log.debug('createView_url=%s' % createView_url)
-                result = self.requester.post_url(createView_url, data)
-            except urllib2.HTTPError, e:
-                log.debug("Error post_data %s" % createView_url)
-                log.exception(e)
-            # We changed Jenkins config - need to update ourself
-            self.poll()
-            new_view_obj = self.get_view(str_view_name)
-            assert isinstance(new_view_obj, View)
-            return new_view_obj
 
     def delete_view(self, str_view_name, view=None, person=None):
         """
