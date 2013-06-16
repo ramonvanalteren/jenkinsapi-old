@@ -73,7 +73,7 @@ class QueueItem(object):
         self.jenkins = jenkins
         self.__dict__.update(kwargs)
 
-    def getJob(self):
+    def get_job(self):
         """
         Return the job associated with this queue item
         """
