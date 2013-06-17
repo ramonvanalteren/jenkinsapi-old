@@ -1,5 +1,4 @@
 import json
-import urllib
 from jenkinsapi.view import View
 from jenkinsapi.exceptions import UnknownView
 
