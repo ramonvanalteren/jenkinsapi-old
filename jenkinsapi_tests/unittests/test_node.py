@@ -4,6 +4,7 @@ import datetime
 
 from jenkinsapi.node import Node
 
+
 class TestNode(unittest.TestCase):
 
     DATA = {"actions": [],
@@ -44,8 +45,7 @@ class TestNode(unittest.TestCase):
         repr(self.n)
 
     def testName(self):
-    	with self.assertRaises(AttributeError):
-    		_ = self.j.id()
+        with self.assertRaises(AttributeError):
+            self.n.id()
 
-    	self.assertEquals(self.n.name, 'bobnit')
-
+        self.assertEquals(self.n.name, 'bobnit')
