@@ -1,6 +1,5 @@
 import mock
 import unittest
-import datetime
 
 from jenkinsapi.node import Node
 
@@ -47,10 +46,12 @@ class TestNode(unittest.TestCase):
     def testName(self):
         with self.assertRaises(AttributeError):
             self.n.id()
-
-    def test_online(self):
-        return assertEquals(self.n, True)
-
-
-
         self.assertEquals(self.n.name, 'bobnit')
+
+    @mock.patch.object(Node, '_poll')
+    def test_online(self, _poll):
+        _poll.return_value = self.DATA
+        return self.assertEquals(self.n.is_online(), True)
+
+if __name__ == '__main__':
+    unittest.main()
