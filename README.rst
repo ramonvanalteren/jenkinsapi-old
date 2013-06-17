@@ -28,7 +28,7 @@ This library can help you:
 Important Links
 ---------------
 
-Support: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
+Suppor & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
 Support & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
