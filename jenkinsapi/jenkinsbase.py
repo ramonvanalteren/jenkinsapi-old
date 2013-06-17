@@ -1,5 +1,3 @@
-import urllib
-import urllib2
 import logging
 import pprint
 from jenkinsapi import config
