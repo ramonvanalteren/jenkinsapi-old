@@ -58,7 +58,6 @@ class Node(JenkinsBase):
                                 (self._data['offline'], self._data['temporarilyOffline']))
         elif self._data['offline'] and self._data['temporarilyOffline']:
             self.toggle_temporarily_offline()
-            self.poll()
             if self._data['offline']:
                 raise AssertionError("The node state is still offline, check client connection:" +
                                      " offline = %s , temporarilyOffline = %s" %
@@ -70,7 +69,6 @@ class Node(JenkinsBase):
         If after run node state has not been changed raise AssertionError.
         : param message: optional string explain why you are taking this node offline
         """
-        self.poll()
         if not self._data['offline']:
             self.toggle_temporarily_offline(message)
             self.poll()
@@ -87,7 +85,8 @@ class Node(JenkinsBase):
         """
         initial_state = self.is_temporarily_offline()
         url = self.baseurl + "/toggleOffline?offlineMessage=" + urllib.quote(message)
-        html_result = self.hit_url(url)
+        html_result = self.jenkins.requester.get_and_confirm_status(url)
+        self.poll()
         log.debug(html_result)
         if initial_state == self.is_temporarily_offline():
             raise AssertionError("The node state has not changed: temporarilyOffline = %s" % state)

@@ -216,10 +216,6 @@ class Jenkins(JenkinsBase):
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
         return View(str_view_url , str_view_name, jenkins_obj=self)
 
-    def get_nodes(self):
-        url = self.get_nodes_url()
-        return Nodes(url, self)
-
     def __getitem__(self, jobname):
         """
         Get a job by name
@@ -239,18 +235,9 @@ class Jenkins(JenkinsBase):
         """
         return jobname in self.get_jobs_list()
 
-    def get_node_dict(self):
-        """Get registered slave nodes on this instance"""
-        url = self.python_api_url(self.get_node_url())
-        node_dict = dict(self.get_data(url))
-        return dict(
-            (node['displayName'], self.python_api_url(self.get_node_url(node['displayName'])))
-                for node in node_dict['computer'])
-
     def get_node(self, nodename):
         """Get a node object for a specific node"""
-        node_url = self.get_node_url(nodename)
-        return Node(node_url, nodename, jenkins_obj=self)
+        return self.get_nodes()[nodename]
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
@@ -265,6 +252,10 @@ class Jenkins(JenkinsBase):
         queue_url = self.get_queue_url()
         return Queue(queue_url, self)
 
+    def get_nodes(self):
+        url = self.get_nodes_url()
+        return Nodes(url, self)
+
     def has_node(self, nodename):
         """
         Does a node by the name specified exist
@@ -272,7 +263,7 @@ class Jenkins(JenkinsBase):
         :return: boolean
         """
         self.poll()
-        return nodename in self.get_node_dict()
+        return nodename in self.get_nodes()
 
     def delete_node(self, nodename):
         """

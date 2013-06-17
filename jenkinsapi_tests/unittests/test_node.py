@@ -48,4 +48,9 @@ class TestNode(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.n.id()
 
+    def test_online(self):
+        return assertEquals(self.n, True)
+
+
+
         self.assertEquals(self.n.name, 'bobnit')
