@@ -83,7 +83,7 @@ JOB_CONFIGS = {
 
 }
 
-class TestParameterizedBuilds(BaseSystemTest):
+class TestDownstreamUpstream(BaseSystemTest):
     def test_invoke_job_parameterized(self):
         for job_name, job_config in JOB_CONFIGS.items():
             self.jenkins.create_job(job_name, job_config)

@@ -1,7 +1,6 @@
 import json
 import urllib
 import logging
-import urlparse
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
@@ -38,7 +37,7 @@ class Jenkins(JenkinsBase):
     def _clone(self):
         return Jenkins(self.baseurl, username=self.username, password=self.password, requester=self.requester)
 
-    def get_base_server_url(self):
+    def base_server_url(self):
         if config.JENKINS_API in self.baseurl:
             return self.baseurl[:-(len(config.JENKINS_API))]
         else:
@@ -259,7 +258,7 @@ class Jenkins(JenkinsBase):
         return url
 
     def get_queue_url(self):
-        url = "%(baseurl)s/queue/" % {'baseurl': self.get_base_server_url()}
+        url = "%(baseurl)s/queue/" % {'baseurl': self.baseurl}
         return url
 
     def get_queue(self):
