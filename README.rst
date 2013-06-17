@@ -26,7 +26,9 @@ This library can help you:
  * Ability to add/remove/modify Jenkins views
 
 Important Links
-----------------
+---------------
+
+Support: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
 Support & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
