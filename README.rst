@@ -28,6 +28,8 @@ This library can help you:
 Important Links
 ----------------
 
+Support & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
+
 Project source code: github: https://github.com/salimfadhley/jenkinsapi
 
 Project documentation: https://jenkinsapi.readthedocs.org/en/latest/
