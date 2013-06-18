@@ -27,7 +27,7 @@ This library can help you:
 
 Known bugs
 ----------
- [] Currently incompatible with Jenkins > 1.518. Job deletion operations fail.
+ [ ] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
  For other issues, please refer to the support URL below.
 
