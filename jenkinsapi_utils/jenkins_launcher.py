@@ -56,7 +56,11 @@ class JenkinsLancher(object):
 
     def update_war(self):
         os.chdir(self.war_directory)
-        subprocess.check_call('./get-jenkins-war.sh')
+        if os.path.exists(self.war_path):
+            log.info("We already have the War file...")
+        else:
+            log.info("Redownloading Jenkins")
+            subprocess.check_call('./get-jenkins-war.sh')
 
     def stop(self):
         log.info("Shutting down jenkins.")
