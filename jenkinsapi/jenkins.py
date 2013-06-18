@@ -84,7 +84,7 @@ class Jenkins(JenkinsBase):
         Get the jobs information
         :return url, name
         """
-        for info in self._data["jobs"]:
+        for info in self._data["jobs"]
             yield info["url"], info["name"]
 
     def get_jobs_list(self):
@@ -92,7 +92,6 @@ class Jenkins(JenkinsBase):
         return jobs dict,'name:url'
         """
         jobs = []
-        print "_data[jobs]=%s" % self._data["jobs"]
         for info in self._data["jobs"]:
             jobs.append(info["name"])
         return jobs
