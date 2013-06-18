@@ -25,6 +25,12 @@ This library can help you:
  * Ability to add/remove/query Jenkins slaves
  * Ability to add/remove/modify Jenkins views
 
+Known bugs
+----------
+ [] Currently incompatible with Jenkins > 1.518. Job deletion operations fail.
+
+ For other issues, please refer to the support URL below.
+
 Important Links
 ---------------
 
