@@ -11,7 +11,7 @@ class Requester(object):
     This default class can handle simple authentication only.
     """
 
-    STATUS_OK = 200
+    VALID_STATUS_CODES = [200,]
 
     def __init__(self, username=None, password=None):
         if username:
@@ -50,11 +50,12 @@ class Requester(object):
         requestKwargs = self.get_request_dict(url, params, data, headers)
         return requests.post(url, **requestKwargs)
 
-    def post_xml_and_confirm_status(self, url, params=None, data=None):
+    def post_xml_and_confirm_status(self, url, params=None, data=None, valid=None):
         headers = {'Content-Type': 'text/xml'}
-        return self.post_and_confirm_status(url, params, data, headers)
+        return self.post_and_confirm_status(url, params, data, headers, valid)
 
-    def post_and_confirm_status(self, url, params=None, data=None, headers=None):
+    def post_and_confirm_status(self, url, params=None, data=None, headers=None, valid=None):
+        valid = valid or self.VALID_STATUS_CODES
         assert isinstance(data, (
             str, dict)), "Unexpected data type: %s" % repr(data)
 
@@ -62,14 +63,15 @@ class Requester(object):
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
         response = self.post_url(url, params, data, headers)
-        if not response.status_code == self.STATUS_OK:
+        if not response.status_code in valid:
             raise JenkinsAPIException('Operation failed. url={0}, data={1}, headers={2}, status={3}, text={4}'.format(
                 response.url, data, headers, response.status_code, response.text.encode('UTF-8')))
         return response
 
-    def get_and_confirm_status(self, url, params=None, headers=None):
+    def get_and_confirm_status(self, url, params=None, headers=None, valid=None):
+        valid = valid or self.VALID_STATUS_CODES
         response = self.get_url(url, params, headers)
-        if not response.status_code == self.STATUS_OK:
+        if not response.status_code in valid:
             raise JenkinsAPIException('Operation failed. url={0}, headers={1}, status={2}, text={3}'.format(
                 response.url, headers, response.status_code, response.text.encode('UTF-8')))
         return response
