@@ -115,10 +115,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
         response = self.jenkins.requester.post_and_confirm_status(
             url,
             data={'json':self.mk_json_from_build_parameters(build_params)}, # See above - build params have to be JSON encoded & posted.
-            params=params
+            params=params,
+            valid = [200,201]
         )
-
-        assert len( response.text ) > 0
         if invoke_pre_check_delay > 0:
             log.info("Waiting for %is to allow Jenkins to catch up" , invoke_pre_check_delay )
             sleep( invoke_pre_check_delay )
