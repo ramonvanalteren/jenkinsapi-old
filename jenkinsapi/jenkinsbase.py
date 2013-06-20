@@ -1,5 +1,4 @@
 import logging
-import pprint
 from jenkinsapi import config
 from jenkinsapi.exceptions import JenkinsAPIException
 log = logging.getLogger(__name__)
@@ -14,9 +13,6 @@ class JenkinsBase(object):
         return """<%s.%s %s>""" % (self.__class__.__module__,
                                    self.__class__.__name__,
                                    str( self ))
-
-    def print_data(self):
-        pprint.pprint(self._data)
 
     def __str__(self):
         raise NotImplementedError
