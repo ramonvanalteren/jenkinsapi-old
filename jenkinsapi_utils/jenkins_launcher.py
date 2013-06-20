@@ -6,6 +6,7 @@ import logging
 import tempfile
 import threading
 import subprocess
+import pkg_resources
 
 log = logging.getLogger(__name__)
 
@@ -62,6 +63,12 @@ class JenkinsLancher(object):
             log.info("Redownloading Jenkins")
             subprocess.check_call('./get-jenkins-war.sh')
 
+    def update_config(self):
+        config_dest = os.path.join(self.jenkins_home, 'config.xml')
+        config_dest_file = open(config_dest,'w')
+        config_source = pkg_resources.resource_string('jenkinsapi_tests.systests', 'config.xml')
+        config_dest_file.write(config_source.encode('UTF-8'))
+
     def stop(self):
         log.info("Shutting down jenkins.")
         self.jenkins_process.terminate()
@@ -70,6 +77,7 @@ class JenkinsLancher(object):
 
     def start(self, timeout=30):
         self.update_war()
+        self.update_config()
 
         os.environ['JENKINS_HOME'] = self.jenkins_home
         os.chdir(self.war_directory)
