@@ -6,6 +6,7 @@ install:
     - "python setup.py develop"
     - "easy_install mock"
     - "easy_install nose"
+    - "easy_install coverage"
 # command to run tests, e.g. python setup.py test
 script:
     - "nosetests jenkinsapi_tests"
