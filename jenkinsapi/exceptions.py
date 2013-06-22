@@ -3,29 +3,39 @@ class JenkinsAPIException(Exception):
     Base class for all errors
     """
 
-class ArtifactsMissing(JenkinsAPIException):
+class NotFound(JenkinsAPIException):
+    """
+    Resource cannot be found
+    """
+
+class ArtifactsMissing(NotFound):
     """
     Cannot find a build with all of the required artifacts.
     """
 
-class UnknownJob( KeyError, JenkinsAPIException):
+class UnknownJob( KeyError, NotFound):
     """
     Jenkins does not recognize the job requested.
     """
 
-class UnknownView( KeyError, JenkinsAPIException):
+class UnknownView( KeyError, NotFound):
     """
     Jenkins does not recognize the view requested.
     """
 
-class UnknownNode( KeyError, JenkinsAPIException):
+class UnknownNode( KeyError, NotFound):
     """
     Jenkins does not recognize the node requested.
     """
 
-class UnknownQueueItem( KeyError, JenkinsAPIException):
+class UnknownQueueItem( KeyError, NotFound):
     """
     Jenkins does not recognize the requested queue item
+    """
+
+class NoBuildData(NotFound):
+    """
+    A job has no build data.
     """
 
 class ArtifactBroken(JenkinsAPIException):
@@ -43,10 +53,7 @@ class WillNotBuild(JenkinsAPIException):
     Cannot trigger a new build.
     """
 
-class NoBuildData(JenkinsAPIException):
-    """
-    A job has no build data.
-    """
+
 
 class NoResults(JenkinsAPIException):
     """
@@ -63,10 +70,7 @@ class BadURL(ValueError,JenkinsAPIException):
     A URL appears to be broken
     """
 
-class NotFound(JenkinsAPIException):
-    """
-    Resource cannot be found
-    """
+
 
 class NotAuthorized(JenkinsAPIException):
     """Not Authorized to access resource"""
