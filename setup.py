@@ -26,12 +26,9 @@ setup(name=PROJECT_NAME.lower(),
       zip_safe=True,
       include_package_data=False,
       setup_requires=['nose'],
-      install_requires=['requests==1.2.3', 'pytz'],
+      install_requires=['requests>=1.2.3', 'pytz'],
       test_suite='jenkinsapi_tests',
       tests_require=['mock', 'coverage'],
-      # extras_require={
-      #   'kerberos': ['kerberos']
-      #},
       entry_points=GLOBAL_ENTRY_POINTS,
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,
