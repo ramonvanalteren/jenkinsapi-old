@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.2.3'
+REVISION = '0.2.4'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Ramon van Alteren, Ruslan Lutsenko"
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ramon@vanalteren.nl, ruslan.lutcenko@gmail.com'

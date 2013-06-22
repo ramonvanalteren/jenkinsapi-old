@@ -5,6 +5,7 @@ import time
 import logging
 import unittest
 from jenkinsapi.queue import Queue
+from jenkinsapi.exceptions import NoBuildData
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 
@@ -26,7 +27,7 @@ JOB_XML = """
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ping -c 100 localhost</command>
+      <command>ping -c 200 localhost</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
@@ -35,13 +36,16 @@ JOB_XML = """
 
 
 class TestQueue(BaseSystemTest):
+    """
+    All kinds of testing on Jenkins Queues
+    """
 
     def test_get_queue(self):
-        q = self.jenkins.get_queue()
-        self.assertIsInstance(q, Queue)
+        qq = self.jenkins.get_queue()
+        self.assertIsInstance(qq, Queue)
 
-    def test_invoke_job_parameterized(self):
-        job_names = [random_string() for i in range(5)]
+    def test_invoke_many_job(self):
+        job_names = [random_string() for _ in range(5)]
         jobs = []
 
         for job_name in job_names:
@@ -49,9 +53,23 @@ class TestQueue(BaseSystemTest):
             jobs.append(j)
             j.invoke()
 
+            self.assertTrue(j.is_queued_or_running())
+
         queue = self.jenkins.get_queue()
         reprString = repr(queue)
         self.assertIn(queue.baseurl, reprString)
+
+    def test_start_and_stop_long_running_job(self):
+        job_name = random_string()
+        j = self.jenkins.create_job(job_name, JOB_XML)
+        j.invoke()
+        self.assertTrue(j.is_queued_or_running())
+
+        while j.is_queued():
+            time.sleep(0.5)
+
+        j.get_first_build().stop()
+        self.assertFalse(j.is_queued_or_running())
 
 
 if __name__ == '__main__':

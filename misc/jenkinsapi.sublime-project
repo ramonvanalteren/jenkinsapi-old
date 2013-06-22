@@ -22,15 +22,12 @@
             "ignore":["C"],
             "use_icons":true
         }
-
     },
 
     "build_systems":
     [
         {
-
             "name":"Virtualenv 2.7",
-            //"working_dir": "${project_path:${folder}}/src",
             "cmd":
             [
                 "${project_path}/bin/python2.7",

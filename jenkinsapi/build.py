@@ -285,14 +285,8 @@ class Build(JenkinsBase):
         Stops the build execution if it's running
         :return boolean True if succeded False otherwise or the build is not running
         """
-        if not self.is_running():
-            return False
-
-        stopbuildurl = urlparse.urljoin(self.baseurl, 'stop')
-        try:
-            self.post_data(stopbuildurl, '')
-        except urllib2.HTTPError:
-            # The request doesn't have a response, so it returns 404,
-            # it's the expected behaviour
-            pass
-        return True
+        if self.is_running():
+            url = "%s/stop" % self.baseurl
+            self.job.jenkins.requester.post_and_confirm_status(url, data='')
+            return True
+        return False
