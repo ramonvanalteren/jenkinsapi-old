@@ -1,3 +1,7 @@
+"""
+A selection of job objects used in testing.
+"""
+
 EMPTY_JOB = '''\
 <?xml version='1.0' encoding='UTF-8'?>
 <project>

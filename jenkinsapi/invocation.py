@@ -10,18 +10,33 @@ class Invocation(object):
 
     def __init__(self, job):
         self.job = job
+        self.initial_builds = None
 
 
     def __enter__(self):
         """
         Start watching the job
         """
+        self.job.poll()
+        self.initial_builds = set(self.job.get_build_dict().keys())
 
     def __exit__(self, type, value, traceback):
         """
         Finish watching the job - it will track which new queue items or builds have
         been created as a consequence of invoking the job.
         """
+        self.job.poll()
+        newly_created_builds = set(self.job.get_build_dict().keys())
+
+        import ipdb
+        ipdb.set_trace() 
+
+
+    def get_build_number(self):
+        """
+        If this job is building or complete then provide it's build-number
+        """
+        return 1
 
     def block(self, until='completed'):
         """
@@ -38,11 +53,13 @@ class Invocation(object):
         """
         Returns True if this item is on the queue
         """
+        return True
 
     def is_running(self):
         """
         Returns True if this item is executing now
         """
+        return True
 
     def is_queued_or_running(self):
         return self.is_queued() or self.is_running()
