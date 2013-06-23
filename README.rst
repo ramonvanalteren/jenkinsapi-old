@@ -21,6 +21,19 @@ This library can help you:
  * Ability to add/remove/query Jenkins slaves
  * Ability to add/remove/modify Jenkins views
 
+Supporting this project
+-----------------------
+
+First of all, thanks for using this project. The fact that you are checking this out is reason enough for me to continue developing it. This project is 100% free and no financial donations are requested, however there are other wasy you can support this work in progress:
+
+ * Submit code and tests: This is test-driven development. The best way to help this project move along is to find a bug and pull-request a new test that shows us what's wrong. The developers of this project find it much  easier to fix against tests than bug-reports.
+
+ * Submit issues & bug reports: It may be 2nd best but it's still very useful. Your bug reports help us work out what's wrong with our project and what features we need to prioritize in future releases. We take note of every issue and are truly grateful to any user who can spare the time to tell us what they think.
+
+ * Submit case studies: If you like what we do, please tell us how you are using this project. We want to know what company you are working for and what kind of uses you have found for JenkinsAPI. We'd love to feature your case-study in future versions of our documentation. If you have a story to tell just raise it as an issue on Github.
+
+ Thanks!
+
 Known bugs
 ----------
  [ ] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
