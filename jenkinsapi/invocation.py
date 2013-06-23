@@ -1,3 +1,5 @@
+from jenkinsapi.exceptions import UnknownQueueItem
+
 class Invocation(object):
     """
     Represents the state and consequences of a single attempt to start a job.
@@ -11,6 +13,7 @@ class Invocation(object):
     def __init__(self, job):
         self.job = job
         self.initial_builds = None
+        self.initial_queue_item = None
 
 
     def __enter__(self):
@@ -20,6 +23,11 @@ class Invocation(object):
         self.job.poll()
         self.initial_builds = set(self.job.get_build_dict().keys())
 
+        try:
+            self.initial_queue_item = self.job.get_queue_item()
+        except UnknownQueueItem:
+            pass
+
     def __exit__(self, type, value, traceback):
         """
         Finish watching the job - it will track which new queue items or builds have
@@ -28,8 +36,7 @@ class Invocation(object):
         self.job.poll()
         newly_created_builds = set(self.job.get_build_dict().keys())
 
-        import ipdb
-        ipdb.set_trace() 
+        queueItem = self.job.get_queue_item()
 
 
     def get_build_number(self):

@@ -7,10 +7,9 @@ from time import sleep
 from jenkinsapi.build import Build
 from jenkinsapi.invocation import Invocation
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi import exceptions
+from jenkinsapi.queue import QueueItem
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
-
-from jenkinsapi.exceptions import NoBuildData, NotFound, NotInQueue, WillNotBuild
+from jenkinsapi.exceptions import NoBuildData, NotFound, NotInQueue, WillNotBuild, UnknownQueueItem
 
 log = logging.getLogger(__name__)
 
@@ -100,7 +99,6 @@ class Job(JenkinsBase, MutableJenkinsThing):
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
         params = {}  # Via Get string
-
 
         with invocation:
             if self.is_queued():
@@ -277,6 +275,14 @@ class Job(JenkinsBase, MutableJenkinsThing):
     def is_queued(self):
         self.poll()
         return self._data["inQueue"]
+
+    def get_queue_item(self):
+        """
+        Return a QueueItem if this object is in a queue, otherwise raise an exception
+        """
+        if not self.is_queued():
+            raise UnknownQueueItem()
+        return QueueItem(self.jenkins, **self._data['queueItem'])
 
     def is_running(self):
         self.poll()
