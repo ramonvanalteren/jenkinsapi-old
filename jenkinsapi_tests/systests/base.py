@@ -3,7 +3,6 @@ from jenkinsapi.jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi.jenkins import Jenkins
 
 
-
 class BaseSystemTest(unittest.TestCase):
 
     def setUp(self):
