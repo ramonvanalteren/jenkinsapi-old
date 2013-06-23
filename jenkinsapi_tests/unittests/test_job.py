@@ -1,13 +1,13 @@
 import mock
 import unittest
-import datetime
 
 from jenkinsapi.job import Job
+from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.exceptions import NoBuildData
 
-class TestJob(unittest.TestCase):
 
-    DATA = {"actions": [],
+class TestJob(unittest.TestCase):
+    JOB_DATA = {"actions": [],
             "description": "test job",
             "displayName": "foo",
             "displayNameOrNull": None,
@@ -38,11 +38,16 @@ class TestJob(unittest.TestCase):
             "scm": {},
             "upstreamProjects": []}
 
-    @mock.patch.object(Job, '_poll')
-    def setUp(self, _poll):
-        _poll.return_value = self.DATA
+    URL_DATA = {'http://halob:8080/job/foo/api/python/':JOB_DATA}
 
-        # def __init__( self, url, name, jenkins_obj ):
+    def fakeGetData(self, url, *args):
+        try:
+            return TestJob.URL_DATA[url]
+        except KeyError:
+            raise Exception("Missing data for %s" % url)
+
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    def setUp(self):
 
         self.J = mock.MagicMock()  # Jenkins object
         self.j = Job('http://halob:8080/job/foo/', 'foo', self.J)
@@ -53,8 +58,8 @@ class TestJob(unittest.TestCase):
 
     def testName(self):
         with self.assertRaises(AttributeError):
-        	self.j.id()
-    	self.assertEquals(self.j.name, 'foo')
+            self.j.id()
+        self.assertEquals(self.j.name, 'foo')
 
     def testNextBuildNumber(self):
         self.assertEquals(self.j.get_next_build_number(), 4)
@@ -62,58 +67,61 @@ class TestJob(unittest.TestCase):
     def test_special_urls(self):
         self.assertEquals(self.j.baseurl, 'http://halob:8080/job/foo')
 
-        self.assertEquals(self.j.get_delete_url(), 'http://halob:8080/job/foo/doDelete')
+        self.assertEquals(
+            self.j.get_delete_url(), 'http://halob:8080/job/foo/doDelete')
 
-        self.assertEquals(self.j.get_rename_url(), 'http://halob:8080/job/foo/doRename')
+        self.assertEquals(
+            self.j.get_rename_url(), 'http://halob:8080/job/foo/doRename')
 
     def test_get_description(self):
         self.assertEquals(self.j.get_description(), 'test job')
 
     def test_get_build_triggerurl(self):
-        self.assertEquals(self.j.get_build_triggerurl(), 'http://halob:8080/job/foo/build')
+        self.assertEquals(
+            self.j.get_build_triggerurl(), 'http://halob:8080/job/foo/build')
 
     def test_wrong__mk_json_from_build_parameters(self):
         with self.assertRaises(AssertionError) as ar:
             self.j._mk_json_from_build_parameters(build_params='bad parameter')
 
-        self.assertEquals(ar.exception.message, 'Build parameters must be a dict')
-
-    def test__mk_json_from_build_parameters(self):
-        params = {'param1': 'value1', 'param2': 'value2'}
-        ret = self.j._mk_json_from_build_parameters(build_params=params)
-        self.assertTrue(isinstance(ret, dict))
-        self.assertTrue(isinstance(ret.get('parameter'), list))
-        self.assertEquals(len(ret.get('parameter')), 2)
-
-    def test_wrong_mk_json_from_build_parameters(self):
-        with self.assertRaises(AssertionError) as ar:
-            self.j.mk_json_from_build_parameters(build_params='bad parameter')
-
-        self.assertEquals(ar.exception.message, 'Build parameters must be a dict')
+        self.assertEquals(
+            ar.exception.message, 'Build parameters must be a dict')
 
     def test__mk_json_from_build_parameters(self):
         params = {'param1': 'value1', 'param2': 'value2'}
         ret = self.j.mk_json_from_build_parameters(build_params=params)
         self.assertTrue(isinstance(ret, str))
-        self.assertEquals(ret, 
-                '{"parameter": [{"name": "param2", "value": "value2"}, {"name": "param1", "value": "value1"}]}')
+        self.assertEquals(ret,
+                          '{"parameter": [{"name": "param2", "value": "value2"}, {"name": "param1", "value": "value1"}]}')
 
-    def test_wrong_field__build_id_for_type(self):
+    def test_wrong_mk_json_from_build_parameters(self):
         with self.assertRaises(AssertionError) as ar:
+            self.j.mk_json_from_build_parameters(build_params='bad parameter')
+
+        self.assertEquals(
+            ar.exception.message, 'Build parameters must be a dict')
+
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    def test_wrong_field__build_id_for_type(self):
+        with self.assertRaises(AssertionError):
             self.j._buildid_for_type('wrong')
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_good_buildnumber(self):
         ret = self.j.get_last_good_buildnumber()
         self.assertTrue(ret, 3)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_failed_buildnumber(self):
-        ret = self.j.get_last_failed_buildnumber()
-        self.assertEquals(ret, None)
+        with self.assertRaises(NoBuildData):
+            self.j.get_last_failed_buildnumber()
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_buildnumber(self):
         ret = self.j.get_last_buildnumber()
         self.assertEquals(ret, 3)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_completed_buildnumber(self):
         ret = self.j.get_last_completed_buildnumber()
         self.assertEquals(ret, 3)
@@ -129,8 +137,8 @@ class TestJob(unittest.TestCase):
         _poll.return_value = {"name": "foo"}
 
         j = Job('http://halob:8080/job/foo/', 'foo', self.J)
-        with self.assertRaises(NoBuildData) as nbd:
-            ret = j.get_build_dict()
+        with self.assertRaises(NoBuildData):
+            j.get_build_dict()
 
     def test_get_build_ids(self):
         # We don't want to deal with listreverseiterator here
@@ -145,8 +153,8 @@ class TestJob(unittest.TestCase):
         _poll.return_value = {"name": "foo"}
 
         j = Job('http://halob:8080/job/foo/', 'foo', self.J)
-        with self.assertRaises(NoBuildData) as nbd:
-            ret = j.get_revision_dict()
+        with self.assertRaises(NoBuildData):
+            j.get_revision_dict()
 
 
 if __name__ == '__main__':
