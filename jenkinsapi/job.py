@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from time import sleep
 from jenkinsapi.build import Build
+from jenkinsapi.invocation import Invocation
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi import exceptions
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
@@ -92,56 +93,62 @@ class Job(JenkinsBase, MutableJenkinsThing):
         assert isinstance(block, bool)
         assert isinstance(skip_if_running, bool)
 
+        # Create a new invocation instance
+        invocation = Invocation(self)
+
         # Either copy the params dict or make a new one.
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
         params = {}  # Via Get string
 
-        if self.is_queued():
-            raise WillNotBuild('%s is already queued' % repr(self))
 
-        elif self.is_running():
-            if skip_if_running:
-                log.warn(
-                    "Will not request new build because %s is already running", self.name)
-            else:
-                log.warn(
-                    "Will re-schedule %s even though it is already running", self.name)
+        with invocation:
+            if self.is_queued():
+                raise WillNotBuild('%s is already queued' % repr(self))
 
-        log.info("Attempting to start %s on %s", self.name, repr(
-            self.get_jenkins_obj()))
+            elif self.is_running():
+                if skip_if_running:
+                    log.warn(
+                        "Will not request new build because %s is already running", self.name)
+                else:
+                    log.warn(
+                        "Will re-schedule %s even though it is already running", self.name)
 
-        url = self.get_build_triggerurl()
+            log.info("Attempting to start %s on %s", self.name, repr(
+                self.get_jenkins_obj()))
 
-        if cause:
-            build_params['cause'] = cause
+            url = self.get_build_triggerurl()
 
-        if securitytoken:
-            params['token'] = securitytoken
+            if cause:
+                build_params['cause'] = cause
 
-        response = self.jenkins.requester.post_and_confirm_status(
-            url,
-            data={'json': self.mk_json_from_build_parameters(
-                build_params)},  # See above - build params have to be JSON encoded & posted.
-            params=params,
-            valid=[200, 201]
-        )
-        if invoke_pre_check_delay > 0:
-            log.info(
-                "Waiting for %is to allow Jenkins to catch up", invoke_pre_check_delay)
-            sleep(invoke_pre_check_delay)
-        if block:
-            total_wait = 0
+            if securitytoken:
+                params['token'] = securitytoken
 
-            while self.is_queued():
+            response = self.jenkins.requester.post_and_confirm_status(
+                url,
+                data={'json': self.mk_json_from_build_parameters(
+                    build_params)},  # See above - build params have to be JSON encoded & posted.
+                params=params,
+                valid=[200, 201]
+            )
+            if invoke_pre_check_delay > 0:
                 log.info(
-                    "Waited %is for %s to begin...", total_wait, self.name)
-                sleep(invoke_block_delay)
-                total_wait += invoke_block_delay
-            if self.is_running():
-                running_build = self.get_last_build()
-                running_build.block_until_complete(
-                    delay=invoke_pre_check_delay)
+                    "Waiting for %is to allow Jenkins to catch up", invoke_pre_check_delay)
+                sleep(invoke_pre_check_delay)
+            if block:
+                total_wait = 0
+
+                while self.is_queued():
+                    log.info(
+                        "Waited %is for %s to begin...", total_wait, self.name)
+                    sleep(invoke_block_delay)
+                    total_wait += invoke_block_delay
+                if self.is_running():
+                    running_build = self.get_last_build()
+                    running_build.block_until_complete(
+                        delay=invoke_pre_check_delay)
+        return invocation
 
     def _buildid_for_type(self, buildtype):
         self.poll()
