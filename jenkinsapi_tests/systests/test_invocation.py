@@ -2,10 +2,11 @@
 System tests for `jenkinsapi.jenkins` module.
 '''
 import unittest
+from jenkinsapi.build import Build
 from jenkinsapi.invocation import Invocation
+from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB
 from jenkinsapi_tests.test_utils.random_strings import random_string
-from jenkinsapi_tests.systests.base import BaseSystemTest
 
 
 class TestInvocation(BaseSystemTest):
@@ -19,9 +20,15 @@ class TestInvocation(BaseSystemTest):
         self.assertEquals(ii.get_build_number(), 1)
 
 
-    def test_multiple_inocations(self):
-    	pass
-        
+    def test_get_build_from_invocation(self):
+    	job_name = 'create_%s' % random_string()
+        job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
+        ii = job.invoke()
+        bn = ii.get_build_number()
+        self.assertIsInstance(bn, int)
+        ii.block(until='not_queued')
+        b = ii.get_build()
+        self.assertIsInstance(b, Build)
 
 
 if __name__ == '__main__':

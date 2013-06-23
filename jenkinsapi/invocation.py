@@ -1,3 +1,4 @@
+import time
 from jenkinsapi.exceptions import UnknownQueueItem
 
 class Invocation(object):
@@ -13,7 +14,8 @@ class Invocation(object):
     def __init__(self, job):
         self.job = job
         self.initial_builds = None
-        self.initial_queue_item = None
+        self.queue_item = None
+        self.build_number = None
 
 
     def __enter__(self):
@@ -23,10 +25,6 @@ class Invocation(object):
         self.job.poll()
         self.initial_builds = set(self.job.get_build_dict().keys())
 
-        try:
-            self.initial_queue_item = self.job.get_queue_item()
-        except UnknownQueueItem:
-            pass
 
     def __exit__(self, type, value, traceback):
         """
@@ -35,21 +33,40 @@ class Invocation(object):
         """
         self.job.poll()
         newly_created_builds = set(self.job.get_build_dict().keys())
-
-        queueItem = self.job.get_queue_item()
-
+        if newly_created_builds:
+            self.build_number = newly_created_builds.pop()
+        else:
+            try:
+                self.queue_item = self.job.get_queue_item()
+                self.build_number = self.job.get_next_build_number()
+            except UnknownQueueItem:
+                pass
 
     def get_build_number(self):
         """
         If this job is building or complete then provide it's build-number
         """
-        return 1
+        return self.build_number
+
+    def get_build(self):
+        return self.job[self.get_build_number()]
+
+    def block_until_not_queued(self):
+        while True:
+            if not self.is_queued():
+                break
+            time.sleep(0.5)
+
 
     def block(self, until='completed'):
         """
         Block this item until a condition is met.
         Setting until to 'running' blocks the item until it is running (i.e. it's no longer queued)
         """
+        assert until in ['completed', 'not_queued'], 'Unknown block condition: %s' % until
+        self.block_until_not_queued()
+        if until=='completed':
+            self.block_until_completed()
 
     def stop(self):
         """
@@ -60,6 +77,10 @@ class Invocation(object):
         """
         Returns True if this item is on the queue
         """
+
+        import ipdb
+        ipdb.set_trace
+
         return True
 
     def is_running(self):
