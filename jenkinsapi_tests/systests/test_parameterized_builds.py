@@ -3,8 +3,9 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import time
 import unittest
-from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.base import BaseSystemTest
+from jenkinsapi_tests.test_utils.random_strings import random_string
+
 
 JOB_CONFIG = """
 <?xml version='1.0' encoding='UTF-8'?>

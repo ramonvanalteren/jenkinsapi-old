@@ -3,7 +3,6 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import logging
 import unittest
-from jenkinsapi.jenkins import Jenkins
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 
