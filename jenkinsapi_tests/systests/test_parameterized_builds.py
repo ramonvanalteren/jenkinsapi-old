@@ -50,6 +50,7 @@ echo $B &gt; b.txt</command>
   <buildWrappers/>
 </project>""".strip()
 
+
 class TestParameterizedBuilds(BaseSystemTest):
 
     def test_invoke_job_parameterized(self):
@@ -57,7 +58,7 @@ class TestParameterizedBuilds(BaseSystemTest):
 
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, JOB_CONFIG)
-        job.invoke(block=True, build_params={ 'B':param_B})
+        job.invoke(block=True, build_params={'B': param_B})
 
         b = job.get_last_build()
         while b.is_running():
