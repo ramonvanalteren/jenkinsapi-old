@@ -36,7 +36,7 @@ First of all, thanks for using this project. The fact that you are checking this
 
 Known bugs
 ----------
- [ ] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
+ [x] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
  For other issues, please refer to the support URL below.
 
