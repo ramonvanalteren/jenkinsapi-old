@@ -1,9 +1,10 @@
 import mock
 import unittest
 
-from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
 from jenkinsapi.utils.requester import Requester
 from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
+
 
 class TestJenkins(unittest.TestCase):
 
