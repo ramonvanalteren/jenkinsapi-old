@@ -3,20 +3,22 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import unittest
 from jenkinsapi.invocation import Invocation
+from jenkinsapi_tests.systests.base import BaseSystemTest
+from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi_tests.test_utils.random_strings import random_string
-from jenkinsapi_tests.systests.base import BaseSystemTest, EMPTY_JOB_CONFIG
+
 
 
 class JobTests(BaseSystemTest):
 
     def test_create_job(self):
         job_name = 'create_%s' % random_string()
-        self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        self.jenkins.create_job(job_name, EMPTY_JOB)
         self.assertJobIsPresent(job_name)
 
     def test_enable_disable_job(self):
         job_name = 'create_%s' % random_string()
-        self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        self.jenkins.create_job(job_name, EMPTY_JOB)
         self.assertJobIsPresent(job_name)
 
         j = self.jenkins[job_name]
@@ -29,20 +31,20 @@ class JobTests(BaseSystemTest):
 
     def test_get_job_and_update_config(self):
         job_name = 'config_%s' % random_string()
-        self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        self.jenkins.create_job(job_name, EMPTY_JOB)
         self.assertJobIsPresent(job_name)
         config = self.jenkins[job_name].get_config()
-        self.assertEquals(config.strip(), EMPTY_JOB_CONFIG.strip())
-        self.jenkins[job_name].update_config(EMPTY_JOB_CONFIG)
+        self.assertEquals(config.strip(), EMPTY_JOB.strip())
+        self.jenkins[job_name].update_config(EMPTY_JOB)
 
     def test_invoke_job(self):
         job_name = 'create_%s' % random_string()
-        job = self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        job = self.jenkins.create_job(job_name, EMPTY_JOB)
         job.invoke()
 
     def test_invocation_object(self):
         job_name = 'create_%s' % random_string()
-        job = self.jenkins.create_job(job_name, EMPTY_JOB_CONFIG)
+        job = self.jenkins.create_job(job_name, EMPTY_JOB)
         ii = job.invoke()
         self.assertIsInstance(ii, Invocation)
 
