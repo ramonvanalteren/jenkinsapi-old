@@ -1,5 +1,6 @@
 import time
-from jenkinsapi.exceptions import UnknownQueueItem
+import datetime
+from jenkinsapi.exceptions import UnknownQueueItem, TimeOut
 
 class Invocation(object):
     """
@@ -51,43 +52,52 @@ class Invocation(object):
     def get_build(self):
         return self.job[self.get_build_number()]
 
-    def block_until_not_queued(self):
+    def block_until_not_queued(self, timeout, delay):
+        self.__block(lambda : self.is_queued(), False, timeout, delay )
+
+    def block_until_completed(self, timeout, delay):
+        self.__block(lambda : self.is_running(), False, timeout, delay )
+
+    @staticmethod
+    def __block(fn, expectation, timeout, delay=2):
+        startTime = datetime.datetime.now()
+        endTime = startTime + datetime.timedelta(seconds=timeout)
         while True:
-            if not self.is_queued():
+            if fn() == expectation:
                 break
-            time.sleep(0.5)
+            else:
+                time.sleep(delay)
+            if datetime.datetime.now() > endTime:
+                raise TimeOut()
 
 
-    def block(self, until='completed'):
+    def block(self, until='completed', timeout=200, delay=2):
         """
         Block this item until a condition is met.
         Setting until to 'running' blocks the item until it is running (i.e. it's no longer queued)
         """
         assert until in ['completed', 'not_queued'], 'Unknown block condition: %s' % until
-        self.block_until_not_queued()
+        self.block_until_not_queued(timeout, delay)
         if until=='completed':
-            self.block_until_completed()
+            self.block_until_completed(timeout, delay)
 
     def stop(self):
         """
         Stop this item, whether it is on the queue or blocked.
         """
+        self.get_build().stop()
 
     def is_queued(self):
         """
         Returns True if this item is on the queue
         """
-
-        import ipdb
-        ipdb.set_trace
-
-        return True
+        return self.job.is_queued()
 
     def is_running(self):
         """
         Returns True if this item is executing now
         """
-        return True
+        return self.get_build().is_running()
 
     def is_queued_or_running(self):
         return self.is_queued() or self.is_running()
@@ -97,9 +107,4 @@ class Invocation(object):
         If the item is queued it will return that QueueItem, otherwise it will
         raise an exception.
         """
-
-    def get_build(self):
-        """
-        If the item is building it will return a Build object, otherwise it will
-        raise an exception.
-        """
+        return self.queue_item
