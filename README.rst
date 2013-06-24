@@ -21,6 +21,11 @@ This library can help you:
  * Ability to add/remove/query Jenkins slaves
  * Ability to add/remove/modify Jenkins views
 
+Getting Help
+------------
+
+If you need to ask for help or report a bug, please use the github issue tracker. Please do not email the developers directly.
+
 Supporting this project
 -----------------------
 
@@ -93,6 +98,8 @@ Project Authors
  * William Zhang (jollychang@douban.com)
  * Victor Garcia (bravejolie@gmail.com)
  * Bradley Harris (bradley@ninelb.com)
+
+PLEASE do not use these email addresses for support, use github's issue tracker.
 
 License
 --------
