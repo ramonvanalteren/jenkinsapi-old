@@ -1,26 +1,6 @@
 import unittest
+from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi.jenkins import Jenkins
-
-
-EMPTY_JOB_CONFIG = '''\
-<?xml version='1.0' encoding='UTF-8'?>
-<project>
-  <actions/>
-  <description></description>
-  <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.scm.NullSCM"/>
-  <canRoam>true</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector"/>
-  <concurrentBuild>false</concurrentBuild>
-  <builders/>
-  <publishers/>
-  <buildWrappers/>
-</project>
-'''
 
 
 class BaseSystemTest(unittest.TestCase):
@@ -43,7 +23,7 @@ class BaseSystemTest(unittest.TestCase):
         for name in all_view_names:
             del self.jenkins.views()[name]
 
-    def _create_job(self, name='whatever', config=EMPTY_JOB_CONFIG):
+    def _create_job(self, name='whatever', config=EMPTY_JOB):
         job = self.jenkins.create_job(name, config)
         self.jenkins.poll()
         return job
