@@ -1,6 +1,6 @@
 import os
 import time
-import urllib
+import requests
 import Queue
 import shutil
 import logging
@@ -80,7 +80,10 @@ class JenkinsLancher(object):
             log.info("Plugins will be installed in '%s'" % plugin_dir)
             # FIXME: This is kinda ugly but works
             filename = "plugin_%s.hpi" % i
-            urllib.urlretrieve(url, os.path.join(plugin_dir, filename))
+            plugin_path = os.path.join(plugin_dir, filename)
+            with open(plugin_path, 'wb') as h:
+                request = requests.get(url)
+                h.write(request.content)
         log.info("Restarting Jenkins after installing the plugins")
         self.jenkins_process.terminate()
         self.jenkins_process.wait()

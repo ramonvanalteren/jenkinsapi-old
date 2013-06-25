@@ -22,8 +22,7 @@ class TestSCMGIT(BaseSystemTest):
         ii = job.invoke()
         ii.block(until='completed')
         self.assertFalse(ii.is_running())
-        bn = ii.get_build_number()
-        b = job.get_build(bn)
+        b = ii.get_build()
         self.assertIsInstance(b.get_revision(), basestring)
 
 if __name__ == '__main__':
