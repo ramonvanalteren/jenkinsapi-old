@@ -87,15 +87,6 @@ class Jenkins(JenkinsBase):
         for info in self._data["jobs"]:
             yield info["url"], info["name"]
 
-    def get_jobs_list(self):
-        """
-        return jobs dict,'name:url'
-        """
-        jobs = []
-        for info in self._data["jobs"]:
-            jobs.append(info["name"])
-        return jobs
-
     def get_job(self, jobname):
         """
         Get a job by name
@@ -204,6 +195,9 @@ class Jenkins(JenkinsBase):
     def keys(self):
         return [ a for a in self.iterkeys() ]
 
+    # This is a function alias we retain for historical compatibility
+    get_jobs_list = keys
+
     def __str__(self):
         return "Jenkins server at %s" % self.baseurl
 
@@ -221,9 +215,9 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        for name, job in self.get_jobs():
-            if name == jobname:
-                return job
+        for info in self._data["jobs"]:
+            if info["name"] == jobname:
+                return Job(info["url"], info["name"], jenkins_obj=self)
         raise UnknownJob(jobname)
 
     def __contains__(self, jobname):
