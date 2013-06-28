@@ -114,6 +114,8 @@ class Jenkins(JenkinsBase):
             return self[jobname]
 
         params = {'name': jobname}
+        if isinstance(config, unicode):
+            config = str(config)
         self.requester.post_xml_and_confirm_status(self.get_create_url(), data=config, params=params)
         self.poll()
         if not self.has_job(jobname):
