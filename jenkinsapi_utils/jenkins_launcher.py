@@ -1,13 +1,17 @@
 import os
 import time
-import requests
 import Queue
 import shutil
 import logging
+import datetime
 import tempfile
+import requests
 import threading
 import subprocess
 import pkg_resources
+
+from jenkinsapi.jenkins import Jenkins
+from jenkinsapi.exceptions import JenkinsAPIException
 
 log = logging.getLogger(__name__)
 
@@ -95,7 +99,21 @@ class JenkinsLancher(object):
         self.jenkins_process.wait()
         shutil.rmtree(self.jenkins_home)
 
-    def start(self, timeout=30):
+    def block_until_jenkins_ready(self, timeout):
+        start_time = datetime.datetime.now()
+        timeout_time = start_time + datetime.timedelta(seconds=timeout)
+
+        while True:
+            try:
+                Jenkins('http://localhost:8080')
+                log.info('Jenkins is finally ready for use.')
+            except JenkinsAPIException:
+                log.info('Jenkins is not yet ready...')
+            if datetime.datetime.now() > timeout_time:
+                raise TimeOut('Took too long for Jenkins to become ready...')
+            time.sleep(5)
+
+    def start(self, timeout=60):
         self.update_war()
         self.update_config()
 
@@ -138,6 +156,8 @@ class JenkinsLancher(object):
                         return
                 else:
                     log.warn('Stream %s has terminated', streamName)
+
+        self.block_until_jenkins_ready(timeout)
 
 
 if __name__ == '__main__':
