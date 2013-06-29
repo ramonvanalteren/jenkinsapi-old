@@ -59,7 +59,7 @@ class JenkinsBase(object):
             return eval(response.text)
         except Exception:
             log.exception('Inappropriate content found at %s', url)
-            raise JenkinsAPIException('Cannot parse %s' % url)
+            raise JenkinsAPIException('Cannot parse %s' % response.content)
 
     @classmethod
     def python_api_url(cls, url):

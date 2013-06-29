@@ -21,6 +21,15 @@ This library can help you:
  * Ability to add/remove/query Jenkins slaves
  * Ability to add/remove/modify Jenkins views
 
+A word from our sponsors
+------------------------
+
+A big thanks to CloudBees, who provide this project with free continuous-integration services. Go check out
+the status of this project on one of their servers. Literally nobody knows more about Jenkins than
+CloudBees.
+
+https://jenkinsapi.ci.cloudbees.com/
+
 Getting Help
 ------------
 

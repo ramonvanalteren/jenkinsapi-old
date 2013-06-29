@@ -3,10 +3,15 @@ import time
 import Queue
 import shutil
 import logging
+import datetime
 import tempfile
+import requests
 import threading
 import subprocess
 import pkg_resources
+
+from jenkinsapi.jenkins import Jenkins
+from jenkinsapi.exceptions import JenkinsAPIException
 
 log = logging.getLogger(__name__)
 
@@ -69,13 +74,46 @@ class JenkinsLancher(object):
         config_source = pkg_resources.resource_string('jenkinsapi_tests.systests', 'config.xml')
         config_dest_file.write(config_source.encode('UTF-8'))
 
+    def install_plugin(self, hpi_url):
+        plugin_dir = os.path.join(self.jenkins_home, 'plugins')
+        if not os.path.exists(plugin_dir):
+            os.mkdir(plugin_dir)
+        hpi_url = [hpi_url] if isinstance(hpi_url, basestring) else hpi_url
+        for i,url in enumerate(hpi_url):
+            log.info("Downloading %s", url)
+            log.info("Plugins will be installed in '%s'" % plugin_dir)
+            # FIXME: This is kinda ugly but works
+            filename = "plugin_%s.hpi" % i
+            plugin_path = os.path.join(plugin_dir, filename)
+            with open(plugin_path, 'wb') as h:
+                request = requests.get(url)
+                h.write(request.content)
+        log.info("Restarting Jenkins after installing the plugins")
+        self.jenkins_process.terminate()
+        self.jenkins_process.wait()
+        self.start()
+
     def stop(self):
         log.info("Shutting down jenkins.")
         self.jenkins_process.terminate()
         self.jenkins_process.wait()
         shutil.rmtree(self.jenkins_home)
 
-    def start(self, timeout=30):
+    def block_until_jenkins_ready(self, timeout):
+        start_time = datetime.datetime.now()
+        timeout_time = start_time + datetime.timedelta(seconds=timeout)
+
+        while True:
+            try:
+                Jenkins('http://localhost:8080')
+                log.info('Jenkins is finally ready for use.')
+            except JenkinsAPIException:
+                log.info('Jenkins is not yet ready...')
+            if datetime.datetime.now() > timeout_time:
+                raise TimeOut('Took too long for Jenkins to become ready...')
+            time.sleep(5)
+
+    def start(self, timeout=60):
         self.update_war()
         self.update_config()
 
@@ -118,6 +156,8 @@ class JenkinsLancher(object):
                         return
                 else:
                     log.warn('Stream %s has terminated', streamName)
+
+        self.block_until_jenkins_ready(timeout)
 
 
 if __name__ == '__main__':
