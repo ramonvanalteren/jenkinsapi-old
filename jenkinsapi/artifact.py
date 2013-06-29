@@ -8,7 +8,6 @@ This module provides a class called Artifact which allows you to download object
 and also access them as a stream.
 """
 from __future__ import with_statement
-import urllib
 import os
 import logging
 import hashlib
