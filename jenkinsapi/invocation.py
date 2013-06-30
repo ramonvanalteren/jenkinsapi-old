@@ -96,8 +96,14 @@ class Invocation(object):
     def is_running(self):
         """
         Returns True if this item is executing now
+        Returns False if this item has completed
+        or has not yet executed.
         """
-        return self.get_build().is_running()
+        try:
+            return self.get_build().is_running()
+        except KeyError:
+            # This item has not yet executed
+            return False
 
     def is_queued_or_running(self):
         return self.is_queued() or self.is_running()
