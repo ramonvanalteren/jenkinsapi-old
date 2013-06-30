@@ -142,12 +142,13 @@ JOB_WITH_ARTIFACTS = """
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ping -c 5 localhost | tee out.txt</command>
+      <command>ping -c 5 localhost | tee out.txt
+gzip &lt; out.txt &gt; out.gz</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>*.txt</artifacts>
+      <artifacts>*.txt,*.gz</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Fingerprinter>

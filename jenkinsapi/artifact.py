@@ -7,13 +7,12 @@ artifacts associated with it.
 This module provides a class called Artifact which allows you to download objects from the server
 and also access them as a stream.
 """
-from __future__ import with_statement
 import os
 import logging
 import hashlib
 
-from jenkinsapi.exceptions import ArtifactBroken
 from jenkinsapi.fingerprint import Fingerprint
+from jenkinsapi.exceptions import ArtifactBroken
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +65,7 @@ class Artifact(object):
         Grab the text of the artifact
         """
         response = self.get_jenkins_obj().requester.get_and_confirm_status(self.url)
-        return response.text
+        return response.content
 
     def _do_download(self, fspath):
         """
