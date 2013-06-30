@@ -74,8 +74,9 @@ SCM_GIT_JOB = """
 <project>
   <actions/>
   <description></description>
+  <keepDependencies>false</keepDependencies>
   <properties/>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+  <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -108,7 +109,7 @@ SCM_GIT_JOB = """
     <excludedUsers></excludedUsers>
     <gitConfigName></gitConfigName>
     <gitConfigEmail></gitConfigEmail>
-    <skipTag>false</skipTag>
+    <skipTag>true</skipTag>
     <includedRegions></includedRegions>
     <scmName></scmName>
   </scm>
@@ -116,15 +117,12 @@ SCM_GIT_JOB = """
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <builders>
-    <hudson.tasks.Shell>
-      <command>ping -c 10 localhost</command>
-    </hudson.tasks.Shell>
-  </builders>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders/>
   <publishers/>
   <buildWrappers/>
-</project>
-"""
+</project>""".strip()
 
 JOB_WITH_ARTIFACTS = """
 <?xml version='1.0' encoding='UTF-8'?>
