@@ -53,12 +53,13 @@ class JenkinsLancher(object):
     """
     JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
-    def __init__(self, war_path):
+    def __init__(self, war_path, plugin_urls=None):
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
         self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
         self.jenkins_process = None
         self.q = Queue.Queue()
+        self.plugin_urls = plugin_urls or []
 
     def update_war(self):
         os.chdir(self.war_directory)
@@ -74,24 +75,23 @@ class JenkinsLancher(object):
         config_source = pkg_resources.resource_string('jenkinsapi_tests.systests', 'config.xml')
         config_dest_file.write(config_source.encode('UTF-8'))
 
-    def install_plugin(self, hpi_url):
+    def install_plugins(self):
+        for i, url in enumerate(self.plugin_urls):
+            self.install_plugin(url, i)
+
+    def install_plugin(self, hpi_url, i):
         plugin_dir = os.path.join(self.jenkins_home, 'plugins')
         if not os.path.exists(plugin_dir):
             os.mkdir(plugin_dir)
-        hpi_url = [hpi_url] if isinstance(hpi_url, basestring) else hpi_url
-        for i,url in enumerate(hpi_url):
-            log.info("Downloading %s", url)
-            log.info("Plugins will be installed in '%s'" % plugin_dir)
-            # FIXME: This is kinda ugly but works
-            filename = "plugin_%s.hpi" % i
-            plugin_path = os.path.join(plugin_dir, filename)
-            with open(plugin_path, 'wb') as h:
-                request = requests.get(url)
-                h.write(request.content)
-        log.info("Restarting Jenkins after installing the plugins")
-        self.jenkins_process.terminate()
-        self.jenkins_process.wait()
-        self.start()
+        
+        log.info("Downloading %s", hpi_url)
+        log.info("Plugins will be installed in '%s'" % plugin_dir)
+        # FIXME: This is kinda ugly but works
+        filename = "plugin_%s.hpi" % i
+        plugin_path = os.path.join(plugin_dir, filename)
+        with open(plugin_path, 'wb') as h:
+            request = requests.get(hpi_url)
+            h.write(request.content)    
 
     def stop(self):
         log.info("Shutting down jenkins.")
@@ -116,6 +116,7 @@ class JenkinsLancher(object):
     def start(self, timeout=60):
         self.update_war()
         self.update_config()
+        self.install_plugins()
 
         os.environ['JENKINS_HOME'] = self.jenkins_home
         os.chdir(self.war_directory)
@@ -167,7 +168,8 @@ if __name__ == '__main__':
     log.info("Hello!")
 
     jl = JenkinsLancher(
-        '/home/sal/workspace/jenkinsapi/src/jenkinsapi_tests/systests/jenkins.war')
+        '/home/sal/workspace/jenkinsapi/src/jenkinsapi_tests/systests/jenkins.war'
+        )
     jl.start()
     log.info("Jenkins was launched...")
 
