@@ -6,7 +6,7 @@ from jenkinsapi.build import Build
 from jenkinsapi.invocation import Invocation
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
-from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB, SHORTISH_JOB
+from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB, SHORTISH_JOB, EMPTY_JOB
 
 
 class TestInvocation(BaseSystemTest):
@@ -38,6 +38,23 @@ class TestInvocation(BaseSystemTest):
         ii = job.invoke()
         ii.block(until='completed')
         self.assertFalse(ii.is_running())
+
+    def test_multiple_invocations_and_get_last_build(self):
+        job_name = 'create_%s' % random_string()
+
+        job = self.jenkins.create_job(job_name, EMPTY_JOB)
+
+        for _ in range(3):
+            ii = job.invoke()
+            ii.block(until='completed')
+
+        build_number = job.get_last_buildnumber()
+        self.assertEquals(build_number, 3)
+
+        build = job.get_build(build_number)
+        self.assertIsInstance(build, Build)
+
+
 
 if __name__ == '__main__':
     unittest.main()
