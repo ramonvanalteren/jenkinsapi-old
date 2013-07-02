@@ -84,6 +84,7 @@ class View(JenkinsBase):
                         (str_job_name, self.name))
                 return False
             elif not self.get_jenkins_obj().has_job(str_job_name):
+                print self.get_jenkins_obj()._data
                 log.error('Job "%s" is not known to Jenkins' % str_job_name)
                 return False
 
@@ -131,3 +132,6 @@ class View(JenkinsBase):
 
     def get_nested_view_dict(self):
         return dict( self._get_nested_views() )
+
+    def views(self):
+        return self.jenkins_obj.views()
