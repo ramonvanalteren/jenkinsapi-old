@@ -1,7 +1,8 @@
+from urlparse import urlparse
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.job import Job
-import logging
 import urllib
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -73,23 +74,30 @@ class View(JenkinsBase):
         """
         Add job to a view
 
-        :param str_job_name: name of the job to be added
+        :param job_name: name of the job to be added
         :param job: Job object to be added
         :return: True if job has been added, False if job already exists or
          job not known to Jenkins
         """
         if not job:
             if str_job_name in self.get_job_dict():
-                log.error('Job %s is already in the view %s' %
+                log.warn('Job %s is already in the view %s' %
                         (str_job_name, self.name))
                 return False
-            elif not self.get_jenkins_obj().has_job(str_job_name):
-                print self.get_jenkins_obj()._data
-                log.error('Job "%s" is not known to Jenkins' % str_job_name)
-                return False
+            else:
+                # Since this call can be made from nested view,
+                # which doesn't have any jobs, we can miss existing job
+                # Thus let's create top level Jenkins and ask him
+                # http://jenkins:8080/view/CRT/view/CRT-FB/view/CRT-SCRT-1301/
+                top_jenkins = self.get_jenkins_obj().get_jenkins_obj_from_url(
+                        self.baseurl.split('view/')[0])
+                if not top_jenkins.has_job(str_job_name):
+                    log.error('Job "%s" is not known to Jenkins' % str_job_name)
+                    return False
+                else:
+                    job = top_jenkins.get_job(str_job_name)
 
-            job = self.jenkins_obj.get_job(str_job_name)
-
+        log.info('Creating job %s in view %s' % (str_job_name, self.name))
         jobs = self._data.setdefault('jobs', [])
         data = {
             "description":"",
@@ -113,11 +121,17 @@ class View(JenkinsBase):
             "Submit":"OK",
             }
         data["name"] = self.name
+        # Add existing jobs (if any)
         for job_name in self.get_job_dict().keys():
-            data[job_name]='on'
+            data[job_name] = 'on'
+
+        # Add new job
+        data[job.name] = 'on'
+
         data['json'] = data.copy()
-        self.jenkins_obj.requester.post_and_confirm_status(
-                '%sconfigSubmit' % self.baseurl, urllib.urlencode(data))
+        data = urllib.urlencode(data)
+        self.get_jenkins_obj().requester.post_and_confirm_status(
+                '%s/configSubmit' % self.baseurl, data=data)
         self.poll()
         log.debug('Job "%s" has been added to a view "%s"' %
                      (job.name, self.name))
