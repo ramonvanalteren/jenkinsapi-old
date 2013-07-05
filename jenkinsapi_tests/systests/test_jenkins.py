@@ -2,6 +2,7 @@
 System tests for `jenkinsapi.jenkins` module.
 '''
 import unittest
+from jenkinsapi.job import Job
 from jenkinsapi.invocation import Invocation
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
@@ -79,9 +80,11 @@ class JobTests(BaseSystemTest):
         copied_job_name = 'CPY%s' % random_string()
 
         self._create_job(template_job_name)
-        self.jenkins.copy_job(template_job_name, copied_job_name)
+        j = self.jenkins.copy_job(template_job_name, copied_job_name)
         self.assertJobIsPresent(template_job_name)
         self.assertJobIsPresent(copied_job_name)
+        self.assertIsInstance(j, Job)
+        self.assertEquals(j.name, copied_job_name)
 
 if __name__ == '__main__':
     unittest.main()
