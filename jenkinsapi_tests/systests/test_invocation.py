@@ -32,7 +32,7 @@ class TestInvocation(BaseSystemTest):
         ii.stop()
         self.assertFalse(ii.is_running())
         self.assertIsInstance(ii.get_build().get_console(), str)
-        self.assertIn('Building on master', ii.get_build().get_console())
+        self.assertIn('Started by user', ii.get_build().get_console())
 
     def test_get_block_until_build_complete(self):
         job_name = 'create_%s' % random_string()
