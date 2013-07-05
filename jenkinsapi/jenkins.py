@@ -136,7 +136,7 @@ class Jenkins(JenkinsBase):
             params=params,
             data='')
         self.poll()
-        return self[jobname]
+        return self[newjobname]
 
     def build_job(self, jobname, params={}):
         """

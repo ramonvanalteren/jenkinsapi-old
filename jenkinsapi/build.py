@@ -282,6 +282,13 @@ class Build(JenkinsBase):
         naive_timestamp = datetime.datetime(*time.gmtime(self._data['timestamp']/1000.0)[:6])
         return pytz.utc.localize(naive_timestamp)
 
+    def get_console(self):
+        """
+        Return the current state of the text console.
+        """
+        url = "%s/consoleText" % self.baseurl
+        return self.job.jenkins.requester.get_url(url).content
+
     def stop(self):
         """
         Stops the build execution if it's running
