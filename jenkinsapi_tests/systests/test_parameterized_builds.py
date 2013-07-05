@@ -70,5 +70,7 @@ class TestParameterizedBuilds(BaseSystemTest):
         artB = artifacts['b.txt']
         self.assertTrue(artB.get_data().strip(), param_B)
 
+        self.assertIn(param_B, b.get_console())
+
 if __name__ == '__main__':
     unittest.main()
