@@ -45,7 +45,7 @@ class Views(object):
         else:
             return None
 
-    def __iteritems__(self):
+    def iteritems(self):
         """
         Get the names & objects for all views
         """
