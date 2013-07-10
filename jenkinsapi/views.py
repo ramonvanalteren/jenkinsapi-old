@@ -43,7 +43,7 @@ class Views(object):
                 raise TypeError('Job %s does not exist in Jenkins')
 
     def __getitem__(self, view_name):
-        for row in self.jenkins._data['views']:
+        for row in self.jenkins._data.get('views', []):
             if row['name'] == view_name:
                 return View(
                     row['url'],
@@ -57,7 +57,7 @@ class Views(object):
         Get the names & objects for all views
         """
         self.jenkins.poll()
-        for row in self.jenkins._data['views']:
+        for row in self.jenkins._data.get('views', []):
             name = row['name']
             url = row['url']
 
