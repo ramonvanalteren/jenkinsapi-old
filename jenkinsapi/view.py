@@ -155,4 +155,4 @@ class View(JenkinsBase):
 
     @property
     def views(self):
-        return self.get_jenkins_obj().get_jenkins_obj_from_url(self.baseurl).views()
+        return self.get_jenkins_obj().get_jenkins_obj_from_url(self.baseurl).views
