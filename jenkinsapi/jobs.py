@@ -99,7 +99,7 @@ class Jobs(object):
                   'mode': 'copy',
                   'from': job_name}
 
-        self.requester.post_and_confirm_status(
+        self.jenkins.requester.post_and_confirm_status(
             self.jenkins.get_create_url(),
             params=params,
             data='')
@@ -115,7 +115,7 @@ class Jobs(object):
         """
         params = {'newName': new_job_name}
         rename_job_url = self[job_name].get_rename_url()
-        self.requester.post_and_confirm_status(
+        self.jenkins.requester.post_and_confirm_status(
             rename_job_url, params=params, data='')
         self.jenkins.poll()
         return self[new_job_name]
