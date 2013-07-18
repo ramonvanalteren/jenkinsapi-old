@@ -33,6 +33,9 @@ class Queue(JenkinsBase):
     def keys(self):
         return [i[0] for i in self.iteritems()]
 
+    def values(self):
+        return [i[1] for i in self.iteritems()]
+
     def __len__(self):
         return len(self._data['items'])
 
@@ -53,14 +56,8 @@ class Queue(JenkinsBase):
         self.delete_item_by_id(queue_item.id)
 
     def delete_item_by_id(self, item_id):
-        deleteurl = urlparse.urljoin(self.baseurl,
-                                     'cancelItem?id=%s' % item_id)
-        try:
-            self.post_data(deleteurl, '')
-        except urllib2.HTTPError:
-            # The request doesn't have a response, so it returns 404,
-            # it's the expected behaviour
-            pass
+        deleteurl = '%s/cancelItem?id=%s' % (self.baseurl, item_id)
+        self.get_jenkins_obj().requester.post_url(deleteurl)
 
 
 class QueueItem(object):

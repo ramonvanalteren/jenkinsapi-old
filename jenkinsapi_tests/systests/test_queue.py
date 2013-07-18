@@ -36,6 +36,14 @@ class TestQueue(BaseSystemTest):
         reprString = repr(queue)
         self.assertIn(queue.baseurl, reprString)
 
+        for queueId, item in queue.iteritems():
+            queue.delete_item(item)
+
+        queue.poll()
+
+        self.assertEquals(len(queue), 0)
+
+
     def test_start_and_stop_long_running_job(self):
         job_name = random_string()
         j = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
