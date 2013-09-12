@@ -1,10 +1,13 @@
-import urlparse
+import time
+import pytz
 import urllib2
+import urlparse
+import datetime
 from jenkinsapi.artifact import Artifact
 from jenkinsapi import config
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.exceptions import NoResults, FailedNoResults
-from jenkinsapi.constants import STATUS_FAIL, STATUS_ABORTED, RESULTSTATUS_FAILURE, STATUS_SUCCESS
+from jenkinsapi.exceptions import NoResults
+from jenkinsapi.constants import STATUS_SUCCESS
 from jenkinsapi.result_set import ResultSet
 
 from time import sleep
@@ -29,7 +32,11 @@ class Build(JenkinsBase):
     def __str__(self):
         return self._data['fullDisplayName']
 
-    def id(self):
+    @property
+    def name(self):
+        return str(self)
+
+    def get_number(self):
         return self._data["number"]
 
     def get_status(self):
@@ -46,11 +53,13 @@ class Build(JenkinsBase):
         return maxRevision
 
     def _get_git_rev(self):
-        for item in self._data['actions']:
-            branch = item.get('buildsByBranchName')
-            head = branch and branch.get('origin/HEAD')
-            if head:
-                return head['revision']['SHA1']
+        # Sometimes we have None as part of actions. Filter those actions
+        # which have lastBuiltRevision in them
+        _actions = [x for x in self._data['actions'] if x \
+                        and "lastBuiltRevision" in x]
+        for item in _actions:
+            revision = item["lastBuiltRevision"]["SHA1"]
+            return revision
 
     def _get_hg_rev(self):
         return [x['mercurialNodeName'] for x in self._data['actions'] if 'mercurialNodeName' in x][0]
@@ -60,13 +69,14 @@ class Build(JenkinsBase):
 
     def get_artifacts( self ):
         for afinfo in self._data["artifacts"]:
-            url = "%sartifact/%s" % ( self.baseurl, afinfo["relativePath"] )
+            url = "%s/artifact/%s" % ( self.baseurl, afinfo["relativePath"] )
             af = Artifact( afinfo["fileName"], url, self )
             yield af
-            del af, url
 
     def get_artifact_dict(self):
-        return dict( (a.url[len(a.build.baseurl + "artifact/"):], a) for a in self.get_artifacts() )
+        return dict(
+            (af.filename, af) for af in self.get_artifacts()
+        )
 
     def get_upstream_job_name(self):
         """
@@ -201,12 +211,26 @@ class Build(JenkinsBase):
         except (IndexError, KeyError):
             return None
 
+    def get_matrix_runs(self):
+        """
+        For a matrix job, get the individual builds for each
+        matrix configuration
+        :return: Generator of Build
+        """
+        if "runs" in self._data:
+            for rinfo in self._data["runs"]:
+                yield Build(rinfo["url"], rinfo["number"], self.job)
+
     def is_running( self ):
         """
         Return a bool if running.
         """
         self.poll()
         return self._data["building"]
+
+    def block(self):
+        while self.is_running():
+            time.sleep(1)
 
     def is_good( self ):
         """
@@ -220,7 +244,7 @@ class Build(JenkinsBase):
         count = 0
         while self.is_running():
             total_wait = delay * count
-            log.info("Waited %is for %s #%s to complete" % ( total_wait, self.job.id(), self.id() ) )
+            log.info("Waited %is for %s #%s to complete" % ( total_wait, self.job.name, self.name ) )
             sleep( delay )
             count += 1
 
@@ -261,21 +285,27 @@ class Build(JenkinsBase):
         return all_actions
 
     def get_timestamp(self):
-        return self._data['timestamp']
+        '''
+        Returns build timestamp in UTC
+        '''
+        # Java timestamps are given in miliseconds since the epoch start!
+        naive_timestamp = datetime.datetime(*time.gmtime(self._data['timestamp']/1000.0)[:6])
+        return pytz.utc.localize(naive_timestamp)
+
+    def get_console(self):
+        """
+        Return the current state of the text console.
+        """
+        url = "%s/consoleText" % self.baseurl
+        return self.job.jenkins.requester.get_url(url).content
 
     def stop(self):
         """
         Stops the build execution if it's running
         :return boolean True if succeded False otherwise or the build is not running
         """
-        if not self.is_running():
-            return False
-
-        stopbuildurl = urlparse.urljoin(self.baseurl, 'stop')
-        try:
-            self.post_data(stopbuildurl, '')
-        except urllib2.HTTPError:
-            # The request doesn't have a response, so it returns 404,
-            # it's the expected behaviour
-            pass
-        return True
+        if self.is_running():
+            url = "%s/stop" % self.baseurl
+            self.job.jenkins.requester.post_and_confirm_status(url, data='')
+            return True
+        return False

@@ -1,12 +1,16 @@
-from jenkinsapi.artifact import Artifact
-from jenkinsapi import constants
-from jenkinsapi.jenkins import Jenkins
-from jenkinsapi.exceptions import ArtifactsMissing, TimeOut, BadURL
-from urllib2 import urlparse
-
+"""
+This module is a collection of helpful, high-level functions for automating common tasks.
+Many of these functions were designed to be exposed to the command-line, hence the have simple string arguments.
+"""
 import os
 import time
 import logging
+
+from urllib2 import urlparse
+from jenkinsapi import constants
+from jenkinsapi.jenkins import Jenkins
+from jenkinsapi.artifact import Artifact
+from jenkinsapi.exceptions import ArtifactsMissing, TimeOut, BadURL
 
 log = logging.getLogger(__name__)
 
@@ -118,7 +122,17 @@ def get_view_from_url(url):
         raise BadURL("Cannot parse URL %s" % url)
     jenkinsurl, view_name = matched.groups()
     jenkinsci = Jenkins(jenkinsurl)
-    return jenkinsci.get_view(view_name)
+    return jenkinsci.views[view_name]
+
+def get_nested_view_from_url(url):
+    """
+    Returns View based on provided URL. Convenient for nested views.
+    """
+    matched = constants.RE_SPLIT_VIEW_URL.search(url)
+    if not matched:
+        raise BadURL("Cannot parse URL %s" % url)
+    jenkinsci = Jenkins(matched.group(0))
+    return jenkinsci.get_view_by_url(url)
 
 def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
         """

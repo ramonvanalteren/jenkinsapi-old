@@ -20,6 +20,10 @@ class ResultSet(JenkinsBase):
     def __str__(self):
         return "Test Result for %s" % str( self.build )
 
+    @property
+    def name(self):
+        return str(self)
+
     def keys(self):
         return [ a[0] for a in self.iteritems() ]
 

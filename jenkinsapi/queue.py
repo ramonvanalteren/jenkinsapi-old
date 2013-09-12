@@ -1,4 +1,5 @@
 from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.exceptions import UnknownQueueItem
 import logging
 import urlparse
 import urllib2
@@ -19,10 +20,32 @@ class Queue(JenkinsBase):
         self.jenkins = jenkins_obj
         JenkinsBase.__init__(self, baseurl)
 
+    def __str__(self):
+        return self.baseurl
+
     def get_jenkins_obj(self):
         return self.jenkins
 
-    def get_queue_items(self, job_name = None):
+    def iteritems(self):
+        for item in self._data['items']:
+            yield item['id'], QueueItem(self.jenkins, **item)
+
+    def keys(self):
+        return [i[0] for i in self.iteritems()]
+
+    def values(self):
+        return [i[1] for i in self.iteritems()]
+
+    def __len__(self):
+        return len(self._data['items'])
+
+    def __getitem__(self, item_id):
+        for id, item in self.iteritems():
+            if id == item_id:
+                return item
+        raise UnknownQueueItem(item_id)
+
+    def get_queue_items_for_job(self, job_name):
         if not job_name:
             return [QueueItem(**item) for item in self._data['items']]
         else:
@@ -33,14 +56,8 @@ class Queue(JenkinsBase):
         self.delete_item_by_id(queue_item.id)
 
     def delete_item_by_id(self, item_id):
-        deleteurl = urlparse.urljoin(self.baseurl,
-                                     'cancelItem?id=%s' % item_id)
-        try:
-            self.post_data(deleteurl, '')
-        except urllib2.HTTPError:
-            # The request doesn't have a response, so it returns 404,
-            # it's the expected behaviour
-            pass
+        deleteurl = '%s/cancelItem?id=%s' % (self.baseurl, item_id)
+        self.get_jenkins_obj().requester.post_url(deleteurl)
 
 
 class QueueItem(object):
@@ -49,7 +66,21 @@ class QueueItem(object):
     those changes
     """
 
-    def __init__(self, **kwargs):
-        for arg in kwargs:
-            setattr(self, arg, kwargs[arg])
+    def __init__(self, jenkins, **kwargs):
+        self.jenkins = jenkins
+        self.__dict__.update(kwargs)
 
+    def get_job(self):
+        """
+        Return the job associated with this queue item
+        """
+        return self.jenkins[self.task['name']]
+
+    def __repr__(self):
+        return "<%s.%s %s>" % (
+                    self.__class__.__module__,
+                    self.__class__.__name__,
+                    str(self))
+
+    def __str__(self):
+        return "%s #%i" % (self.task['name'], self.id)

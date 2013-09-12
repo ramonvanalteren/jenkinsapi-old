@@ -1,53 +1,65 @@
-import urllib2
 import logging
-import pprint
 from jenkinsapi import config
-from jenkinsapi.utils.retry import retry_function
-
+from jenkinsapi.exceptions import JenkinsAPIException
 log = logging.getLogger(__name__)
 
 class JenkinsBase(object):
     """
     This appears to be the base object that all other jenkins objects are inherited from
     """
-    RETRY_ATTEMPTS = 5
+    RETRY_ATTEMPTS = 1
 
     def __repr__(self):
         return """<%s.%s %s>""" % (self.__class__.__module__,
                                    self.__class__.__name__,
                                    str( self ))
 
-    def print_data(self):
-        pprint.pprint(self._data)
-
     def __str__(self):
-        raise NotImplemented
+        raise NotImplementedError
 
-    def __init__(self, baseurl, poll=True, formauth=False, krbauth=False):
+    def __init__(self, baseurl, poll=True):
         """
         Initialize a jenkins connection
         """
-        self.baseurl = baseurl
-        self.formauth = formauth
-        self.krbauth = krbauth
-        if poll and not self.formauth:
-            try:
-                self.poll()
-            except urllib2.HTTPError, hte:
-                log.exception(hte)
-                log.warn( "Failed to connect to %s" % baseurl )
-                raise
+        self._data = None
+        self.baseurl = self.strip_trailing_slash(baseurl)
+        if poll:
+            self.poll()
+
+    def get_jenkins_obj(self):
+        raise NotImplementedError('Please implement this method on %s' % self.__class__.__name__)
+
+    def __eq__(self, other):
+        """
+        Return true if the other object represents a connection to the same server
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        if not other.baseurl == self.baseurl:
+            return False
+        return True
+
+    @classmethod
+    def strip_trailing_slash(cls, url):
+        while url.endswith('/'):
+            url = url[:-1]
+        return url
 
     def poll(self):
         self._data = self._poll()
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
-        return retry_function(self.RETRY_ATTEMPTS , self.get_data, url)
+        return self.get_data(url)
 
-    def get_jenkins_obj(self):
-        """Not implemented, abstract method implemented by child classes"""
-        raise NotImplemented("Abstract method, implemented by child classes")
+    def get_data(self, url):
+        requester = self.get_jenkins_obj().requester
+        response = requester.get_url(url)
+        try:
+            return eval(response.text)
+        except Exception:
+            log.exception('Inappropriate content found at %s', url)
+            raise JenkinsAPIException('Cannot parse %s' % response.content)
 
     @classmethod
     def python_api_url(cls, url):
@@ -59,40 +71,3 @@ class JenkinsBase(object):
             else:
                 fmt = "%s/%s"
             return fmt % (url, config.JENKINS_API)
-
-    def get_data(self, url):
-        """
-        Find out how to connect, and then grab the data.
-        """
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen(url)
-            result = eval(stream.read())
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise
-            log.warn("Error reading %s" % url)
-            log.exception(e)
-            raise
-        return result
-
-    def post_data(self, url, content):
-        try:
-            urlopen = self.get_jenkins_obj().get_opener()
-            result = urlopen(url, data=content).read().strip()
-        except urllib2.HTTPError, e:
-            log.warn("Error post data %s" % url)
-            log.exception(e)
-            raise
-        return result
-
-    def hit_url(self, url ):
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen( url )
-            html_result = stream.read()
-        except urllib2.HTTPError, e:
-            log.debug( "Error reading %s" % url )
-            log.exception(e)
-            raise
-        return html_result

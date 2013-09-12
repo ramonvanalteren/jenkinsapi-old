@@ -1,0 +1,16 @@
+## Custom test configuration for CircleCI
+machine:
+
+  timezone:
+    Europe/London # Set the timezone
+
+## Customize dependencies
+dependencies:
+  post:
+    - python setup.py test --dry-run
+    - easy_install coverage
+
+## Customize test commands
+test:
+  override:
+    - nosetests jenkinsapi_tests --with-coverage --cover-html --with-xunit

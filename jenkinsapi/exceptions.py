@@ -1,34 +1,61 @@
-class ArtifactsMissing(Exception):
+class JenkinsAPIException(Exception):
+    """
+    Base class for all errors
+    """
+
+class NotFound(JenkinsAPIException):
+    """
+    Resource cannot be found
+    """
+
+class ArtifactsMissing(NotFound):
     """
     Cannot find a build with all of the required artifacts.
     """
 
-class UnknownJob( KeyError ):
+class UnknownJob( KeyError, NotFound):
     """
     Jenkins does not recognize the job requested.
     """
 
-class ArtifactBroken(Exception):
+class UnknownView( KeyError, NotFound):
     """
-    An artifact is broken, wrong
-    """
-
-class TimeOut( Exception ):
-    """
-    Some jobs have taken too long to complete.
+    Jenkins does not recognize the view requested.
     """
 
-class WillNotBuild(Exception):
+class UnknownNode( KeyError, NotFound):
     """
-    Cannot trigger a new build.
+    Jenkins does not recognize the node requested.
     """
 
-class NoBuildData(Exception):
+class UnknownQueueItem( KeyError, NotFound):
+    """
+    Jenkins does not recognize the requested queue item
+    """
+
+class NoBuildData(NotFound):
     """
     A job has no build data.
     """
 
-class NoResults(Exception):
+class ArtifactBroken(JenkinsAPIException):
+    """
+    An artifact is broken, wrong
+    """
+
+class TimeOut( JenkinsAPIException ):
+    """
+    Some jobs have taken too long to complete.
+    """
+
+class WillNotBuild(JenkinsAPIException):
+    """
+    Cannot trigger a new build.
+    """
+
+
+
+class NoResults(JenkinsAPIException):
     """
     A build did not publish any results.
     """
@@ -38,30 +65,27 @@ class FailedNoResults(NoResults):
     A build did not publish any results because it failed
     """
 
-class BadURL(ValueError):
+class BadURL(ValueError,JenkinsAPIException):
     """
     A URL appears to be broken
     """
 
-class NotFound(Exception):
-    """
-    Resource cannot be found
-    """
 
-class NotAuthorized(Exception):
+
+class NotAuthorized(JenkinsAPIException):
     """Not Authorized to access resource"""
     # Usually thrown when we get a 403 returned
 
-class NotSupportSCM(Exception):
+class NotSupportSCM(JenkinsAPIException):
     """
     It's a SCM that does not supported by current version of jenkinsapi
     """
 
-class NotConfiguredSCM(Exception):
+class NotConfiguredSCM(JenkinsAPIException):
     """
     It's a job that doesn't have configured SCM
     """
-class NotInQueue(Exception):
+class NotInQueue(JenkinsAPIException):
     """
     It's a job that is not in the queue
     """
