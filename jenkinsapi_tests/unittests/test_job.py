@@ -24,7 +24,7 @@ class TestJob(unittest.TestCase):
                              "iconUrl": "health-80plus.png", "score": 100}],
             "inQueue": False,
             "keepDependencies": False,
-            "lastBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
+            "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"}, # build running
             "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
             "lastFailedBuild": None,
             "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -120,7 +120,7 @@ class TestJob(unittest.TestCase):
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_buildnumber(self):
         ret = self.j.get_last_buildnumber()
-        self.assertEquals(ret, 3)
+        self.assertEquals(ret, 4)
 
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_completed_buildnumber(self):
@@ -130,7 +130,7 @@ class TestJob(unittest.TestCase):
     def test_get_build_dict(self):
         ret = self.j.get_build_dict()
         self.assertTrue(isinstance(ret, dict))
-        self.assertEquals(len(ret), 3)
+        self.assertEquals(len(ret), 4)
 
     @mock.patch.object(Job, '_poll')
     def test_nobuilds_get_build_dict(self, _poll):
@@ -146,7 +146,7 @@ class TestJob(unittest.TestCase):
         # So we convert result to a list
         ret = list(self.j.get_build_ids())
         self.assertTrue(isinstance(ret, list))
-        self.assertEquals(len(ret), 3)
+        self.assertEquals(len(ret), 4)
 
     @mock.patch.object(Job, '_poll')
     def test_nobuilds_get_revision_dict(self, _poll):
