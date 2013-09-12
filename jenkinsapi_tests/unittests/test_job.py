@@ -1,6 +1,7 @@
 import mock
 import unittest
 
+from jenkinsapi import config
 from jenkinsapi.job import Job
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.exceptions import NoBuildData
@@ -38,7 +39,7 @@ class TestJob(unittest.TestCase):
             "scm": {},
             "upstreamProjects": []}
 
-    URL_DATA = {'http://halob:8080/job/foo/api/python/':JOB_DATA}
+    URL_DATA = {'http://halob:8080/job/foo/%s' % config.JENKINS_API:JOB_DATA}
 
     def fakeGetData(self, url, *args):
         try:
