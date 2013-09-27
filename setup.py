@@ -33,6 +33,7 @@ setup(name=PROJECT_NAME.lower(),
       url=PROJECT_URL,
       description=SHORT_DESCRIPTION,
       long_description=DESCRIPTION,
+      license='MIT',
       classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
