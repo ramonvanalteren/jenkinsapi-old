@@ -28,7 +28,7 @@ class Build(JenkinsBase):
         self.buildno = buildno
         self.job = job
         JenkinsBase.__init__( self, url )
-        
+
     def _poll(self):
         #For build's we need more information for downstream and upstream builds
         #so we override the poll to get at the extra data for build objects
@@ -177,7 +177,7 @@ class Build(JenkinsBase):
                 downstream_jobs.append(self.get_jenkins_obj().get_job(job_name))
             return downstream_jobs
         except (IndexError, KeyError):
-            return None
+            return []
 
     def get_downstream_job_names(self):
         """
@@ -194,7 +194,7 @@ class Build(JenkinsBase):
                         downstream_names.append(job_usage['name'])
             return downstream_names
         except (IndexError, KeyError):
-            return None
+            return []
 
     def get_downstream_builds(self):
         """
@@ -215,7 +215,7 @@ class Build(JenkinsBase):
                                 downstream_builds.append(job.get_build(build_id))
             return downstream_builds
         except (IndexError, KeyError):
-            return None
+            return []
 
     def get_matrix_runs(self):
         """
