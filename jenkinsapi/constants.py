@@ -1,3 +1,7 @@
+"""
+Constants for jenkinsapi
+"""
+
 import re
 
 STATUS_FAIL = "FAIL"

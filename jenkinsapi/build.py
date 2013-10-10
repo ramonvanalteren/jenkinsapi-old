@@ -1,3 +1,7 @@
+"""
+Build API methods
+"""
+
 import time
 import pytz
 import datetime
