@@ -43,10 +43,11 @@ class Queue(JenkinsBase):
         return len(self._data['items'])
 
     def __getitem__(self, item_id):
-        for id, item in self.iteritems():
-            if id == item_id:
-                return item
-        raise UnknownQueueItem(item_id)
+        self_as_dict = dict(self.iteritems())
+        if item_id in self_as_dict:
+            return self_as_dict[item_id]
+        else:
+            raise UnknownQueueItem(item_id)
 
     def get_queue_items_for_job(self, job_name):
         if not job_name:
