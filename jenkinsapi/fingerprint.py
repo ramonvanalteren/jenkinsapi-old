@@ -19,19 +19,20 @@ class Fingerprint(JenkinsBase):
     """
     RE_MD5 = re.compile("^([0-9a-z]{32})$")
 
-    def __init__(self, baseurl, id, jenkins_obj):
+    def __init__(self, baseurl, id_, jenkins_obj):
         logging.basicConfig()
         self.jenkins_obj = jenkins_obj
-        assert self.RE_MD5.search(id), "%s does not look like a valid id" % id
-        url = "%s/fingerprint/%s/" % (baseurl, id)
+        assert self.RE_MD5.search(id_), "%s does not look like a valid id" % id_
+        url = "%s/fingerprint/%s/" % (baseurl, id_)
         JenkinsBase.__init__(self, url, poll=False)
-        self.id = id
+        self.id_ = id_
+        self.unknown = False  # Previously uninitialized in ctor
 
     def get_jenkins_obj(self):
         return self.jenkins_obj
 
     def __str__(self):
-        return self.id
+        return self.id_
 
     def valid(self):
         """
@@ -82,9 +83,9 @@ class Fingerprint(JenkinsBase):
         try:
             assert self.valid()
         except AssertionError:
-            raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (self.id, self.baseurl))
+            raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (self.id_, self.baseurl))
         except urllib2.HTTPError:
-            raise ArtifactBroken("Unable to validate artifact id %s using %s" % (self.id, self.baseurl))
+            raise ArtifactBroken("Unable to validate artifact id %s using %s" % (self.id_, self.baseurl))
         return True
 
     def get_info(self):
