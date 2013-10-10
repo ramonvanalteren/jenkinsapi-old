@@ -174,14 +174,13 @@ def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
 
 def search_artifact_by_regexp(jenkinsurl, jobid, artifactRegExp):
     '''
+    Search the entire history of a hudson job for a build which has an artifact whose
+    name matches a supplied regular expression. Return only that artifact.
+
     @param jenkinsurl: The base URL of the jenkins server
     @param jobid: The name of the job we are to search through
     @param artifactRegExp: A compiled regular expression object (not a re-string)
     '''
-    """
-    Search the entire history of a hudson job for a build which has an artifact whose
-    name matches a supplied regular expression. Return only that artifact.
-    """
     J = Jenkins(jenkinsurl)
     j = J[jobid]
 
