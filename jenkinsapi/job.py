@@ -193,8 +193,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return invocation
 
     def _buildid_for_type(self, buildtype):
-        self.poll()
         """Gets a buildid for a given type of build"""
+        self.poll()
         KNOWNBUILDTYPES = [
             "lastSuccessfulBuild",
             "lastBuild",
