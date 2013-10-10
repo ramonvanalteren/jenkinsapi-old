@@ -33,11 +33,19 @@ class Queue(JenkinsBase):
         for item in self._data['items']:
             yield item['id'], QueueItem(self.jenkins, **item)
 
+    def iterkeys(self):
+        for item in self._data['items']:
+            yield item['id']
+
+    def iterivalues(self):
+        for item in self._data['items']:
+            yield QueueItem(self.jenkins, **item)
+
     def keys(self):
-        return [i[0] for i in self.iteritems()]
+        return list(self.iterkeys())
 
     def values(self):
-        return [i[1] for i in self.iteritems()]
+        return list(self.itervalues())
 
     def __len__(self):
         return len(self._data['items'])
