@@ -149,14 +149,14 @@ class Jenkins(JenkinsBase):
         self.poll()
         return self[newjobname]
 
-    def build_job(self, jobname, params={}):
+    def build_job(self, jobname, params=None):
         """
         Invoke a build by job name
         :param jobname: name of exist job, str
         :param params: the job params, dict
         :return: none
         """
-        self[jobname].invoke(build_params=params)
+        self[jobname].invoke(build_params=params or {})
         return
 
     def delete_job(self, jobname):
