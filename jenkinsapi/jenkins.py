@@ -112,7 +112,7 @@ class Jenkins(JenkinsBase):
         """
         return jobname in self
 
-    def create_job(self, jobname, config):
+    def create_job(self, jobname, config_):
         """
         Create a job
         :param jobname: name of new job, str
@@ -123,9 +123,9 @@ class Jenkins(JenkinsBase):
             return self[jobname]
 
         params = {'name': jobname}
-        if isinstance(config, unicode):
-            config = str(config)
-        self.requester.post_xml_and_confirm_status(self.get_create_url(), data=config, params=params)
+        if isinstance(config_, unicode):
+            config_ = str(config_)
+        self.requester.post_xml_and_confirm_status(self.get_create_url(), data=config_, params=params)
         self.poll()
         if not self.has_job(jobname):
             raise JenkinsAPIException('Cannot create job %s' % jobname)
