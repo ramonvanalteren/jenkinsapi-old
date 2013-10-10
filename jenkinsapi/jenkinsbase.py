@@ -3,6 +3,7 @@ from jenkinsapi import config
 from jenkinsapi.exceptions import JenkinsAPIException
 log = logging.getLogger(__name__)
 
+
 class JenkinsBase(object):
     """
     This appears to be the base object that all other jenkins objects are inherited from
@@ -12,7 +13,7 @@ class JenkinsBase(object):
     def __repr__(self):
         return """<%s.%s %s>""" % (self.__class__.__module__,
                                    self.__class__.__name__,
-                                   str( self ))
+                                   str(self))
 
     def __str__(self):
         raise NotImplementedError

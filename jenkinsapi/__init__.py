@@ -33,14 +33,14 @@ easy_install -m jenkinsapi
 Project Authors
 ===============
 
- * Salim Fadhley (sal@stodge.org) 
- * Ramon van Alteren (ramon@vanalteren.nl) 
- * Ruslan Lutsenko (ruslan.lutcenko@gmail.com) 
+ * Salim Fadhley (sal@stodge.org)
+ * Ramon van Alteren (ramon@vanalteren.nl)
+ * Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
 
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
-__all__= [ "command_line", "utils",
+__all__= ["command_line", "utils",
            "api", "artifact", "build", "config", "constants", "exceptions", "fingerprint",
            "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"]
 __docformat__ = "epytext"

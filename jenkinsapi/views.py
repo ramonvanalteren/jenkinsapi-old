@@ -5,6 +5,7 @@ from jenkinsapi.exceptions import UnknownView
 
 log = logging.getLogger(__name__)
 
+
 class Views(object):
 
     # TODO @lechat 20130702: Add check that plugin for view actually exists in Jenkins

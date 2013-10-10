@@ -16,6 +16,7 @@ from jenkinsapi.exceptions import ArtifactBroken
 
 log = logging.getLogger(__name__)
 
+
 class Artifact(object):
     """
     Represents a single Jenkins artifact, usually some kind of file
@@ -106,7 +107,6 @@ class Artifact(object):
         assert os.path.isdir(dirpath)
         outputfilepath = os.path.join(dirpath, self.filename)
         return self.save(outputfilepath)
-
 
     def __repr__(self):
         """

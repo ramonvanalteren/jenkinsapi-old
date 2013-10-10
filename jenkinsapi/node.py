@@ -4,6 +4,7 @@ import urllib
 
 log = logging.getLogger(__name__)
 
+
 class Node(JenkinsBase):
     """
     Class to hold information on nodes that are attached as slaves to the master jenkins instance
@@ -40,7 +41,6 @@ class Node(JenkinsBase):
 
     def is_idle(self):
         return self._data['idle']
-
 
     def set_online(self):
         """

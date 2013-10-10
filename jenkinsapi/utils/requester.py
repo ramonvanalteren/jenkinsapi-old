@@ -61,7 +61,6 @@ class Requester(object):
         requestKwargs = self.get_request_dict(url, params, None, headers)
         return requests.get(url, **requestKwargs)
 
-
     def post_url(self, url, params=None, data=None, headers=None):
         requestKwargs = self.get_request_dict(url, params, data, headers)
         return requests.post(url, **requestKwargs)

@@ -5,6 +5,7 @@ from jenkinsapi.jenkinsbase import JenkinsBase
 
 log = logging.getLogger(__name__)
 
+
 class Nodes(JenkinsBase):
     """
     Class to hold information on a collection of nodes

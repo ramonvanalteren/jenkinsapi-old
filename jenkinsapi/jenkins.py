@@ -133,7 +133,7 @@ class Jenkins(JenkinsBase):
         :param newjobname: name of new job, str
         :return: new Job obj
         """
-        params = { 'name': newjobname,
+        params = {'name': newjobname,
                    'mode': 'copy',
                    'from': jobname}
 
@@ -199,7 +199,7 @@ class Jenkins(JenkinsBase):
         return list(self.get_jobs())
 
     def keys(self):
-        return [ a for a in self.iterkeys() ]
+        return [a for a in self.iterkeys()]
 
     # This is a function alias we retain for historical compatibility
     get_jobs_list = keys
@@ -214,7 +214,7 @@ class Jenkins(JenkinsBase):
     def get_view_by_url(self, str_view_url):
         #for nested view
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
-        return View(str_view_url , str_view_name, jenkins_obj=self)
+        return View(str_view_url, str_view_name, jenkins_obj=self)
 
     def __getitem__(self, jobname):
         """
@@ -298,19 +298,19 @@ class Jenkins(JenkinsBase):
         if exclusive:
             MODE = 'EXCLUSIVE'
         params = {
-            'name' : name,
-            'type' : NODE_TYPE,
-            'json' : json.dumps ({
-                'name'            : name,
-                'nodeDescription' : node_description,
-                'numExecutors'    : num_executors,
-                'remoteFS'        : remote_fs,
-                'labelString'     : labels,
-                'mode'            : MODE,
-                'type'            : NODE_TYPE,
-                'retentionStrategy' : { 'stapler-class'  : 'hudson.slaves.RetentionStrategy$Always' },
-                'nodeProperties'    : { 'stapler-class-bag' : 'true' },
-                'launcher'          : { 'stapler-class' : 'hudson.slaves.JNLPLauncher' }
+            'name': name,
+            'type': NODE_TYPE,
+            'json': json.dumps ({
+                'name': name,
+                'nodeDescription': node_description,
+                'numExecutors': num_executors,
+                'remoteFS': remote_fs,
+                'labelString': labels,
+                'mode': MODE,
+                'type': NODE_TYPE,
+                'retentionStrategy': {'stapler-class': 'hudson.slaves.RetentionStrategy$Always'},
+                'nodeProperties': {'stapler-class-bag': 'true'},
+                'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
             })
         }
         url = self.get_node_url() + "doCreateItem?%s" % urllib.urlencode(params)

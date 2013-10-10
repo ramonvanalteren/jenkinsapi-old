@@ -2,6 +2,7 @@ import time
 import datetime
 from jenkinsapi.exceptions import UnknownQueueItem, TimeOut
 
+
 class Invocation(object):
     """
     Represents the state and consequences of a single attempt to start a job.
@@ -18,14 +19,12 @@ class Invocation(object):
         self.queue_item = None
         self.build_number = None
 
-
     def __enter__(self):
         """
         Start watching the job
         """
         self.job.poll()
         self.initial_builds = set(self.job.get_build_dict().keys())
-
 
     def __exit__(self, type, value, traceback):
         """
@@ -54,10 +53,10 @@ class Invocation(object):
         return self.job[self.get_build_number()]
 
     def block_until_not_queued(self, timeout, delay):
-        self.__block(lambda : self.is_queued(), False, timeout, delay )
+        self.__block(lambda: self.is_queued(), False, timeout, delay)
 
     def block_until_completed(self, timeout, delay):
-        self.__block(lambda : self.is_running(), False, timeout, delay )
+        self.__block(lambda: self.is_running(), False, timeout, delay)
 
     @staticmethod
     def __block(fn, expectation, timeout, delay=2):
@@ -70,7 +69,6 @@ class Invocation(object):
                 time.sleep(delay)
             if datetime.datetime.now() > endTime:
                 raise TimeOut()
-
 
     def block(self, until='completed', timeout=200, delay=2):
         """

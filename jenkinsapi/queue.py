@@ -6,6 +6,7 @@ import urllib2
 
 log = logging.getLogger(__name__)
 
+
 class Queue(JenkinsBase):
     """
     Class that represents the Jenkins queue

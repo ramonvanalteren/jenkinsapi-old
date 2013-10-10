@@ -200,13 +200,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         return self._buildid_for_type("lastSuccessfulBuild")
 
-    def get_last_failed_buildnumber( self ):
+    def get_last_failed_buildnumber(self):
         """
         Get the numerical ID of the last good build.
         """
         return self._buildid_for_type(buildtype="lastFailedBuild")
 
-    def get_last_buildnumber( self ):
+    def get_last_buildnumber(self):
         """
         Get the numerical ID of the last build.
         """
