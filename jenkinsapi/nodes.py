@@ -44,7 +44,8 @@ class Nodes(JenkinsBase):
             try:
                 yield item['displayName'], Node(nodeurl, nodename, self.jenkins)
             except Exception:
-                import ipdb; ipdb.set_trace()
+                import ipdb
+                ipdb.set_trace()
 
     def __getitem__(self, nodename):
         for k, v in self.iteritems():
