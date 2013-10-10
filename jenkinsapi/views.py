@@ -96,11 +96,11 @@ class Views(object):
         :param person: Person name (to create personal view), str
         :return: new View obj or None if view was not created
         """
-        log.info('Creating "%s" view "%s"' % (view_type, view_name))
+        log.info(msg='Creating "%s" view "%s"' % (view_type, view_name))
         #url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % person) if person else self.baseurl
 
         if view_name in self:
-            log.warn('View "%s" already exists' % view_name)
+            log.warn(msg='View "%s" already exists' % view_name)
             return self[view_name]
 
         url = '%s/createView' % self.jenkins.baseurl

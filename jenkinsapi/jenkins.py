@@ -47,7 +47,7 @@ class Jenkins(JenkinsBase):
     def validate_fingerprint(self, id):
         obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
         obj_fingerprint.validate()
-        log.info("Jenkins says %s is valid" % id)
+        log.info(msg="Jenkins says %s is valid" % id)
 
     # def reload(self):
     #     '''Try and reload the configuration from disk'''

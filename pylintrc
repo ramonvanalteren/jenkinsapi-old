@@ -119,7 +119,8 @@ argument-rgx=[a-z_][a-z0-9_]{2,40}$
 
 # Regular expression which should only match correct variable names
 # Amplify: Up to 40 characters long
-variable-rgx=[a-z_][a-z0-9_]{2,40}$
+# variable-rgx=[a-z_][a-z0-9_]{2,40}$
+variable-rgx=[A-Za-z_][A-Za-z0-9_]{1,40}$
 
 # Regular expression which should only match correct list comprehension /
 # generator expression variable names

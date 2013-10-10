@@ -63,7 +63,7 @@ def get_artifacts(jenkinsurl, jobid=None, build_no=None, proxyhost=None,
     else:
         build = job.get_last_good_build()
     artifacts = build.get_artifact_dict()
-    log.info("Found %i artifacts in '%s'" % (len(artifacts.keys()), build_no))
+    log.info(msg="Found %i artifacts in '%s'" % (len(artifacts.keys()), build_no))
     return artifacts
 
 
@@ -84,7 +84,7 @@ def search_artifacts(jenkinsurl, jobid, artifact_ids=None):
         if set(artifact_ids).issubset(set(artifacts.keys())):
             return dict((a, artifacts[a]) for a in artifact_ids)
         missing_artifacts = set(artifact_ids) - set(artifacts.keys())
-        log.debug("Artifacts %s missing from %s #%i" % (", ".join(missing_artifacts), jobid, build_id))
+        log.debug(msg="Artifacts %s missing from %s #%i" % (", ".join(missing_artifacts), jobid, build_id))
     #noinspection PyUnboundLocalVariable
     raise ArtifactsMissing(missing_artifacts)
 
@@ -116,7 +116,7 @@ def block_until_complete(jenkinsurl, jobs, maxwait=12000, interval=30, raise_on_
         if not still_running:
             return
         str_still_running = ", ".join('"%s"' % str(a) for a in still_running)
-        log.warn("Waiting for jobs %s to complete. Will wait another %is" % (str_still_running, time_left))
+        log.warn(msg="Waiting for jobs %s to complete. Will wait another %is" % (str_still_running, time_left))
         time.sleep(interval)
     if raise_on_timeout:
         #noinspection PyUnboundLocalVariable
@@ -155,7 +155,7 @@ def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
     for reldir, artifactnames in dirstruct.items():
         destdir = os.path.join(installdir, reldir)
         if not os.path.exists(destdir):
-            log.warn("Making install directory %s" % destdir)
+            log.warn(msg="Making install directory %s" % destdir)
             os.makedirs(destdir)
         else:
             assert os.path.isdir(destdir)

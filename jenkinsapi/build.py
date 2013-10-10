@@ -251,7 +251,7 @@ class Build(JenkinsBase):
         count = 0
         while self.is_running():
             total_wait = delay * count
-            log.info("Waited %is for %s #%s to complete" % (total_wait, self.job.name, self.name))
+            log.info(msg="Waited %is for %s #%s to complete" % (total_wait, self.job.name, self.name))
             sleep(delay)
             count += 1
 

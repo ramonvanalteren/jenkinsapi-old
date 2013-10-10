@@ -36,14 +36,14 @@ class Artifact(object):
         :param fspath: full pathname including the filename, str
         :return: filepath
         """
-        log.info("Saving artifact @ %s to %s" % (self.url, fspath))
+        log.info(msg="Saving artifact @ %s to %s" % (self.url, fspath))
         if not fspath.endswith(self.filename):
-            log.warn("Attempt to change the filename of artifact %s on save." % self.filename)
+            log.warn(msg="Attempt to change the filename of artifact %s on save." % self.filename)
         if os.path.exists(fspath):
             if self.build:
                 try:
                     if self._verify_download(fspath):
-                        log.info("Local copy of %s is already up to date." % self.filename)
+                        log.info(msg="Local copy of %s is already up to date." % self.filename)
                         return fspath
                 except ArtifactBroken:
                     log.info("Jenkins artifact could not be identified.")
