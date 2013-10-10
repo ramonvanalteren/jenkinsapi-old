@@ -151,11 +151,8 @@ class View(JenkinsBase):
         return True
 
     def _get_nested_views(self):
-        if not 'views' in self._data:
-            pass
-        else:
-            for viewdict in self._data["views"]:
-                yield viewdict["name"], viewdict["url"]
+        for viewdict in self._data.get("views", []):
+            yield viewdict["name"], viewdict["url"]
 
     def get_nested_view_dict(self):
         return dict(self._get_nested_views())
