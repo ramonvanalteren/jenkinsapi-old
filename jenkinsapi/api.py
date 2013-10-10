@@ -146,30 +146,30 @@ def get_nested_view_from_url(url):
 
 
 def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
-        """
-        Install the artifacts.
-        """
-        assert basestaticurl.endswith("/"), "Basestaticurl should end with /"
-        installed = []
-        for reldir, artifactnames in dirstruct.items():
-            destdir = os.path.join(installdir, reldir)
-            if not os.path.exists(destdir):
-                log.warn("Making install directory %s" % destdir)
-                os.makedirs(destdir)
+    """
+    Install the artifacts.
+    """
+    assert basestaticurl.endswith("/"), "Basestaticurl should end with /"
+    installed = []
+    for reldir, artifactnames in dirstruct.items():
+        destdir = os.path.join(installdir, reldir)
+        if not os.path.exists(destdir):
+            log.warn("Making install directory %s" % destdir)
+            os.makedirs(destdir)
+        else:
+            assert os.path.isdir(destdir)
+        for artifactname in artifactnames:
+            destpath = os.path.abspath(os.path.join(destdir, artifactname))
+            if artifactname in artifacts.keys():
+                # The artifact must be loaded from jenkins
+                theartifact = artifacts[artifactname]
             else:
-                assert os.path.isdir(destdir)
-            for artifactname in artifactnames:
-                destpath = os.path.abspath(os.path.join(destdir, artifactname))
-                if artifactname in artifacts.keys():
-                    # The artifact must be loaded from jenkins
-                    theartifact = artifacts[artifactname]
-                else:
-                    # It's probably a static file, we can get it from the static collection
-                    staticurl = urlparse.urljoin(basestaticurl, artifactname)
-                    theartifact = Artifact(artifactname, staticurl)
-                theartifact.save(destpath)
-                installed.append(destpath)
-        return installed
+                # It's probably a static file, we can get it from the static collection
+                staticurl = urlparse.urljoin(basestaticurl, artifactname)
+                theartifact = Artifact(artifactname, staticurl)
+            theartifact.save(destpath)
+            installed.append(destpath)
+    return installed
 
 
 def search_artifact_by_regexp(jenkinsurl, jobid, artifactRegExp):
