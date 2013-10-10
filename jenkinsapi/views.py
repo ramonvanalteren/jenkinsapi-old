@@ -48,12 +48,7 @@ class Views(object):
     def __getitem__(self, view_name):
         for row in self.jenkins._data.get('views', []):
             if row['name'] == view_name:
-                return View(
-                    row['url'],
-                    row['name'],
-                    self.jenkins)
-        else:
-            return None
+                return View(row['url'], row['name'], self.jenkins)
 
     def iteritems(self):
         """
