@@ -186,13 +186,13 @@ class Build(JenkinsBase):
         """
         downstream_jobs_names = self.job.get_downstream_job_names()
         fingerprint_data = self.get_data("%s?depth=2&tree=fingerprint[usage[name]]" % self.python_api_url(self.baseurl))
-        downstream_names = []
         try:
             fingerprints = fingerprint_data['fingerprint'][0]
-            for f in fingerprints['usage']:
-                if f['name'] in downstream_jobs_names:
-                    downstream_names.append(f['name'])
-            return downstream_names
+            return [
+                f['name']
+                for f in fingerprints['usage']
+                if f['name'] in downstream_jobs_names
+            ]
         except (IndexError, KeyError):
             return None
 
@@ -201,15 +201,16 @@ class Build(JenkinsBase):
         Get the downstream builds for this build
         :return List of Build or None
         """
-        downstream_jobs_names = self.job.get_downstream_job_names()
-        fingerprint_data = self.get_data("%s?depth=2&tree=fingerprint[usage[name,ranges[ranges[end,start]]]]" % self.python_api_url(self.baseurl))
-        downstream_builds = []
+        downstream_jobs_names = set(self.job.get_downstream_job_names())
+        msg = "%s?depth=2&tree=fingerprint[usage[name,ranges[ranges[end,start]]]]"
+        fingerprint_data = self.get_data(msg % self.python_api_url(self.baseurl))
         try:
             fingerprints = fingerprint_data['fingerprint'][0]
-            for f in fingerprints['usage']:
-                if f['name'] in downstream_jobs_names:
-                    downstream_builds.append(self.get_jenkins_obj().get_job(f['name']).get_build(f['ranges']['ranges'][0]['start']))
-            return downstream_builds
+            return [
+                self.get_jenkins_obj().get_job(f['name']).get_build(f['ranges']['ranges'][0]['start'])
+                for f in fingerprints['usage']
+                if f['name'] in downstream_jobs_names
+            ]
         except (IndexError, KeyError):
             return None
 

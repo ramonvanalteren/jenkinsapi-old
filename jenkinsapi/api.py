@@ -51,7 +51,8 @@ def get_build(jenkinsurl, jobname, build_no):
     return job.get_build(build_no)
 
 
-def get_artifacts(jenkinsurl, jobid=None, build_no=None, proxyhost=None, proxyport=None, proxyuser=None, proxypass=None):
+def get_artifacts(jenkinsurl, jobid=None, build_no=None, proxyhost=None,
+                  proxyport=None, proxyuser=None, proxypass=None):
     """
     Find all the artifacts for the latest build of a job.
     """
