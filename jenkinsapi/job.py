@@ -79,6 +79,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         data = self._add_missing_builds(data)
         return data
 
+    # pylint: disable=E1123
+    # Unexpected keyword arg 'params'
     def _add_missing_builds(self, data):
         '''Query Jenkins to get all builds of the job in the data object.
 
