@@ -51,7 +51,7 @@ class Queue(JenkinsBase):
             return [QueueItem(**item) for item in self._data['items']]
         else:
             return [QueueItem(**item) for item in self._data['items']
-                   if item['task']['name'] == job_name]
+                    if item['task']['name'] == job_name]
 
     def delete_item(self, queue_item):
         self.delete_item_by_id(queue_item.id)
@@ -78,10 +78,7 @@ class QueueItem(object):
         return self.jenkins[self.task['name']]
 
     def __repr__(self):
-        return "<%s.%s %s>" % (
-                    self.__class__.__module__,
-                    self.__class__.__name__,
-                    str(self))
+        return "<%s.%s %s>" % (self.__class__.__module__, self.__class__.__name__, str(self))
 
     def __str__(self):
         return "%s #%i" % (self.task['name'], self.id)

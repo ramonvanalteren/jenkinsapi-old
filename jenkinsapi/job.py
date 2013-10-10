@@ -228,8 +228,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         # FIXME SO how is this supposed to work if build is false-y?
         # I don't think that builds *can* be false here, so I don't
         # understand the test above.
-        return dict((build["number"], build["url"])
-                        for build in builds)
+        return dict((build["number"], build["url"]) for build in builds)
 
     def get_revision_dict(self):
         """

@@ -112,6 +112,4 @@ class Artifact(object):
         """
         Produce a handy repr-string.
         """
-        return """<%s.%s %s>""" % (self.__class__.__module__,
-                                    self.__class__.__name__,
-                                    self.url)
+        return """<%s.%s %s>""" % (self.__class__.__module__, self.__class__.__name__, self.url)

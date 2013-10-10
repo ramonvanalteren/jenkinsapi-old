@@ -134,8 +134,8 @@ class Jenkins(JenkinsBase):
         :return: new Job obj
         """
         params = {'name': newjobname,
-                   'mode': 'copy',
-                   'from': jobname}
+                  'mode': 'copy',
+                  'from': jobname}
 
         self.requester.post_and_confirm_status(
             self.get_create_url(),

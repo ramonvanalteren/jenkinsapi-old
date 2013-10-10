@@ -56,8 +56,11 @@ class Build(JenkinsBase):
     def _get_git_rev(self):
         # Sometimes we have None as part of actions. Filter those actions
         # which have lastBuiltRevision in them
-        _actions = [x for x in self._data['actions'] if x \
-                        and "lastBuiltRevision" in x]
+        _actions = [x for x in self._data['actions']
+                    if x and "lastBuiltRevision" in x]
+        # FIXME So this code returns the first item found in the filtered
+        # list. Why not just:
+        #     `return _actions[0]["lastBuiltRevision"]["SHA1"]`
         for item in _actions:
             revision = item["lastBuiltRevision"]["SHA1"]
             return revision
