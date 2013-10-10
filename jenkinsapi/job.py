@@ -67,7 +67,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Jenkins API loads the first 100 builds and thus may not contain all builds
         information. This method checks if all builds are loaded in the data object
         and updates it with the missing builds if needed.'''
-        if not data.has_key("builds") or not data["builds"]:
+        if not data.get("builds"):
             return data
         # do not call _buildid_for_type here: it would poll and do an infinite loop
         oldest_loaded_build_number = data["builds"][-1]["number"]
@@ -219,12 +219,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self._buildid_for_type("lastCompletedBuild")
 
     def get_build_dict(self):
-        if not self._data.has_key("builds"):
+        if "builds" not in self._data:
             raise NoBuildData(repr(self))
         builds = self._data["builds"]
         last_build = self._data['lastBuild']
         if builds and last_build and builds[0]['number'] != last_build['number']:
             builds = [last_build] + builds
+        # FIXME SO how is this supposed to work if build is false-y?
+        # I don't think that builds *can* be false here, so I don't
+        # understand the test above.
         return dict((build["number"], build["url"])
                         for build in builds)
 
