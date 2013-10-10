@@ -45,6 +45,17 @@ Project Authors
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
+
+from jenkinsapi import (
+    # Modules
+    command_line,
+    utils,
+
+    # Files
+    api, artifact, build, config, constants, exceptions, fingerprint,
+    jenkins, jenkinsbase, job, node, result_set, result, view
+)
+
 __all__ = [
     "command_line", "utils",
     "api", "artifact", "build", "config", "constants", "exceptions", "fingerprint",
