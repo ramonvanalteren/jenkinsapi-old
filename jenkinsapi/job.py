@@ -13,7 +13,15 @@ from jenkinsapi.invocation import Invocation
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.queue import QueueItem
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
-from jenkinsapi.exceptions import NoBuildData, NotConfiguredSCM, NotFound, NotInQueue, NotSupportSCM, WillNotBuild, UnknownQueueItem
+from jenkinsapi.exceptions import (
+    NoBuildData,
+    NotConfiguredSCM,
+    NotFound,
+    NotInQueue,
+    NotSupportSCM,
+    WillNotBuild,
+    UnknownQueueItem,
+)
 
 log = logging.getLogger(__name__)
 
@@ -115,7 +123,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         to_json_structure = Job._mk_json_from_build_parameters(build_params)
         return json.dumps(to_json_structure)
 
-    def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3, invoke_block_delay=15, build_params=None, cause=None):
+    def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3,
+               invoke_block_delay=15, build_params=None, cause=None):
         assert isinstance(invoke_pre_check_delay, (int, float))
         assert isinstance(invoke_block_delay, (int, float))
         assert isinstance(block, bool)

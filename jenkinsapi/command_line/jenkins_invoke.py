@@ -16,7 +16,8 @@ class JenkinsInvoke(object):
     def mkparser(cls):
         parser = optparse.OptionParser()
         DEFAULT_BASEURL = os.environ.get("JENKINS_URL", "http://localhost/jenkins")
-        parser.help_text = "Execute a number of jenkins jobs on the server of your choice. Optionally block until the jobs are complete."
+        parser.help_text = "Execute a number of jenkins jobs on the server of your choice." + \
+            " Optionally block until the jobs are complete."
         parser.add_option("-J", "--jenkinsbase", dest="baseurl",
                           help="Base URL for the Jenkins server, default is %s" % DEFAULT_BASEURL,
                           type="str", default=DEFAULT_BASEURL)

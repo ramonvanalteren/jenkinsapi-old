@@ -22,8 +22,8 @@ from jenkinsapi.exceptions import JenkinsAPIException
 class Requester(object):
 
     """
-    A class which carries out HTTP requests. You can replace this class with one of your own implementation if you require
-    some other way to access Jenkins.
+    A class which carries out HTTP requests. You can replace this class with one of your
+    own implementation if you require some other way to access Jenkins.
 
     This default class can handle simple authentication only.
     """
