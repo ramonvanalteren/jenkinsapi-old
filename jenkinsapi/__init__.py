@@ -45,7 +45,9 @@ Project Authors
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
-__all__ = ["command_line", "utils",
-           "api", "artifact", "build", "config", "constants", "exceptions", "fingerprint",
-           "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"]
+__all__ = [
+    "command_line", "utils",
+    "api", "artifact", "build", "config", "constants", "exceptions", "fingerprint",
+    "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"
+]
 __docformat__ = "epytext"
