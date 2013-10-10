@@ -2,9 +2,13 @@
 About this library
 ==================
 
-Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi. This API makes Jenkins even easier to use by providing an easy to use conventional python interface.
+Jenkins is the market leading continuous integration system, originally created by Kohsuke Kawaguchi.
+This API makes Jenkins even easier to use by providing an easy to use conventional python interface.
 
-Jenkins (and It's predecessor Hudson) are fantastic projects - but they are somewhat Java-centric. Thankfully the designers have provided an excellent and complete REST interface. This library wraps up that interface as more conventional python objects in order to make most Jenkins oriented tasks simpler.
+Jenkins (and It's predecessor Hudson) are fantastic projects - but they are somewhat Java-centric.
+Thankfully the designers have provided an excellent and complete REST interface. This library
+wraps up that interface as more conventional python objects in order to make most Jenkins oriented
+tasks simpler.
 
 This library can help you:
 
@@ -20,7 +24,8 @@ This library can help you:
 Installing JenkinsAPI
 =====================
 
-Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or distribute to automatically install this project.
+Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or distribute
+to automatically install this project.
 
 Most users can do the following:
 
