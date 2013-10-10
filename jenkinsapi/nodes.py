@@ -52,10 +52,11 @@ class Nodes(JenkinsBase):
                 ipdb.set_trace()
 
     def __getitem__(self, nodename):
-        for k, v in self.iteritems():
-            if k == nodename:
-                return v
-        raise UnknownNode(nodename)
+        self_as_dict = dict(self.iteritems())
+        if nodename in self_as_dict:
+            return self_as_dict[nodename]
+        else:
+            raise UnknownNode(nodename)
 
     def __len__(self):
         return len(self.iteritems())

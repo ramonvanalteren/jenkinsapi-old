@@ -51,5 +51,5 @@ class ResultSet(JenkinsBase):
         return len(self.items())
 
     def __getitem__(self, key):
-        d = dict(self.iteritems())
-        return d[key]
+        self_as_dict = dict(self.iteritems())
+        return self_as_dict[key]
