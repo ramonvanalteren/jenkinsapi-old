@@ -232,6 +232,9 @@ class Jenkins(JenkinsBase):
                 return Job(info["url"], info["name"], jenkins_obj=self)
         raise UnknownJob(jobname)
 
+    def __len__(self):
+        return len(self._data["jobs"])
+
     def __contains__(self, jobname):
         """
         Does a job by the name specified exist

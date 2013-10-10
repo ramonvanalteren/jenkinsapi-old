@@ -56,3 +56,6 @@ class Nodes(JenkinsBase):
             if k == nodename:
                 return v
         raise UnknownNode(nodename)
+
+    def __len__(self):
+        return len(self.iteritems())

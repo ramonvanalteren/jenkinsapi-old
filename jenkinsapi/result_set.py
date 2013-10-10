@@ -49,3 +49,7 @@ class ResultSet(JenkinsBase):
 
     def __len__(self):
         return len(self.items())
+
+    def __getitem__(self, key):
+        d = dict(self.iteritems())
+        return d[key]

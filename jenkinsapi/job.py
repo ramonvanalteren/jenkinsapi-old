@@ -316,6 +316,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
     def __getitem__(self, buildnumber):
         return self.get_build(buildnumber)
 
+    def __len__(self):
+        return len(self.get_build_dict())
+
     def is_queued_or_running(self):
         return self.is_queued() or self.is_running()
 
