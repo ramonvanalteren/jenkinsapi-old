@@ -11,7 +11,7 @@ from jenkinsapi import jenkins
 log = logging.getLogger(__name__)
 
 
-class jenkins_invoke(object):
+class JenkinsInvoke(object):
     @classmethod
     def mkparser(cls):
         parser = optparse.OptionParser()
@@ -66,4 +66,4 @@ class jenkins_invoke(object):
 def main():
     logging.basicConfig()
     logging.getLogger("").setLevel(logging.INFO)
-    jenkins_invoke.main()
+    JenkinsInvoke.main()
