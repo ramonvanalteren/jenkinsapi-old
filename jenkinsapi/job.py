@@ -23,6 +23,12 @@ from jenkinsapi.exceptions import (
     UnknownQueueItem,
 )
 
+SVN_URL = './scm/locations/hudson.scm.SubversionSCM_-ModuleLocation/remote'
+GIT_URL = './scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url'
+HG_URL = './scm/source'
+GIT_BRANCH = './scm/branches/hudson.plugins.git.BranchSpec/name'
+HG_BRANCH = './scm/branch'
+
 log = logging.getLogger(__name__)
 
 
@@ -45,15 +51,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
             'hudson.scm.NullSCM': 'NullSCM'
         }
         self._scmurlmap = {
-            'svn': lambda element_tree: [element for element in element_tree.findall('./scm/locations/hudson.scm.SubversionSCM_-ModuleLocation/remote')],
-            'git': lambda element_tree: [element for element in element_tree.findall('./scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url')],
-            'hg': lambda element_tree: [element_tree.find('./scm/source')],
+            'svn': lambda element_tree: list(element_tree.findall(SVN_URL)),
+            'git': lambda element_tree: list(element_tree.findall(GIT_URL)),
+            'hg': lambda element_tree: list(element_tree.find(HG_URL)),
             None: lambda element_tree: []
         }
         self._scmbranchmap = {
             'svn': lambda element_tree: [],
-            'git': lambda element_tree: [element for element in element_tree.findall('./scm/branches/hudson.plugins.git.BranchSpec/name')],
-            'hg': lambda element_tree: [element_tree.find('./scm/branch')],
+            'git': lambda element_tree: list(element_tree.findall(GIT_BRANCH)),
+            'hg': lambda element_tree: list(element_tree.find(HG_BRANCH)),
             None: lambda element_tree: []
         }
         JenkinsBase.__init__(self, url)
