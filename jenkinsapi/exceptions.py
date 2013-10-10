@@ -76,7 +76,7 @@ class FailedNoResults(NoResults):
     """
 
 
-class BadURL(ValueError,JenkinsAPIException):
+class BadURL(ValueError, JenkinsAPIException):
     """
     A URL appears to be broken
     """

@@ -291,7 +291,7 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        NODE_TYPE   = 'hudson.slaves.DumbSlave$DescriptorImpl'
+        NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
         MODE = 'NORMAL'
         if self.has_node(name):
             return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
@@ -300,7 +300,7 @@ class Jenkins(JenkinsBase):
         params = {
             'name': name,
             'type': NODE_TYPE,
-            'json': json.dumps ({
+            'json': json.dumps({
                 'name': name,
                 'nodeDescription': node_description,
                 'numExecutors': num_executors,

@@ -19,7 +19,7 @@ class Fingerprint(JenkinsBase):
         logging.basicConfig()
         self.jenkins_obj = jenkins_obj
         assert self.RE_MD5.search(id), "%s does not look like a valid id" % id
-        url =  "%s/fingerprint/%s/" % (baseurl, id)
+        url = "%s/fingerprint/%s/" % (baseurl, id)
         JenkinsBase.__init__(self, url, poll=False)
         self.id = id
 

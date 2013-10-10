@@ -84,14 +84,14 @@ class Artifact(object):
         fp = Fingerprint(self.build.job.jenkins.baseurl, local_md5, self.build.job.jenkins)
         return fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
 
-    def _md5sum(self, fspath, chunksize=2**20):
+    def _md5sum(self, fspath, chunksize=2 ** 20):
         """
         A MD5 hashing function intended to produce the same results as that used by
         Jenkins.
         """
         md5 = hashlib.md5()
         try:
-            with open(fspath,'rb') as f:
+            with open(fspath, 'rb') as f:
                 for chunk in iter(lambda: f.read(chunksize), ''):
                     md5.update(chunk)
         except:

@@ -81,8 +81,8 @@ def search_artifacts(jenkinsurl, jobid, artifact_ids=None):
         build = job.get_build(build_id)
         artifacts = build.get_artifact_dict()
         if set(artifact_ids).issubset(set(artifacts.keys())):
-            return dict((a,artifacts[a]) for a in artifact_ids)
-        missing_artifacts =  set(artifact_ids) - set(artifacts.keys())
+            return dict((a, artifacts[a]) for a in artifact_ids)
+        missing_artifacts = set(artifact_ids) - set(artifacts.keys())
         log.debug("Artifacts %s missing from %s #%i" % (", ".join(missing_artifacts), jobid, build_id))
     #noinspection PyUnboundLocalVariable
     raise ArtifactsMissing(missing_artifacts)

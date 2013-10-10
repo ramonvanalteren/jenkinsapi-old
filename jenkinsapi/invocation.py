@@ -77,7 +77,7 @@ class Invocation(object):
         """
         assert until in ['completed', 'not_queued'], 'Unknown block condition: %s' % until
         self.block_until_not_queued(timeout, delay)
-        if until=='completed':
+        if until == 'completed':
             self.block_until_completed(timeout, delay)
 
     def stop(self):

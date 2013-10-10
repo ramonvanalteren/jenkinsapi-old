@@ -68,7 +68,7 @@ class JenkinsBase(object):
             return url
         else:
             if url.endswith(r"/"):
-                fmt="%s%s"
+                fmt = "%s%s"
             else:
                 fmt = "%s/%s"
             return fmt % (url, config.JENKINS_API)

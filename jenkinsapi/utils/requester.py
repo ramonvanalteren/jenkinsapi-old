@@ -24,7 +24,7 @@ class Requester(object):
     This default class can handle simple authentication only.
     """
 
-    VALID_STATUS_CODES = [200,]
+    VALID_STATUS_CODES = [200, ]
 
     def __init__(self, username=None, password=None, ssl_verify=True):
         if username:

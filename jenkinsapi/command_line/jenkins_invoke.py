@@ -11,7 +11,7 @@ class jenkins_invoke(object):
     @classmethod
     def mkparser(cls):
         parser = optparse.OptionParser()
-        DEFAULT_BASEURL=os.environ.get("JENKINS_URL", "http://localhost/jenkins")
+        DEFAULT_BASEURL = os.environ.get("JENKINS_URL", "http://localhost/jenkins")
         parser.help_text = "Execute a number of jenkins jobs on the server of your choice. Optionally block until the jobs are complete."
         parser.add_option("-J", "--jenkinsbase", dest="baseurl",
                           help="Base URL for the Jenkins server, default is %s" % DEFAULT_BASEURL,
@@ -22,7 +22,7 @@ class jenkins_invoke(object):
                         help="password for jenkins user auth", type='str', default=None)
         parser.add_option("-b", "--block", dest="block", action="store_true", default=False,
                           help="Block until each of the jobs is complete.")
-        parser.add_option("-t", "--token", dest="token",help="Optional security token.",
+        parser.add_option("-t", "--token", dest="token", help="Optional security token.",
                           default=None)
         return parser
 

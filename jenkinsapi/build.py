@@ -257,7 +257,7 @@ class Build(JenkinsBase):
         Return the URL for the object which provides the job's result summary.
         """
         url_tpl = r"%stestReport/%s"
-        return  url_tpl % (self._data["url"], config.JENKINS_API)
+        return url_tpl % (self._data["url"], config.JENKINS_API)
 
     def get_resultset(self):
         """
@@ -290,7 +290,7 @@ class Build(JenkinsBase):
         Returns build timestamp in UTC
         '''
         # Java timestamps are given in miliseconds since the epoch start!
-        naive_timestamp = datetime.datetime(*time.gmtime(self._data['timestamp']/1000.0)[:6])
+        naive_timestamp = datetime.datetime(*time.gmtime(self._data['timestamp'] / 1000.0)[:6])
         return pytz.utc.localize(naive_timestamp)
 
     def get_console(self):
