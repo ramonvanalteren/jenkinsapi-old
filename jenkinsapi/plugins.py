@@ -54,4 +54,3 @@ class Plugins(JenkinsBase):
     def __str__(self):
         plugins = [plugin["shortName"] for plugin in self._data.get("plugins", [])]
         return str(sorted(plugins))
-
