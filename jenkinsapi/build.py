@@ -1,7 +1,5 @@
 import time
 import pytz
-import urllib2
-import urlparse
 import datetime
 from jenkinsapi.artifact import Artifact
 from jenkinsapi import config
