@@ -182,8 +182,8 @@ def search_artifact_by_regexp(jenkinsurl, jobid, artifactRegExp):
     @param jobid: The name of the job we are to search through
     @param artifactRegExp: A compiled regular expression object (not a re-string)
     '''
-    J = Jenkins(jenkinsurl)
-    j = J[jobid]
+    job = Jenkins(jenkinsurl)
+    j = job[jobid]
 
     build_ids = j.get_build_ids()
 
