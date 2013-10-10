@@ -1,4 +1,3 @@
-import urllib
 import logging
 
 from jenkinsapi.jenkinsbase import JenkinsBase

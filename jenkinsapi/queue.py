@@ -1,8 +1,6 @@
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.exceptions import UnknownQueueItem
 import logging
-import urlparse
-import urllib2
 
 log = logging.getLogger(__name__)
 

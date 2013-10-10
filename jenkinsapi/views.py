@@ -1,7 +1,6 @@
 import logging
 import json
 from jenkinsapi.view import View
-from jenkinsapi.exceptions import UnknownView
 
 log = logging.getLogger(__name__)
 
