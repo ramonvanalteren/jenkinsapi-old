@@ -57,10 +57,12 @@ class Invocation(object):
         return self.job[self.get_build_number()]
 
     def block_until_not_queued(self, timeout, delay):
-        self.__block(lambda: self.is_queued(), False, timeout, delay)
+        # self.__block(lambda: self.is_queued(), False, timeout, delay)
+        self.__block(self.is_queued, False, timeout, delay)
 
     def block_until_completed(self, timeout, delay):
-        self.__block(lambda: self.is_running(), False, timeout, delay)
+        # self.__block(lambda: self.is_running(), False, timeout, delay)
+        self.__block(self.is_running, False, timeout, delay)
 
     @staticmethod
     def __block(fn, expectation, timeout, delay=2):
