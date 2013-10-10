@@ -174,6 +174,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 params=params,
                 valid=[200, 201]
             )
+            response = response
             if invoke_pre_check_delay > 0:
                 log.info(
                     "Waiting for %is to allow Jenkins to catch up", invoke_pre_check_delay)

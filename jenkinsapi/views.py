@@ -83,6 +83,7 @@ class Views(object):
     def delete_view_by_url(self, str_url):
         url = "%s/doDelete" % str_url
         response = self.requester.get_url(url, data='')
+        response = response
         self.jenkins.poll()
         return self
 
