@@ -49,17 +49,17 @@ class Jenkins(JenkinsBase):
         else:
             return self.baseurl
 
-    def validate_fingerprint(self, id):
-        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
+    def validate_fingerprint(self, id_):
+        obj_fingerprint = Fingerprint(self.baseurl, id_, jenkins_obj=self)
         obj_fingerprint.validate()
-        log.info(msg="Jenkins says %s is valid" % id)
+        log.info(msg="Jenkins says %s is valid" % id_)
 
     # def reload(self):
     #     '''Try and reload the configuration from disk'''
     #     self.requester.get_url("%(baseurl)s/reload" % self.__dict__)
 
-    def get_artifact_data(self, id):
-        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
+    def get_artifact_data(self, id_):
+        obj_fingerprint = Fingerprint(self.baseurl, id_, jenkins_obj=self)
         obj_fingerprint.validate()
         return obj_fingerprint.get_info()
 

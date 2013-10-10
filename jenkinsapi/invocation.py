@@ -30,7 +30,7 @@ class Invocation(object):
         self.job.poll()
         self.initial_builds = set(self.job.get_build_dict().keys())
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         """
         Finish watching the job - it will track which new queue items or builds have
         been created as a consequence of invoking the job.
