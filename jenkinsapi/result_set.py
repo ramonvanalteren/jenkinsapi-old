@@ -38,14 +38,14 @@ class ResultSet(JenkinsBase):
     def iteritems(self):
         for suite in self._data.get("suites", []):
             for case in suite["cases"]:
-                R = Result(**case)
-                yield R.id(), R
+                result = Result(**case)
+                yield result.id(), result
 
         for report_set in self._data.get("childReports", []):
             for suite in report_set["result"]["suites"]:
                 for case in suite["cases"]:
-                    R = Result(**case)
-                    yield R.id(), R
+                    result = Result(**case)
+                    yield result.id(), result
 
     def __len__(self):
         return len(self.items())
