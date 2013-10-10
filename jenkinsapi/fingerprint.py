@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi Fingerprint
+"""
+
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.exceptions import ArtifactBroken
 

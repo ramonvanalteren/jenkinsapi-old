@@ -1,3 +1,8 @@
+"""
+Module for jenkinsapi Jenkins object
+"""
+
+
 import json
 import urllib
 import logging

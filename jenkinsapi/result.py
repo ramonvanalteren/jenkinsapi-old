@@ -1,8 +1,13 @@
-class Result(object):
-    def __init__(self, **kwargs):
-        """
+"""
+Module for jenkinsapi Result
+"""
 
-        """
+class Result(object):
+    """
+    Result class
+    """
+
+    def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
     def __str__(self):

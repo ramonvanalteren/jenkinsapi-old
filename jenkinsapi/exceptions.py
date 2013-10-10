@@ -1,3 +1,8 @@
+"""
+Module for exceptions specialized for jenkinsapi
+"""
+
+
 class JenkinsAPIException(Exception):
     """
     Base class for all errors

@@ -1,3 +1,7 @@
+"""
+jenkinsapi class for invoking Jenkins
+"""
+
 import os
 import sys
 import logging

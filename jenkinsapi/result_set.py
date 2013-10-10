@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi ResultSet
+"""
+
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.result import Result
 

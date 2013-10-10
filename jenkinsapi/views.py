@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi Views
+"""
+
 import logging
 import json
 from jenkinsapi.view import View
@@ -6,6 +10,9 @@ log = logging.getLogger(__name__)
 
 
 class Views(object):
+    """
+    An abstraction on a Jenkins object's views
+    """
 
     # TODO @lechat 20130702: Add check that plugin for view actually exists in Jenkins
     LIST_VIEW = 'hudson.model.ListView'
@@ -13,10 +20,6 @@ class Views(object):
     MY_VIEW = 'hudson.model.MyView'
     DASHBOARD_VIEW = 'hudson.plugins.view.dashboard.Dashboard'
     PIPELINE_VIEW = 'au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView'
-
-    """
-    An abstraction on a Jenkins object's views
-    """
 
     def __init__(self, jenkins):
         self.jenkins = jenkins

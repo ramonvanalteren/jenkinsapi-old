@@ -1,3 +1,7 @@
+"""
+Module for JenkinsBase class
+"""
+
 import logging
 from jenkinsapi import config
 from jenkinsapi.exceptions import JenkinsAPIException

@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi nodes
+"""
+
 import logging
 from jenkinsapi.node import Node
 from jenkinsapi.exceptions import UnknownNode

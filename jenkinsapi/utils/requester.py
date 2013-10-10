@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi requester (which is a wrapper around python-requests)
+"""
+
 import requests
 from jenkinsapi.exceptions import JenkinsAPIException
 # import logging

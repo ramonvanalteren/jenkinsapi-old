@@ -1,3 +1,7 @@
+"""
+Module for jenkinsapi Node class
+"""
+
 from jenkinsapi.jenkinsbase import JenkinsBase
 import logging
 import urllib

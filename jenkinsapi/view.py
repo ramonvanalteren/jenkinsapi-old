@@ -1,3 +1,6 @@
+"""
+Module for jenkinsapi views
+"""
 import urllib
 import logging
 
@@ -9,6 +12,10 @@ log = logging.getLogger(__name__)
 
 
 class View(JenkinsBase):
+    """
+    View class
+    """
+
     def __init__(self, url, name, jenkins_obj):
         self.name = name
         self.jenkins_obj = jenkins_obj
