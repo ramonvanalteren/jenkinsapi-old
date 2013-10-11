@@ -55,7 +55,7 @@ class Requester(object):
 
         requestKwargs['verify'] = self.ssl_verify
 
-        if not data == None:
+        if not data is None:
             # It may seem odd, but some Jenkins operations require posting
             # an empty string.
             requestKwargs['data'] = data
