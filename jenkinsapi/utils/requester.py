@@ -3,7 +3,7 @@ Module for jenkinsapi requester (which is a wrapper around python-requests)
 """
 
 import requests
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 # import logging
 
 # # these two lines enable debugging at httplib level (requests->urllib3->httplib)
