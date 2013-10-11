@@ -22,7 +22,7 @@ class TestQueue(BaseSystemTest):
         qq = self.jenkins.get_queue()
         self.assertIsInstance(qq, Queue)
 
-    def test_invoke_many_job(self):
+    def test_invoke_many_jobs(self):
         job_names = [random_string() for _ in range(5)]
         jobs = []
 
@@ -37,7 +37,7 @@ class TestQueue(BaseSystemTest):
         reprString = repr(queue)
         self.assertIn(queue.baseurl, reprString)
 
-        for queueId, item in queue.iteritems():
+        for _, item in queue.iteritems():
             queue.delete_item(item)
 
         queue.poll()
