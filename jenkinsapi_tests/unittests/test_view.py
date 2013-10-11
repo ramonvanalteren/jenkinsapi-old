@@ -6,6 +6,7 @@ from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.view import View
 from jenkinsapi.job import Job
 
+
 class TestView(unittest.TestCase):
 
     DATA = {'description': 'Important Shizz',
@@ -119,7 +120,6 @@ class TestView(unittest.TestCase):
 
         result = v.add_job('bar')
         self.assertTrue(result)
-
 
     class SelfPatchJenkins(object):
         def has_job(self, job_name):

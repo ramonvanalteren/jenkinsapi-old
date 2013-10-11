@@ -4,6 +4,7 @@ import unittest
 from jenkinsapi.result_set import ResultSet
 from jenkinsapi.result import Result
 
+
 class TestResultSet(unittest.TestCase):
 
     DATA = {'duration': 0.0,

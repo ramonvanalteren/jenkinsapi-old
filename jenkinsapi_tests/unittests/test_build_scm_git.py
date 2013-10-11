@@ -2,6 +2,7 @@ import mock
 import unittest
 from jenkinsapi.build import Build
 
+
 class test_build(unittest.TestCase):
 
     DATA = {'actions': [{'causes': [{'shortDescription': 'Started by an SCM change'}]},
@@ -53,7 +54,6 @@ class test_build(unittest.TestCase):
  'result': 'SUCCESS',
  'timestamp': 1372553675652,
  'url': 'http://localhost:8080/job/git_yssrtigfds/3/'}
-
 
     @mock.patch.object(Build, '_poll')
     def setUp(self, _poll):

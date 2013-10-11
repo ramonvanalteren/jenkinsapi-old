@@ -8,18 +8,18 @@ from jenkinsapi.plugin import Plugin
 
 class TestPlugins(unittest.TestCase):
     DATA = {'plugins': [
-            {'deleted': False, 'hasUpdate': True, 'downgradable': False, 
-            'dependencies': [{}, {}, {}, {}], 
-            'longName': 'Jenkins Subversion Plug-in', 'active': True, 
-            'shortName': 'subversion', 'backupVersion': None, 
+            {'deleted': False, 'hasUpdate': True, 'downgradable': False,
+            'dependencies': [{}, {}, {}, {}],
+            'longName': 'Jenkins Subversion Plug-in', 'active': True,
+            'shortName': 'subversion', 'backupVersion': None,
             'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
-            'enabled': True, 'pinned': False, 'version': '1.45', 
-            'supportsDynamicLoad': 'MAYBE', 'bundled': True}, 
-            {'deleted': False, 'hasUpdate': True, 'downgradable': False, 
-            'dependencies': [{}, {}], 'longName': 'Maven Integration plugin', 
-            'active': True, 'shortName': 'maven-plugin', 'backupVersion': None, 
-            'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin', 
-            'enabled': True, 'pinned': False, 'version': '1.521', 
+            'enabled': True, 'pinned': False, 'version': '1.45',
+            'supportsDynamicLoad': 'MAYBE', 'bundled': True},
+            {'deleted': False, 'hasUpdate': True, 'downgradable': False,
+            'dependencies': [{}, {}], 'longName': 'Maven Integration plugin',
+            'active': True, 'shortName': 'maven-plugin', 'backupVersion': None,
+            'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin',
+            'enabled': True, 'pinned': False, 'version': '1.521',
             'supportsDynamicLoad': 'MAYBE', 'bundled': True}
         ]}
 
@@ -69,12 +69,12 @@ class TestPlugins(unittest.TestCase):
     def test_plugins_values(self, _poll_plugins):
         _poll_plugins.return_value = self.DATA
 
-        p = Plugin({'deleted': False, 'hasUpdate': True, 'downgradable': False, 
-            'dependencies': [{}, {}, {}, {}], 
-            'longName': 'Jenkins Subversion Plug-in', 'active': True, 
-            'shortName': 'subversion', 'backupVersion': None, 
+        p = Plugin({'deleted': False, 'hasUpdate': True, 'downgradable': False,
+            'dependencies': [{}, {}, {}, {}],
+            'longName': 'Jenkins Subversion Plug-in', 'active': True,
+            'shortName': 'subversion', 'backupVersion': None,
             'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
-            'enabled': True, 'pinned': False, 'version': '1.45', 
+            'enabled': True, 'pinned': False, 'version': '1.45',
             'supportsDynamicLoad': 'MAYBE', 'bundled': True})
 
         plugins = self.J.get_plugins().values()
@@ -99,12 +99,12 @@ class TestPlugins(unittest.TestCase):
     def test_plugin_get_by_name(self, _poll_plugins):
         _poll_plugins.return_value = self.DATA
 
-        p = Plugin({'deleted': False, 'hasUpdate': True, 'downgradable': False, 
-            'dependencies': [{}, {}, {}, {}], 
-            'longName': 'Jenkins Subversion Plug-in', 'active': True, 
-            'shortName': 'subversion', 'backupVersion': None, 
+        p = Plugin({'deleted': False, 'hasUpdate': True, 'downgradable': False,
+            'dependencies': [{}, {}, {}, {}],
+            'longName': 'Jenkins Subversion Plug-in', 'active': True,
+            'shortName': 'subversion', 'backupVersion': None,
             'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
-            'enabled': True, 'pinned': False, 'version': '1.45', 
+            'enabled': True, 'pinned': False, 'version': '1.45',
             'supportsDynamicLoad': 'MAYBE', 'bundled': True})
 
         plugin = self.J.get_plugins()['subversion']

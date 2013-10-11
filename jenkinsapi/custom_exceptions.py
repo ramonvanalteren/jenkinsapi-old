@@ -9,6 +9,7 @@ class JenkinsAPIException(Exception):
     """
     pass
 
+
 class NotFound(JenkinsAPIException):
     """
     Resource cannot be found

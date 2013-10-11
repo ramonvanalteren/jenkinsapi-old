@@ -208,8 +208,8 @@ class TestJenkins(unittest.TestCase):
                     username='foouser', password='foopassword')
         job = J.create_job('job_one', None)
         self.assertTrue(isinstance(job, Job))
-        self.assertTrue(job.baseurl=='http://localhost:8080/job_one')
-        self.assertTrue(job.name=='job_one')
+        self.assertTrue(job.baseurl == 'http://localhost:8080/job_one')
+        self.assertTrue(job.name == 'job_one')
 
     # Here we're going to test function, which is going to modify
     # Jenkins internal data. It calls for data once to check
@@ -257,8 +257,8 @@ class TestJenkins(unittest.TestCase):
 
         job = J.create_job('job_new', None)
         self.assertTrue(isinstance(job, Job))
-        self.assertTrue(job.baseurl=='http://localhost:8080/job_new')
-        self.assertTrue(job.name=='job_new')
+        self.assertTrue(job.baseurl == 'http://localhost:8080/job_new')
+        self.assertTrue(job.name == 'job_new')
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
@@ -361,12 +361,12 @@ class TestJenkinsURLs(unittest.TestCase):
     def test_has_plugin(self, _p_poll, _poll):
         _poll.return_value = {}
         _p_poll.return_value = {'plugins': [
-            {'deleted': False, 'hasUpdate': True, 'downgradable': False, 
-            'dependencies': [{}, {}, {}, {}], 
-            'longName': 'Jenkins Subversion Plug-in', 'active': True, 
-            'shortName': 'subversion', 'backupVersion': None, 
+            {'deleted': False, 'hasUpdate': True, 'downgradable': False,
+            'dependencies': [{}, {}, {}, {}],
+            'longName': 'Jenkins Subversion Plug-in', 'active': True,
+            'shortName': 'subversion', 'backupVersion': None,
             'url': 'http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
-            'enabled': True, 'pinned': False, 'version': '1.45', 
+            'enabled': True, 'pinned': False, 'version': '1.45',
             'supportsDynamicLoad': 'MAYBE', 'bundled': True}]}
 
         J = Jenkins('http://localhost:8080/',

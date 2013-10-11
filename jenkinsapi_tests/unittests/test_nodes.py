@@ -26,7 +26,6 @@ class TestNode(unittest.TestCase):
              'views': [{'name': 'All', 'url': 'http://halob:8080/'},
                        {'name': 'FodFanFo', 'url': 'http://halob:8080/view/FodFanFo/'}]}
 
-
     DATA1 = {'busyExecutors': 0,
              'computer': [{'actions': [],
                           'displayName': 'master',
@@ -127,7 +126,7 @@ class TestNode(unittest.TestCase):
              'oneOffExecutors': [],
              'temporarilyOffline': False}
 
-    DATA3= { 'actions': [],
+    DATA3 = {'actions': [],
              'displayName': 'halob',
              'executors': [{}],
              'icon': 'computer-x.png',
@@ -148,7 +147,6 @@ class TestNode(unittest.TestCase):
              'oneOffExecutors': [],
              'temporarilyOffline': False}
 
-
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(Nodes, '_poll')
     def setUp(self, _poll_nodes, _poll_jenkins):
@@ -159,7 +157,7 @@ class TestNode(unittest.TestCase):
 
         self.J = Jenkins('http://localhost:8080')
         self.ns = self.J.get_nodes()
-        #self.ns = Nodes('http://localhost:8080/computer', 'bobnit', self.J)
+        # self.ns = Nodes('http://localhost:8080/computer', 'bobnit', self.J)
 
     def testRepr(self):
         # Can we produce a repr string for this object

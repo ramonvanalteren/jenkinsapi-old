@@ -24,7 +24,7 @@ class TestJobGetAllBuilds(unittest.TestCase):
                              "iconUrl": "health-80plus.png", "score": 100}],
             "inQueue": False,
             "keepDependencies": False,
-            "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"}, # build running
+            "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
             "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
             "lastFailedBuild": None,
             "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -92,7 +92,7 @@ class TestJobGetAllBuilds(unittest.TestCase):
                              "iconUrl": "health-80plus.png", "score": 100}],
             "inQueue": False,
             "keepDependencies": False,
-            "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"}, # build running
+            "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"},  # build running
             "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
             "lastFailedBuild": None,
             "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
@@ -121,7 +121,6 @@ class TestJobGetAllBuilds(unittest.TestCase):
             # this one below should never be used
             (JOB3_API_URL, str({'tree': 'allBuilds[number,url]'})): JOB3_ALL_BUILDS_DATA,
     }
-
 
     def fakeGetData(self, url, params=None):
         TestJobGetAllBuilds.__get_data_call_count += 1

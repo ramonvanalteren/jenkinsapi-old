@@ -6,7 +6,10 @@ from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
 
-class TestDataMissing(Exception): pass
+
+class TestDataMissing(Exception):
+    pass
+
 
 class TestViews(unittest.TestCase):
     @mock.patch.object(Jenkins, '_poll')
@@ -39,7 +42,7 @@ class TestViews(unittest.TestCase):
         def mockGetData(JJ, url):
             DATA = {}
             DATA['http://localhost:8080/%s' % config.JENKINS_API] = \
-                {'views':[dict(name='NewView', url='http://xxxxx/yyyy')]}
+                {'views': [dict(name='NewView', url='http://xxxxx/yyyy')]}
             DATA['http://xxxxx/yyyy/%s' % config.JENKINS_API] = \
                 {}
 
@@ -72,4 +75,3 @@ class TestViews(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

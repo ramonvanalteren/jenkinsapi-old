@@ -24,7 +24,7 @@ class TestJob(unittest.TestCase):
                              "iconUrl": "health-80plus.png", "score": 100}],
             "inQueue": False,
             "keepDependencies": False,
-            "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"}, # build running
+            "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
             "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
             "lastFailedBuild": None,
             "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -39,7 +39,7 @@ class TestJob(unittest.TestCase):
             "scm": {},
             "upstreamProjects": []}
 
-    URL_DATA = {'http://halob:8080/job/foo/%s' % config.JENKINS_API:JOB_DATA}
+    URL_DATA = {'http://halob:8080/job/foo/%s' % config.JENKINS_API: JOB_DATA}
 
     def fakeGetData(self, url, *args):
         try:

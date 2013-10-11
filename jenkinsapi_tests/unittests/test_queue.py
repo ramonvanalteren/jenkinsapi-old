@@ -8,10 +8,12 @@ from jenkinsapi.queue import Queue, QueueItem
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.job import Job
 
+
 class FourOhFourError(Exception):
     """
     Missing fake data
     """
+
 
 class TestQueue(unittest.TestCase):
 
@@ -25,15 +27,14 @@ class TestQueue(unittest.TestCase):
     URL_DATA = {}
 
     URL_DATA['http://localhost:8080/%s' % config.JENKINS_API] = \
-        {'jobs':[
-            {'name':'utmebvpxrw', 
-              'url':'http://localhost/job/utmebvpxrw'}
+        {'jobs': [
+            {'name': 'utmebvpxrw',
+              'url': 'http://localhost/job/utmebvpxrw'}
               ]
         }
 
     URL_DATA['http://localhost/job/utmebvpxrw/%s' % config.JENKINS_API] = \
         {}
-
 
     URL_DATA['http://localhost:8080/queue/%s' % config.JENKINS_API] = \
         {'items': [{'actions': [{'causes': [{'shortDescription': 'Started by user anonymous',
@@ -79,7 +80,6 @@ class TestQueue(unittest.TestCase):
                      'url': 'http://localhost:8080/job/utmebvpxrw/'},
             'why': 'Waiting for next available executor'}]}
 
-
     @mock.patch.object(JenkinsBase, 'get_data', mockGetData)
     def setUp(self):
         self.J = Jenkins('http://localhost:8080')  # Jenkins
@@ -92,7 +92,7 @@ class TestQueue(unittest.TestCase):
         self.assertEquals(len(self.q), 3)
 
     def test_list_items(self):
-        self.assertEquals(set(self.q.keys()), set([40,41,42]))
+        self.assertEquals(set(self.q.keys()), set([40, 41, 42]))
 
     def test_getitem(self):
         item40 = self.q[40]
