@@ -99,6 +99,7 @@ class TestQueue(unittest.TestCase):
         _get.return_value = 'SUCCESS'
         req = Requester('foo', 'bar')
         response = req.get_url(
+            'http://dummy',
             params={'param': 'value'},
             headers=None)
         self.assertTrue(response == 'SUCCESS')
@@ -108,6 +109,7 @@ class TestQueue(unittest.TestCase):
         _post.return_value = 'SUCCESS'
         req = Requester('foo', 'bar')
         response = req.post_url(
+            'http://dummy',
             params={'param': 'value'},
             headers=None)
         self.assertTrue(response == 'SUCCESS')
@@ -118,6 +120,7 @@ class TestQueue(unittest.TestCase):
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_xml_and_confirm_status(
+                url='http://dummy',
                 params={'param': 'value'},
                 data=None
             )
@@ -131,6 +134,7 @@ class TestQueue(unittest.TestCase):
         _post.return_value = response
         req = Requester('foo', 'bar')
         ret = req.post_xml_and_confirm_status(
+            url='http://dummy',
             params={'param': 'value'},
             data='<xml/>'
         )
@@ -142,6 +146,7 @@ class TestQueue(unittest.TestCase):
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_and_confirm_status(
+                url='http://dummy',
                 params={'param': 'value'},
                 data=None
             )
@@ -155,6 +160,7 @@ class TestQueue(unittest.TestCase):
         _post.return_value = response
         req = Requester('foo', 'bar')
         ret = req.post_and_confirm_status(
+            url='http://dummy',
             params={'param': 'value'},
             data='some data'
         )
@@ -169,6 +175,7 @@ class TestQueue(unittest.TestCase):
         req = Requester('foo', 'bar')
         with self.assertRaises(JenkinsAPIException) as ae:
             req.post_and_confirm_status(
+                url='http://dummy',
                 params={'param': 'value'},
                 data='some data'
             )
@@ -183,6 +190,7 @@ class TestQueue(unittest.TestCase):
         _get.return_value = response
         req = Requester('foo', 'bar')
         ret = req.get_and_confirm_status(
+            url='http://dummy',
             params={'param': 'value'}
         )
         self.assertTrue(isinstance(ret, requests.Response))
@@ -196,6 +204,7 @@ class TestQueue(unittest.TestCase):
         req = Requester('foo', 'bar')
         with self.assertRaises(JenkinsAPIException) as ae:
             req.get_and_confirm_status(
+                url='http://dummy',
                 params={'param': 'value'}
             )
 
