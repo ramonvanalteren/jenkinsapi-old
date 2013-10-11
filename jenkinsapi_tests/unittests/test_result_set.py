@@ -65,4 +65,4 @@ class TestResultSet(unittest.TestCase):
         for k, v in self.rs.items():
             self.assertIsInstance(k, str)
             self.assertIsInstance(v, Result)
-            self.assertIsInstance(v.id(), str)
+            self.assertIsInstance(v.identifier(), str)
