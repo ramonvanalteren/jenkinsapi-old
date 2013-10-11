@@ -201,7 +201,7 @@ class TestQueue(unittest.TestCase):
         response.status_code = 500
         _get.return_value = response
 
-        req = Requester('foo', 'bar')
+        req = Requester('foo', 'bar', baseurl='http://dummy')
         with self.assertRaises(JenkinsAPIException) as ae:
             req.get_and_confirm_status(
                 url='http://dummy',

@@ -3,7 +3,8 @@ Module for jenkinsapi requester (which is a wrapper around python-requests)
 """
 
 import requests
-from jenkinsapi.custom_exceptions import JenkinsAPIException
+import urlparse
+from jenkinsapi.exceptions import JenkinsAPIException
 # import logging
 
 # # these two lines enable debugging at httplib level (requests->urllib3->httplib)
@@ -30,10 +31,11 @@ class Requester(object):
 
     VALID_STATUS_CODES = [200, ]
 
-    def __init__(self, username=None, password=None, ssl_verify=True):
+    def __init__(self, username=None, password=None, ssl_verify=True, baseurl=None):
         if username:
             assert password, 'Cannot set a username without a password!'
 
+        self.base_scheme = urlparse.urlsplit(baseurl).scheme if baseurl else None
         self.username = username
         self.password = password
         self.ssl_verify = ssl_verify
@@ -66,13 +68,30 @@ class Requester(object):
 
         return requestKwargs
 
+    def _update_url_scheme(self, url):
+        """
+        Updates scheme of given url to the one used in Jenkins baseurl.
+        """
+        if self.base_scheme and not url.startswith("%s://" % self.base_scheme):
+            url_split = urlparse.urlsplit(url)
+            url = urlparse.urlunsplit(
+                [
+                self.base_scheme,
+                url_split.netloc,
+                url_split.path,
+                url_split.query,
+                url_split.fragment
+                ]
+            )
+        return url
+
     def get_url(self, url, params=None, headers=None):
         requestKwargs = self.get_request_dict(params=params, headers=headers)
-        return requests.get(url, **requestKwargs)
+        return requests.get(self._update_url_scheme(url), **requestKwargs)
 
     def post_url(self, url, params=None, data=None, files=None, headers=None):
         requestKwargs = self.get_request_dict(params=params, data=data, files=files, headers=headers)
-        return requests.post(url, **requestKwargs)
+        return requests.post(self._update_url_scheme(url), **requestKwargs)
 
     def post_xml_and_confirm_status(self, url, params=None, data=None, valid=None):
         headers = {'Content-Type': 'text/xml'}

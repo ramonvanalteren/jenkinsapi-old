@@ -10,6 +10,7 @@ import urlparse
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
+from jenkinsapi.jobs import Jobs
 from jenkinsapi.node import Node
 from jenkinsapi.view import View
 from jenkinsapi.nodes import Nodes
@@ -19,7 +20,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob, JenkinsAPIException
+from jenkinsapi.custom_exceptions import UnknownJob
 
 log = logging.getLogger(__name__)
 
@@ -37,11 +38,12 @@ class Jenkins(JenkinsBase):
         """
         self.username = username
         self.password = password
-        self.requester = requester or Requester(username, password)
+        self.requester = requester or Requester(username, password, baseurl=baseurl)
         JenkinsBase.__init__(self, baseurl)
 
     def _clone(self):
-        return Jenkins(self.baseurl, username=self.username, password=self.password, requester=self.requester)
+        return Jenkins(self.baseurl, username=self.username,
+                       password=self.password, requester=self.requester)
 
     def base_server_url(self):
         if config.JENKINS_API in self.baseurl:
@@ -81,12 +83,17 @@ class Jenkins(JenkinsBase):
         # This only ever needs to work on the base object
         return '%s/computer' % self.baseurl
 
+    @property
+    def jobs(self):
+        return Jobs(self)
+
     def get_jobs(self):
         """
         Fetch all the build-names on this Jenkins server.
         """
         for info in self._data["jobs"]:
-            yield info["name"], Job(info["url"], info["name"], jenkins_obj=self)
+            yield info["name"],\
+                  Job(info["url"], info["name"], jenkins_obj=self)
 
     def get_jobs_info(self):
         """
@@ -102,7 +109,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of the job, str
         :return: Job obj
         """
-        return self[jobname]
+        return self.jobs[jobname]
 
     def has_job(self, jobname):
         """
@@ -110,7 +117,7 @@ class Jenkins(JenkinsBase):
         :param jobname: string
         :return: boolean
         """
-        return jobname in self
+        return jobname in self.jobs
 
     def create_job(self, jobname, config_):
         """
@@ -119,35 +126,10 @@ class Jenkins(JenkinsBase):
         :param config: configuration of new job, xml
         :return: new Job obj
         """
-        if self.has_job(jobname):
-            return self[jobname]
-
-        params = {'name': jobname}
-        if isinstance(config_, unicode):
-            config_ = str(config_)
-        self.requester.post_xml_and_confirm_status(self.get_create_url(), data=config_, params=params)
-        self.poll()
-        if not self.has_job(jobname):
-            raise JenkinsAPIException('Cannot create job %s' % jobname)
-        return self[jobname]
+        return self.jobs.create(jobname, config_)
 
     def copy_job(self, jobname, newjobname):
-        """
-        Copy a job
-        :param jobname: name of a exist job, str
-        :param newjobname: name of new job, str
-        :return: new Job obj
-        """
-        params = {'name': newjobname,
-                  'mode': 'copy',
-                  'from': jobname}
-
-        self.requester.post_and_confirm_status(
-            self.get_create_url(),
-            params=params,
-            data='')
-        self.poll()
-        return self[newjobname]
+        return self.jobs.copy(jobname, newjobname)
 
     def build_job(self, jobname, params=None):
         """
@@ -157,7 +139,6 @@ class Jenkins(JenkinsBase):
         :return: none
         """
         self[jobname].invoke(build_params=params or {})
-        return
 
     def delete_job(self, jobname):
         """
@@ -165,13 +146,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of a exist job, str
         :return: new jenkins_obj
         """
-        delete_job_url = self[jobname].get_delete_url()
-        self.requester.post_and_confirm_status(
-            delete_job_url,
-            data='some random bytes...'
-        )
-        self.poll()
-        return self
+        del self.jobs[jobname]
 
     def rename_job(self, jobname, newjobname):
         """
@@ -180,12 +155,7 @@ class Jenkins(JenkinsBase):
         :param newjobname: name of new job, str
         :return: new Job obj
         """
-        params = {'newName': newjobname}
-        rename_job_url = self[jobname].get_rename_url()
-        self.requester.post_and_confirm_status(
-            rename_job_url, params=params, data='')
-        self.poll()
-        return self[newjobname]
+        return self.jobs.rename(jobname, newjobname)
 
     def iterkeys(self):
         for info in self._data["jobs"]:
@@ -193,7 +163,8 @@ class Jenkins(JenkinsBase):
 
     def iteritems(self):
         """
-        :param return: An iterator of pairs. Each pair will be (job name, Job object)
+        :param return: An iterator of pairs.
+            Each pair will be (job name, Job object)
         """
         return self.get_jobs()
 
@@ -241,7 +212,7 @@ class Jenkins(JenkinsBase):
         :param jobname: string
         :return: boolean
         """
-        return jobname in self.get_jobs_list()
+        return jobname in self.jobs
 
     def get_node(self, nodename):
         """Get a node object for a specific node"""
