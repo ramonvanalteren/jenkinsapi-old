@@ -210,3 +210,6 @@ class TestQueue(unittest.TestCase):
 
         print ae.exception.message
         self.assertTrue(ae.exception.message == "Operation failed. url=None, headers=None, status=500, text=")
+
+if __name__ == "__main__":
+    unittest.main()

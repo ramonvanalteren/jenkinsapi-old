@@ -39,7 +39,7 @@ class Requester(object):
         self.ssl_verify = ssl_verify
 
 
-    def get_request_dict(self, url, params=None, data=None, files=None, headers=None):
+    def get_request_dict(self, params=None, data=None, files=None, headers=None):
         requestKwargs = {}
         if self.username:
             requestKwargs['auth'] = (self.username, self.password)
@@ -67,11 +67,11 @@ class Requester(object):
         return requestKwargs
 
     def get_url(self, url, params=None, headers=None):
-        requestKwargs = self.get_request_dict(url, params=params, headers=headers)
+        requestKwargs = self.get_request_dict(params=params, headers=headers)
         return requests.get(url, **requestKwargs)
 
     def post_url(self, url, params=None, data=None, files=None, headers=None):
-        requestKwargs = self.get_request_dict(url, params=params, data=data, files=files, headers=headers)
+        requestKwargs = self.get_request_dict(params=params, data=data, files=files, headers=headers)
         return requests.post(url, **requestKwargs)
 
     def post_xml_and_confirm_status(self, url, params=None, data=None, valid=None):
