@@ -4,7 +4,7 @@ import unittest
 import requests
 from collections import defaultdict
 from jenkinsapi.jenkins import Requester
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 class TestQueue(unittest.TestCase):
 

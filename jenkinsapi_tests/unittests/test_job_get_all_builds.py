@@ -4,7 +4,7 @@ import unittest
 from jenkinsapi import config
 from jenkinsapi.job import Job
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.exceptions import NoBuildData
+from jenkinsapi.custom_exceptions import NoBuildData
 
 
 class TestJobGetAllBuilds(unittest.TestCase):

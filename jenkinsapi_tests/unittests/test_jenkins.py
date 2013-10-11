@@ -2,7 +2,7 @@ import mock
 import unittest
 
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
 from jenkinsapi.plugins import Plugins
 

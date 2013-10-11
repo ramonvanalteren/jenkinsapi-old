@@ -11,7 +11,7 @@ import subprocess
 import pkg_resources
 
 from jenkinsapi.jenkins import Jenkins
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 log = logging.getLogger(__name__)
 
