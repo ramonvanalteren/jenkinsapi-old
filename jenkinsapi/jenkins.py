@@ -19,7 +19,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.exceptions import UnknownJob, JenkinsAPIException
+from jenkinsapi.custom_exceptions import UnknownJob, JenkinsAPIException
 
 log = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ Module for Jenkinsapi Invocation object
 
 import time
 import datetime
-from jenkinsapi.exceptions import UnknownQueueItem, TimeOut
+from jenkinsapi.custom_exceptions import UnknownQueueItem, TimeOut
 
 
 class Invocation(object):

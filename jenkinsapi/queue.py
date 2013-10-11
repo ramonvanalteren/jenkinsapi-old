@@ -3,7 +3,7 @@ Queue module for jenkinsapi
 """
 
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.exceptions import UnknownQueueItem
+from jenkinsapi.custom_exceptions import UnknownQueueItem
 import logging
 
 log = logging.getLogger(__name__)

@@ -13,7 +13,7 @@ from jenkinsapi.invocation import Invocation
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.queue import QueueItem
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
-from jenkinsapi.exceptions import (
+from jenkinsapi.custom_exceptions import (
     NoBuildData,
     NotConfiguredSCM,
     NotFound,

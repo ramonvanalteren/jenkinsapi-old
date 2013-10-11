@@ -10,7 +10,7 @@ from urllib2 import urlparse
 from jenkinsapi import constants
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.artifact import Artifact
-from jenkinsapi.exceptions import ArtifactsMissing, TimeOut, BadURL
+from jenkinsapi.custom_exceptions import ArtifactsMissing, TimeOut, BadURL
 
 log = logging.getLogger(__name__)
 

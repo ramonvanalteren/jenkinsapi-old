@@ -4,7 +4,7 @@ Module for jenkinsapi nodes
 
 import logging
 from jenkinsapi.node import Node
-from jenkinsapi.exceptions import UnknownNode
+from jenkinsapi.custom_exceptions import UnknownNode
 from jenkinsapi.jenkinsbase import JenkinsBase
 
 log = logging.getLogger(__name__)

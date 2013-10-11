@@ -12,7 +12,7 @@ import logging
 import hashlib
 
 from jenkinsapi.fingerprint import Fingerprint
-from jenkinsapi.exceptions import ArtifactBroken
+from jenkinsapi.custom_exceptions import ArtifactBroken
 
 log = logging.getLogger(__name__)
 

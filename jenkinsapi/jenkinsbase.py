@@ -4,7 +4,7 @@ Module for JenkinsBase class
 
 import logging
 from jenkinsapi import config
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 log = logging.getLogger(__name__)
 
 
