@@ -18,12 +18,12 @@ class TestViews(unittest.TestCase):
         mock_requester = Requester(username='foouser', password='foopassword')
         mock_requester.get_url = mock.MagicMock(return_value='<div/>')
         mock_requester.post_url = mock.MagicMock(return_value='')
-        _poll.return_value = {'views': [
-                        {'name': 'All',
-                         'url': 'http://localhost:8080/views/All'},
-                        {'name': 'NewView',
-                         'url': 'http://localhost:8080/views/NewView'},
-                        ]}
+        _poll.return_value = {
+            'views': [
+                {'name': 'All', 'url': 'http://localhost:8080/views/All'},
+                {'name': 'NewView', 'url': 'http://localhost:8080/views/NewView'},
+            ]
+        }
         _base_poll.return_value = _poll.return_value
         J = Jenkins('http://localhost:8080/',
                     username='foouser', password='foopassword',
@@ -32,7 +32,7 @@ class TestViews(unittest.TestCase):
         new_view = J.views.create('NewView')
         self.assertTrue(isinstance(new_view, View))
         self.assertEquals(new_view.baseurl,
-                'http://localhost:8080/views/NewView')
+                          'http://localhost:8080/views/NewView')
 
     def test_create_existing_view(self):
         """
@@ -55,9 +55,7 @@ class TestViews(unittest.TestCase):
 
         with mock.patch.object(JenkinsBase, 'get_data', mockGetData):
 
-            J = Jenkins('http://localhost:8080',
-                    username='foouser',
-                    password='foopassword')
+            J = Jenkins('http://localhost:8080', username='foouser', password='foopassword')
 
             new_view = J.views.create('NewView')
 
