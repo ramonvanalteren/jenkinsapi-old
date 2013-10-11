@@ -20,8 +20,8 @@ class Result(object):
         self_str = str(self)
         return "<%s.%s %s>" % (module_name, class_name, self_str)
 
-    #def id(self):
-    #    """
-    #    Calculate an ID for this object.
-    #    """
-    #    return "%s.%s" % (self.className, self.name)
+    def identifier(self):
+        """
+        Calculate an ID for this object.
+        """
+        return "%s.%s" % (self.className, self.name)
