@@ -1,3 +1,7 @@
+"""
+This module implements the Jobs class, which is intended to be a container-like
+interface for all of the jobs defined on a single Jenkins server.
+"""
 import logging
 from jenkinsapi.job import Job
 from jenkinsapi.custom_exceptions import JenkinsAPIException
@@ -6,7 +10,12 @@ log = logging.getLogger(__name__)
 
 
 class Jobs(object):
-
+    """
+    This class provides a container-like API which gives
+    access to all jobs defined on the Jenkins server. It behaves
+    like a dict in which keys are Job-names and values are actual
+    jenkinsapi.Job objects.
+    """
     def __init__(self, jenkins):
         self.jenkins = jenkins
 
