@@ -4,7 +4,7 @@ interface for all of the jobs defined on a single Jenkins server.
 """
 import logging
 from jenkinsapi.job import Job
-from jenkinsapi.custom_exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException, UnknownJob
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +35,9 @@ class Jobs(object):
             )
             self.jenkins.poll()
 
+    def __setitem__(self, key, value):
+        raise NotImplementedError()
+
     def __getitem__(self, job_name):
         for row in self.jenkins._data.get('jobs', []):
             if row['name'] == job_name:
@@ -42,8 +45,8 @@ class Jobs(object):
                     row['url'],
                     row['name'],
                     self.jenkins)
-        else:
-            return None
+
+        raise UnknownJob(job_name)
 
     def iteritems(self):
         """

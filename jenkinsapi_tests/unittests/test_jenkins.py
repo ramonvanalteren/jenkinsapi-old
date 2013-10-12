@@ -1,10 +1,10 @@
 import mock
 import unittest
 
-from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import JenkinsAPIException
-from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
 from jenkinsapi.plugins import Plugins
+from jenkinsapi.utils.requester import Requester
+from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
+from jenkinsapi.custom_exceptions import JenkinsAPIException, UnknownJob
 
 
 class TestJenkins(unittest.TestCase):
@@ -36,45 +36,6 @@ class TestJenkins(unittest.TestCase):
                     username='foouser', password='foopassword',
                     requester=mock_requester)
         J.poll()
-
-# TODO: Refactor this to use Requests, not urllib2
-    # @mock.patch.object(Jenkins, '_poll')
-    # def test_unauthorised_reload(self, _poll):
-    #     def fail_get_url(url):
-    #         raise urllib2.HTTPError(url=url, code=403,
-    #             msg='You are not authorized to reload this server',
-    #             hdrs=None, fp=None)
-
-    #     _poll.return_value = {}
-    #     mock_requester = Requester(username='foouser', password='foopassword')
-    #     mock_requester.get_url = mock.MagicMock(return_value='',
-    #             side_effect=fail_get_url)
-    #     J = Jenkins('http://localhost:8080/',
-    #                 username='foouser', password='foopassword',
-    #                 requester=mock_requester)
-    #     with self.assertRaises(NotAuthorized) as na:
-    #         J.reload()
-
-        # self.assertEquals(na.exception.message,
-        #         'You are not authorized to reload this server')
-
-    # @mock.patch.object(Jenkins, '_poll')
-    # def test_httperror_reload(self, _poll):
-    #     def fail_get_url(url):
-    #         raise urllib2.HTTPError(url=url, code=500,
-    #                 msg='Because I said so!', hdrs=None, fp=None)
-
-    #     _poll.return_value = {}
-    #     mock_requester = Requester(username='foouser', password='foopassword')
-    #     mock_requester.get_url = mock.MagicMock(return_value='',
-    #             side_effect=fail_get_url)
-    #     J = Jenkins('http://localhost:8080/',
-    #                 username='foouser', password='foopassword',
-    #                 requester=mock_requester)
-    #     with self.assertRaises(urllib2.HTTPError) as ar:
-    #         J.poll()
-    #     http_error = ar.exception
-    #     self.assertEquals(http_error.code, 500)
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
@@ -149,6 +110,24 @@ class TestJenkins(unittest.TestCase):
         self.assertTrue(isinstance(job, Job))
         self.assertEquals(job.name, _poll.return_value['jobs'][0]['name'])
         self.assertEquals(job.baseurl, _poll.return_value['jobs'][0]['url'])
+
+    @mock.patch.object(JenkinsBase, '_poll')
+    @mock.patch.object(Jenkins, '_poll')
+    @mock.patch.object(Job, '_poll')
+    def test_get_job_that_does_not_exist(self, _base_poll, _poll, _job_poll):
+        _poll.return_value = {
+            'jobs': [
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+            ]
+        }
+        _base_poll.return_value = _poll.return_value
+        _job_poll.return_value = {}
+        J = Jenkins('http://localhost:8080/',
+                    username='foouser', password='foopassword')
+
+        with self.assertRaises(UnknownJob):
+            job = J.get_job('job_three')
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
