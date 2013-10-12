@@ -26,8 +26,13 @@ class KrbRequester(Requester):
         self.mutual_auth = mutual_auth
 
     def get_request_dict(self, url, params, data, headers):
-        req_dict = super(KrbRequester, self).get_request_dict(url=url, params=params,
-                                                              data=data, headers=headers)
+        req_dict = Requester(
+            self,
+            url=url,
+            params=params,
+            data=data,
+            headers=headers
+        )
         if self.mutual_auth:
             auth = HTTPKerberosAuth(self.mutual_auth)
         else:
