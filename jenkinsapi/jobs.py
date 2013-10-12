@@ -1,6 +1,6 @@
 import logging
 from jenkinsapi.job import Job
-from jenkinsapi.exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 log = logging.getLogger(__name__)
 
