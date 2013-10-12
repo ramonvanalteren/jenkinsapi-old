@@ -79,9 +79,11 @@ class Jobs(object):
         params = {'name': job_name}
         if isinstance(config, unicode):
             config = str(config)
-        self.jenkins.requester.\
-                post_xml_and_confirm_status(self.jenkins.get_create_url(),
-                                            data=config, params=params)
+        self.jenkins.requester.post_xml_and_confirm_status(
+            self.jenkins.get_create_url(),
+            data=config,
+            params=params
+        )
         self.jenkins.poll()
         if job_name not in self:
             raise JenkinsAPIException('Cannot create job %s' % job_name)

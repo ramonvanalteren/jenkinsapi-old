@@ -192,7 +192,8 @@ class Build(JenkinsBase):
         """
 # <<<<<<< HEAD
 #         downstream_jobs_names = self.job.get_downstream_job_names()
-#         fingerprint_data = self.get_data("%s?depth=2&tree=fingerprint[usage[name]]" % self.python_api_url(self.baseurl))
+#         fingerprint_data = self.get_data("%s?depth=2&tree=fingerprint[usage[name]]" \
+#                                            % self.python_api_url(self.baseurl))
 #         try:
 #             fingerprints = fingerprint_data['fingerprint'][0]
 #             return [
@@ -205,7 +206,7 @@ class Build(JenkinsBase):
         downstream_names = []
         try:
             fingerprints = self._data["fingerprint"]
-            for fingerprint in fingerprints :
+            for fingerprint in fingerprints:
                 for job_usage in fingerprint['usage']:
                     if job_usage['name'] in downstream_job_names:
                         downstream_names.append(job_usage['name'])
@@ -235,7 +236,7 @@ class Build(JenkinsBase):
         downstream_builds = []
         try:
             fingerprints = self._data["fingerprint"]
-            for fingerprint in fingerprints :
+            for fingerprint in fingerprints:
                 for job_usage in fingerprint['usage']:
                     if job_usage['name'] in downstream_job_names:
                         job = self.get_jenkins_obj().get_job(job_usage['name'])

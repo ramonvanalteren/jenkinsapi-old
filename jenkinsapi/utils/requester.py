@@ -40,7 +40,6 @@ class Requester(object):
         self.password = password
         self.ssl_verify = ssl_verify
 
-
     def get_request_dict(self, params=None, data=None, files=None, headers=None):
         requestKwargs = {}
         if self.username:
@@ -76,11 +75,11 @@ class Requester(object):
             url_split = urlparse.urlsplit(url)
             url = urlparse.urlunsplit(
                 [
-                self.base_scheme,
-                url_split.netloc,
-                url_split.path,
-                url_split.query,
-                url_split.fragment
+                    self.base_scheme,
+                    url_split.netloc,
+                    url_split.path,
+                    url_split.query,
+                    url_split.fragment
                 ]
             )
         return url

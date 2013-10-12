@@ -92,8 +92,8 @@ class Jenkins(JenkinsBase):
         Fetch all the build-names on this Jenkins server.
         """
         for info in self._data["jobs"]:
-            yield info["name"],\
-                  Job(info["url"], info["name"], jenkins_obj=self)
+            yield info["name"], \
+                Job(info["url"], info["name"], jenkins_obj=self)
 
     def get_jobs_info(self):
         """
