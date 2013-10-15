@@ -152,7 +152,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             if len(self.get_params_list()) == 0:
                 if self.is_queued():
                     raise WillNotBuild('%s is already queued' % repr(self))
-    
+
                 elif self.is_running():
                     if skip_if_running:
                         log.warn(
