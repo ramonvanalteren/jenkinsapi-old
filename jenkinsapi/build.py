@@ -4,6 +4,7 @@ Build API methods
 
 import time
 import pytz
+import warnings
 import datetime
 from jenkinsapi.artifact import Artifact
 from jenkinsapi import config
@@ -56,6 +57,7 @@ class Build(JenkinsBase):
         return getattr(self, '_get_%s_rev' % vcs, lambda: None)()
 
     def _get_svn_rev(self):
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         maxRevision = 0
         for repoPathSet in self._data["changeSet"]["revisions"]:
             maxRevision = max(repoPathSet["revision"], maxRevision)
@@ -74,6 +76,7 @@ class Build(JenkinsBase):
             return revision
 
     def _get_hg_rev(self):
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         return [x['mercurialNodeName'] for x in self._data['actions'] if 'mercurialNodeName' in x][0]
 
     def get_duration(self):
@@ -136,6 +139,7 @@ class Build(JenkinsBase):
         Get the master job name if it exist, None otherwise
         :return: String or None
         """
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         try:
             return self.get_actions()['parameters'][0]['value']
         except KeyError:
@@ -146,6 +150,7 @@ class Build(JenkinsBase):
         Get the master job object if it exist, None otherwise
         :return: Job or None
         """
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         if self.get_master_job_name():
             return self.get_jenkins_obj().get_job(self.get_master_job_name())
         else:
@@ -156,6 +161,7 @@ class Build(JenkinsBase):
         Get the master build number if it exist, None otherwise
         :return: int or None
         """
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         try:
             return int(self.get_actions()['parameters'][1]['value'])
         except KeyError:
@@ -166,6 +172,7 @@ class Build(JenkinsBase):
         Get the master build if it exist, None otherwise
         :return Build or None
         """
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         master_job = self.get_master_job()
         if master_job:
             return master_job.get_build(self.get_master_build_number())
@@ -177,6 +184,7 @@ class Build(JenkinsBase):
         Get the downstream jobs for this build
         :return List of jobs or None
         """
+        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         downstream_jobs = []
         try:
             for job_name in self.get_downstream_job_names():
