@@ -1,5 +1,11 @@
 """
-Build API methods
+A jenkins build represents a single execution of a Jenkins Job.
+
+Builds can be thought of as the second level of the jenkins heirarchy
+beneath Jobs. Builds can have state, such as whether they are running or
+not. They can also have outcomes, such as wether they passed or failed.
+
+Build objects can be associated with Results and Artifacts.g
 """
 
 import time
