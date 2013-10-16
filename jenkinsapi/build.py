@@ -4,17 +4,17 @@ Build API methods
 
 import time
 import pytz
+import logging
 import warnings
 import datetime
-from jenkinsapi.artifact import Artifact
-from jenkinsapi import config
-from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.custom_exceptions import NoResults
-from jenkinsapi.constants import STATUS_SUCCESS
-from jenkinsapi.result_set import ResultSet
-
 from time import sleep
-import logging
+from jenkinsapi import config
+from jenkinsapi.artifact import Artifact
+from jenkinsapi.result_set import ResultSet
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.constants import STATUS_SUCCESS
+from jenkinsapi.custom_exceptions import NoResults
+
 
 log = logging.getLogger(__name__)
 
