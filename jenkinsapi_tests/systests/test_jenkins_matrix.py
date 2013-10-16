@@ -1,12 +1,8 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
-import os
 import re
 import time
-import gzip
-import shutil
-import tempfile
 import unittest
 
 from jenkinsapi_tests.systests.base import BaseSystemTest
@@ -14,9 +10,9 @@ from jenkinsapi_tests.systests.job_configs import MATRIX_JOB
 from jenkinsapi_tests.test_utils.random_strings import random_string
 
 
-class TestPingerJob(BaseSystemTest):
+class TestMatrixJob(BaseSystemTest):
 
-    def test_invoke_job(self):
+    def test_invoke_matrix_job(self):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, MATRIX_JOB)
         job.invoke(block=True)
@@ -33,7 +29,12 @@ class TestPingerJob(BaseSystemTest):
             m = re.search(u'\xbb (.*) #\\d+$', r.name)
             self.assertIsNotNone(m)
             s.add(m.group(1))
-        self.assertEqual(s, {'one', 'two', 'three'})
+
+        # This is a bad test, it simply verifies that this function does
+        # not crash on a build from a matrix job.
+        self.assertFalse(b.get_master_job_name())
+
+        self.assertEqual(s, set(['one', 'two', 'three']))
 
 if __name__ == '__main__':
     unittest.main()
