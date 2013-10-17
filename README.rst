@@ -97,8 +97,8 @@ JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) 
 	<jenkinsapi.build.Build test_jenkinsapi #77>
 	...
 
-Project Authors
-----------------
+Project Contributors
+--------------------
 
  * Salim Fadhley (sal@stodge.org)
  * Ramon van Alteren (ramon@vanalteren.nl)
@@ -110,7 +110,7 @@ Project Authors
  * Aleksey Maksimov (ctpeko3a@gmail.com)
  * Kyle Rockman (kyle.rockman@mac.com)
 
-Please do not contact these authors directly for support questions! Use the GitHub tracker instead.
+Please do not contact these contributors directly for support questions! Use the GitHub tracker instead.
 
 License
 --------
