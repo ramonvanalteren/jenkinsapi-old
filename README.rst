@@ -110,6 +110,8 @@ Project Authors
  * Aleksey Maksimov (ctpeko3a@gmail.com)
  * Kyle Rockman (kyle.rockman@mac.com)
 
+Please do not contact these authors directly for support questions! Use the GitHub tracker instead.
+
 License
 --------
 
