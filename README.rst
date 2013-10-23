@@ -130,6 +130,7 @@ Project Contributors
  * Bradley Harris (bradley@ninelb.com)
  * Aleksey Maksimov (ctpeko3a@gmail.com)
  * Kyle Rockman (kyle.rockman@mac.com)
+ * Sascha Peilicke (saschpe@gmx.de)
 
 Please do not contact these contributors directly for support questions! Use the GitHub tracker instead.
 
