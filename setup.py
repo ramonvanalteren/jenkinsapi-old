@@ -27,7 +27,7 @@ setup(
     zip_safe=True,
     include_package_data=False,
     install_requires=['requests>=1.2.3', 'pytz>=2013b'],
-    test_suite='jenkinsapi_tests',
+    test_suite='nose.collector',
     tests_require=['mock', 'nose', 'coverage'],
     entry_points=GLOBAL_ENTRY_POINTS,
     url=PROJECT_URL,

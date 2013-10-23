@@ -97,6 +97,27 @@ JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) 
 	<jenkinsapi.build.Build test_jenkinsapi #77>
 	...
 
+Testing
+-------
+
+If you have installed the test dependencies on your system already, you can run
+the testsuite with the following command:
+
+.. code-block:: bash
+
+        python setup.py test
+
+Otherwise using a virtualenv is recommended. Setuptools will automatically fetch
+missing test dependencies:
+
+.. code-block:: bash
+
+        virtualenv
+        source .venv/bin/active
+        (venv) python setup.py test
+
+
+
 Project Contributors
 --------------------
 
