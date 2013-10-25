@@ -17,24 +17,25 @@ class TestMatrixJob(BaseSystemTest):
         job = self.jenkins.create_job(job_name, MATRIX_JOB)
         job.invoke(block=True)
 
-        b = job.get_last_build()
+        build = job.get_last_build()
 
-        while b.is_running():
+        while build.is_running():
             time.sleep(1)
 
-        s = set()
-        for r in b.get_matrix_runs():
-            self.assertEquals(r.get_number(), b.get_number())
-            self.assertEquals(r.get_upstream_build(), b)
-            m = re.search(u'\xbb (.*) #\\d+$', r.name)
-            self.assertIsNotNone(m)
-            s.add(m.group(1))
+        set_of_groups = set()
+        for run in build.get_matrix_runs():
+            self.assertEquals(run.get_number(), build.get_number())
+            self.assertEquals(run.get_upstream_build(), build)
+            match_result = re.search(u'\xbb (.*) #\\d+$', run.name)
+            self.assertIsNotNone(match_result)
+            set_of_groups.add(match_result.group(1))
+            build.get_master_job_name()
 
         # This is a bad test, it simply verifies that this function does
         # not crash on a build from a matrix job.
-        self.assertFalse(b.get_master_job_name())
+        self.assertFalse(build.get_master_job_name())
 
-        self.assertEqual(s, set(['one', 'two', 'three']))
+        self.assertEqual(set_of_groups, set(['one', 'two', 'three']))
 
 if __name__ == '__main__':
     unittest.main()
