@@ -86,7 +86,7 @@ JOB_CONFIGS = {
 
 
 class TestDownstreamUpstream(BaseSystemTest):
-    DELAY = 2
+    DELAY = 10
 
     def test_stream_relationship(self):
         """
