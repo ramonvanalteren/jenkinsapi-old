@@ -13,8 +13,6 @@ class Views(object):
     """
     An abstraction on a Jenkins object's views
     """
-
-    # TODO @lechat 20130702: Add check that plugin for view actually exists in Jenkins
     LIST_VIEW = 'hudson.model.ListView'
     NESTED_VIEW = 'hudson.plugins.nested_view.NestedView'
     MY_VIEW = 'hudson.model.MyView'

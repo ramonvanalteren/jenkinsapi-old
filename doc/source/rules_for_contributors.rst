@@ -19,6 +19,8 @@ You might want to follow a typical test driven development cycle: http://en.wiki
 
 Put simply: Write your tests first and only implement features required to make your tests pass. Do not let your implementation get ahead of your tests.
 
+Features implemented without tests will be removed. Unmaintained features (which break because of changes in Jenkins) will also be removed.
+
 Check the CI status before comitting
 ------------------------------------
 
