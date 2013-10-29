@@ -44,7 +44,7 @@ class Executor(JenkinsBase):
         Get Executor number.
         """
         self.poll()
-        return self._data['']
+        return self._data['number']
 
     def is_idle(self):
         """
