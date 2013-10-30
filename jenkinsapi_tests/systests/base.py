@@ -1,4 +1,5 @@
 import unittest
+import jenkinsapi_tests.systests
 from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi.jenkins import Jenkins
 
@@ -6,7 +7,8 @@ from jenkinsapi.jenkins import Jenkins
 class BaseSystemTest(unittest.TestCase):
 
     def setUp(self):
-        self.jenkins = Jenkins('http://localhost:8080')
+        port = jenkinsapi_tests.systests.state['launcher'].http_port
+        self.jenkins = Jenkins('http://localhost:%d' % port)
         self._delete_all_jobs()
         self._delete_all_views()
 
