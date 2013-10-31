@@ -1,6 +1,7 @@
 import os
 import time
 import Queue
+import random
 import shutil
 import logging
 import datetime
@@ -60,6 +61,7 @@ class JenkinsLancher(object):
         self.jenkins_process = None
         self.q = Queue.Queue()
         self.plugin_urls = plugin_urls or []
+        self.http_port = random.randint(9000, 10000)
 
     def update_war(self):
         os.chdir(self.war_directory)
@@ -121,7 +123,8 @@ class JenkinsLancher(object):
         os.environ['JENKINS_HOME'] = self.jenkins_home
         os.chdir(self.war_directory)
 
-        jenkins_command = ['java', '-jar', self.war_filename]
+        jenkins_command = ['java', '-jar', self.war_filename, 
+            '--httpPort=%d' % self.http_port]
 
         log.info("About to start Jenkins...")
         log.info("%s> %s", os.getcwd(), " ".join(jenkins_command))
