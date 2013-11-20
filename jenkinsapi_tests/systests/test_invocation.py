@@ -27,6 +27,7 @@ class TestInvocation(BaseSystemTest):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
         ii = job.invoke(invoke_pre_check_delay=7)
+        time.sleep(3)
         bn = ii.get_build_number()
         self.assertIsInstance(bn, int)
         ii.block(until='not_queued')
