@@ -5,7 +5,6 @@ Jenkins node.
 """
 import logging
 from jenkinsapi.executor import Executor
-from jenkinsapi.custom_exceptions import JenkinsAPIException
 from jenkinsapi.jenkinsbase import JenkinsBase
 
 log = logging.getLogger(__name__)
