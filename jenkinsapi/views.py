@@ -41,7 +41,7 @@ class Views(object):
             if not new_view.add_job(job_name):
                 # Something wrong - delete view
                 del self[new_view]
-                raise TypeError('Job %s does not exist in Jenkins')
+                raise TypeError('Job %s does not exist in Jenkins' % job_name)
 
     def __getitem__(self, view_name):
         for row in self.jenkins._data.get('views', []):
