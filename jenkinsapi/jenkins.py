@@ -225,7 +225,7 @@ class Jenkins(JenkinsBase):
         return url
 
     def get_queue_url(self):
-        url = urlparse.urljoin(self.base_server_url(), 'queue')
+        url = "%s/%s" % (self.base_server_url(), 'queue')
         return url
 
     def get_queue(self):
