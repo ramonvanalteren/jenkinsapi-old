@@ -193,6 +193,12 @@ class Jenkins(JenkinsBase):
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
         return View(str_view_url, str_view_name, jenkins_obj=self)
 
+    def delete_view_by_url(self, str_url):
+        url = "%s/doDelete" % str_url
+        self.requester.post_and_confirm_status(url, data='')
+        self.poll()
+        return self
+
     def __getitem__(self, jobname):
         """
         Get a job by name

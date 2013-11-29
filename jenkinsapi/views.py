@@ -78,13 +78,6 @@ class Views(object):
         """
         return list(self.iterkeys())
 
-    def delete_view_by_url(self, str_url):
-        url = "%s/doDelete" % str_url
-        response = self.requester.get_url(url, data='')
-        response = response
-        self.jenkins.poll()
-        return self
-
     def create(self, view_name, view_type=LIST_VIEW):
         """
         Create a view
