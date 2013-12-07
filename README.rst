@@ -89,6 +89,8 @@ JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) 
 	>>> import jenkinsapi
 	>>> from jenkinsapi.jenkins import Jenkins
 	>>> J = Jenkins('http://localhost:8080')
+	>>> J.get_version()
+	1.542
 	>>> J.keys() # Jenkins objects appear to be dict-like, mapping keys (job-names) to
 	['foo', 'test_jenkinsapi']
 	>>> J['test_jenkinsapi']
