@@ -21,7 +21,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob
+from jenkinsapi.custom_exceptions import UnknownJob, BadURL
 
 log = logging.getLogger(__name__)
 
@@ -318,3 +318,14 @@ class Jenkins(JenkinsBase):
     def get_executors(self, nodename):
         url = '%s/computer/%s' % (self.baseurl, nodename)
         return Executors(url, nodename, self)
+  
+    def get_version(self):
+        """
+        Return version number of Jenkins
+        """
+        r = self.requester.get_and_confirm_status(self.baseurl)
+        try:
+            return r.headers['X-jenkins']
+        except KeyError:
+            msg = '%s is not a valid Jenkins URL.' %(self.baseurl)
+            raise BadURL(msg)
