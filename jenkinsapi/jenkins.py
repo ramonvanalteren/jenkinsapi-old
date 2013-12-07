@@ -318,14 +318,14 @@ class Jenkins(JenkinsBase):
     def get_executors(self, nodename):
         url = '%s/computer/%s' % (self.baseurl, nodename)
         return Executors(url, nodename, self)
-  
+
     def get_version(self):
         """
         Return version number of Jenkins
         """
-        r = self.requester.get_and_confirm_status(self.baseurl)
+        response = self.requester.get_and_confirm_status(self.baseurl)
         try:
-            return r.headers['X-jenkins']
+            return response.headers['X-jenkins']
         except KeyError:
-            msg = '%s is not a valid Jenkins URL.' %(self.baseurl)
+            msg = '%s is not a valid Jenkins URL.' % (self.baseurl)
             raise BadURL(msg)

@@ -305,7 +305,7 @@ class TestJenkins(unittest.TestCase):
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
-    def test_get_version(self, _base_poll,_poll):
+    def test_get_version(self, _base_poll, _poll):
         class MockResponse(object):
              def __init__(self):
                  self.headers = {}
@@ -319,7 +319,7 @@ class TestJenkins(unittest.TestCase):
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
-    def test_get_version_exception(self, _base_poll,_poll):
+    def test_get_version_exception(self, _base_poll, _poll):
         class MockResponse(object):
             def __init__(self):
                 self.headers = {}
@@ -331,8 +331,8 @@ class TestJenkins(unittest.TestCase):
                     requester=mock_requester)
         with self.assertRaises(BadURL) as context:
             J.get_version()
-        msg = '%s is not a valid Jenkins URL.' %(base_url)
-        self.assertEqual(context.exception.message,msg)
+        msg = '%s is not a valid Jenkins URL.' % (base_url)
+        self.assertEqual(context.exception.message, msg)
 
 class TestJenkinsURLs(unittest.TestCase):
 
