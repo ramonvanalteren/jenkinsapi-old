@@ -326,4 +326,4 @@ class Jenkins(JenkinsBase):
         """
         response = self.requester.get_and_confirm_status(self.baseurl)
         version_key = 'X-Jenkins'
-        return response.headers.get(version_key,'0.0')
+        return response.headers.get(version_key, '0.0')
