@@ -309,17 +309,17 @@ class TestJenkins(unittest.TestCase):
         class MockResponse(object):
              def __init__(self):
                  self.headers = {}
-                 self.headers['X-jenkins'] = '1.542'
+                 self.headers['X-Jenkins'] = '1.542'
         mock_requester = Requester(username='foouser', password='foopassword')
         mock_requester.get_and_confirm_status = mock.MagicMock(return_value=MockResponse())
         J = Jenkins('http://localhost:8080/',
                     username='foouser', password='foopassword',
                     requester=mock_requester)
-        self.assertEquals('1.542', J.get_version())
+        self.assertEquals('1.542', J.version)
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
-    def test_get_version_exception(self, _base_poll, _poll):
+    def test_get_version_nonexistent(self, _base_poll, _poll):
         class MockResponse(object):
             def __init__(self):
                 self.headers = {}
@@ -329,10 +329,7 @@ class TestJenkins(unittest.TestCase):
         J = Jenkins(base_url,
                     username='foouser', password='foopassword',
                     requester=mock_requester)
-        with self.assertRaises(BadURL) as context:
-            J.get_version()
-        msg = '%s is not a valid Jenkins URL.' % (base_url)
-        self.assertEqual(context.exception.message, msg)
+        self.assertEquals('0.0', J.version)
 
 class TestJenkinsURLs(unittest.TestCase):
 
