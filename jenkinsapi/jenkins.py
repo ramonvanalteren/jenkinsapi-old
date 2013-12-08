@@ -318,3 +318,12 @@ class Jenkins(JenkinsBase):
     def get_executors(self, nodename):
         url = '%s/computer/%s' % (self.baseurl, nodename)
         return Executors(url, nodename, self)
+
+    @property
+    def version(self):
+        """
+        Return version number of Jenkins
+        """
+        response = self.requester.get_and_confirm_status(self.baseurl)
+        version_key = 'X-Jenkins'
+        return response.headers.get(version_key, '0.0')

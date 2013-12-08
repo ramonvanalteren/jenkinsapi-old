@@ -4,7 +4,7 @@ import unittest
 from jenkinsapi.plugins import Plugins
 from jenkinsapi.utils.requester import Requester
 from jenkinsapi.jenkins import Jenkins, JenkinsBase, Job
-from jenkinsapi.custom_exceptions import JenkinsAPIException, UnknownJob
+from jenkinsapi.custom_exceptions import JenkinsAPIException, UnknownJob, BadURL
 
 
 class TestJenkins(unittest.TestCase):
@@ -303,6 +303,33 @@ class TestJenkins(unittest.TestCase):
         new_jenkins = J.get_jenkins_obj()
         self.assertEquals(new_jenkins, J)
 
+    @mock.patch.object(JenkinsBase, '_poll')
+    @mock.patch.object(Jenkins, '_poll')
+    def test_get_version(self, _base_poll, _poll):
+        class MockResponse(object):
+             def __init__(self):
+                 self.headers = {}
+                 self.headers['X-Jenkins'] = '1.542'
+        mock_requester = Requester(username='foouser', password='foopassword')
+        mock_requester.get_and_confirm_status = mock.MagicMock(return_value=MockResponse())
+        J = Jenkins('http://localhost:8080/',
+                    username='foouser', password='foopassword',
+                    requester=mock_requester)
+        self.assertEquals('1.542', J.version)
+
+    @mock.patch.object(JenkinsBase, '_poll')
+    @mock.patch.object(Jenkins, '_poll')
+    def test_get_version_nonexistent(self, _base_poll, _poll):
+        class MockResponse(object):
+            def __init__(self):
+                self.headers = {}
+        base_url = 'http://localhost:8080'
+        mock_requester = Requester(username='foouser', password='foopassword')
+        mock_requester.get_and_confirm_status = mock.MagicMock(return_value=MockResponse())
+        J = Jenkins(base_url,
+                    username='foouser', password='foopassword',
+                    requester=mock_requester)
+        self.assertEquals('0.0', J.version)
 
 class TestJenkinsURLs(unittest.TestCase):
 
