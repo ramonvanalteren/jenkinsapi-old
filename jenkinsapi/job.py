@@ -562,7 +562,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 'name': 'FOO_BAR'
             }
         """
-        for action in self._data['actions']:
+        actions = (x for x in self._data['actions'] if x is not None)
+        for action in actions:
             try:
                 for param in action['parameterDefinitions']:
                     yield param
