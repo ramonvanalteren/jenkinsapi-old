@@ -96,7 +96,7 @@ class TestHgJob(unittest.TestCase):
         self.assertEquals(self.j.get_scm_branch(),['testme'])
 
     @mock.patch.object(Job,'get_config',configtree_with_default_branch)
-    def test_hg_attributes(self):
+    def test_hg_attributes_default_branch(self):
         self.assertEquals(self.j.get_scm_branch(),['default'])
 
 if __name__ == '__main__':
