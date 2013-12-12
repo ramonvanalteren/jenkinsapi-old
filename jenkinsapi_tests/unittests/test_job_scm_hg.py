@@ -1,5 +1,3 @@
-import sys
-sys.path.append('C:\opensource\jenkinsapi')
 import mock
 import unittest
 
