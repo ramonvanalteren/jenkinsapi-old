@@ -207,6 +207,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """Gets a buildid for a given type of build"""
         self.poll()
         KNOWNBUILDTYPES = [
+            "lastStableBuild",
             "lastSuccessfulBuild",
             "lastBuild",
             "lastCompletedBuild",
@@ -223,6 +224,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Get the numerical ID of the first build.
         """
         return self._buildid_for_type("firstBuild")
+
+    def get_last_stable_buildnumber(self):
+        """
+        Get the numerical ID of the last stable build.
+        """
+        return self._buildid_for_type("lastStableBuild")
 
     def get_last_good_buildnumber(self):
         """
@@ -283,6 +290,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Return the next build number that Jenkins will assign.
         """
         return self._data.get('nextBuildNumber', 0)
+
+    def get_last_stable_build(self):
+        """
+        Get the last stable build
+        """
+        bn = self.get_last_stable_buildnumber()
+        return self.get_build(bn)
 
     def get_last_good_build(self):
         """
