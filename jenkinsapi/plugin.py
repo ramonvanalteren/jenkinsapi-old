@@ -9,7 +9,7 @@ class Plugin(object):
     """
 
     def __init__(self, plugin_dict):
-        assert(isinstance(plugin_dict, dict))
+        assert isinstance(plugin_dict, dict)
         self.__dict__ = plugin_dict
 
     def __eq__(self, other):
