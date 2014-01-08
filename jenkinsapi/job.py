@@ -28,6 +28,7 @@ GIT_URL = './scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url'
 HG_URL = './scm/source'
 GIT_BRANCH = './scm/branches/hudson.plugins.git.BranchSpec/name'
 HG_BRANCH = './scm/branch'
+DEFAULT_HG_BRANCH_NAME = 'default'
 
 log = logging.getLogger(__name__)
 
@@ -53,13 +54,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         self._scmurlmap = {
             'svn': lambda element_tree: list(element_tree.findall(SVN_URL)),
             'git': lambda element_tree: list(element_tree.findall(GIT_URL)),
-            'hg': lambda element_tree: list(element_tree.find(HG_URL)),
+            'hg': lambda element_tree: list(element_tree.findall(HG_URL)),
             None: lambda element_tree: []
         }
         self._scmbranchmap = {
             'svn': lambda element_tree: [],
             'git': lambda element_tree: list(element_tree.findall(GIT_BRANCH)),
-            'hg': lambda element_tree: list(element_tree.find(HG_BRANCH)),
+            'hg': self._get_hg_branch,
             None: lambda element_tree: []
         }
         JenkinsBase.__init__(self, url)
@@ -72,6 +73,17 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_jenkins_obj(self):
         return self.jenkins
+
+    # When the name of the hg branch used in the job is default hg branch (i.e.
+    # default), Mercurial plugin doesn't store default branch name in config XML
+    # file of the job. Create XML node corresponding to default branch
+    def _get_hg_branch(self, element_tree):
+        branches = element_tree.findall(HG_BRANCH)
+        if not branches:
+            hg_default_branch = ET.Element('branch')
+            hg_default_branch.text = DEFAULT_HG_BRANCH_NAME
+            branches.append(hg_default_branch)
+        return branches
 
     def _poll(self):
         data = JenkinsBase._poll(self)
