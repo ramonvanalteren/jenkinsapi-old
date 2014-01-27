@@ -103,7 +103,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
             return data
         # do not call _buildid_for_type here: it would poll and do an infinite loop
         oldest_loaded_build_number = data["builds"][-1]["number"]
-        first_build_number = data["firstBuild"]["number"]
+        if not data['firstBuild']:
+            first_build_number = oldest_loaded_build_number
+        else:
+            first_build_number = data["firstBuild"]["number"]
         all_builds_loaded = (oldest_loaded_build_number == first_build_number)
         if all_builds_loaded:
             return data
