@@ -127,9 +127,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self._element_tree
 
     def get_build_triggerurl(self, build_params=None, files=None):
-        if build_params or files:
-            return "%s/buildWithParameters" % self.baseurl
-        return "%s/build" % self.baseurl
+        if len(self.get_params_list()) == 0:
+            return "%s/build" % self.baseurl
+        return "%s/buildWithParameters" % self.baseurl
 
     @staticmethod
     def _mk_json_from_build_parameters(build_params):
