@@ -60,7 +60,7 @@ class JenkinsBase(object):
     def get_data(self, url, params=None):
         requester = self.get_jenkins_obj().requester
         response = requester.get_url(url, params)
-        if response.status_code != 200 :
+        if response.status_code != 200:
             response.raise_for_status()
         try:
             return ast.literal_eval(response.text)
