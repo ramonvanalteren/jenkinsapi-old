@@ -87,7 +87,7 @@ class JobTests(BaseSystemTest):
 
     def test_get_master_data(self):
         master_data = self.jenkins.get_master_data()
-        self.assertEquals(master_data['totalExecutors'], 2, master_data['totalExecutors'])
+        self.assertEquals(master_data['totalExecutors'], 2)
 
 if __name__ == '__main__':
     unittest.main()
