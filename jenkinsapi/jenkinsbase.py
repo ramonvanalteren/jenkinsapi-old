@@ -52,6 +52,8 @@ class JenkinsBase(object):
 
     def poll(self):
         self._data = self._poll()
+        if 'jobs' in self._data:
+            self._data['jobs'] = self.resolve_job_folders(self._data['jobs'])
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
@@ -67,6 +69,26 @@ class JenkinsBase(object):
         except Exception:
             logging.exception('Inappropriate content found at %s', url)
             raise JenkinsAPIException('Cannot parse %s' % response.content)
+
+    def resolve_job_folders(self, jobs):
+        for job in jobs:
+            if 'color' not in job.keys():
+                jobs.remove(job)
+                jobs += self.process_job_folder(job)
+
+        return jobs
+
+    def process_job_folder(self, folder):
+        data = self.get_data(self.python_api_url(folder['url']))
+        result = []
+
+        for job in data.get('jobs', []):
+            if 'color' not in job.keys():
+                result += self.process_job_folder(job)
+            else:
+                result.append(job)
+
+        return result
 
     @classmethod
     def python_api_url(cls, url):

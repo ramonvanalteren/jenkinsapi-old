@@ -29,6 +29,7 @@ class TestQueue(unittest.TestCase):
         'jobs': [
             {
                 'name': 'utmebvpxrw',
+                'color': 'blue',
                 'url': 'http://localhost/job/utmebvpxrw'
             }
         ]
