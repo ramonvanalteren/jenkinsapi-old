@@ -127,7 +127,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self._element_tree
 
     def get_build_triggerurl(self):
-        if len(self.get_params_list()) == 0:
+        if not self.get_params_list():
             return "%s/build" % self.baseurl
         return "%s/buildWithParameters" % self.baseurl
 
