@@ -88,6 +88,21 @@ You can use Jenkins to get information about recently completed builds. For exam
 
 When used with the Git source-control system line 20 will print out something like '8b4f4e6f6d0af609bb77f95d8fb82ff1ee2bba0d' - which looks suspiciously like a Git revision number.
 
+Tips & Tricks
+-------------
+
+Getting the installed version of JenkinsAPI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+    pip install pkginfo
+    python
+
+
+.. code-block:: pythin
+    from pkginfo import get_metadata
+    print get_metadata('jenkinsapi').version
+
 Project Authors
 ===============
 
