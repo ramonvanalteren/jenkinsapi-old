@@ -118,8 +118,6 @@ missing test dependencies:
         source .venv/bin/active
         (venv) python setup.py test
 
-
-
 Project Contributors
 --------------------
 
@@ -136,6 +134,21 @@ Project Contributors
  * David Johansen (david@makewhat.is)
 
 Please do not contact these contributors directly for support questions! Use the GitHub tracker instead.
+
+Tips & Tricks
+-------------
+
+Getting the installed version of JenkinsAPI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+		pip install pkginfo
+		python
+
+
+.. code-block:: pythin
+		from pkginfo import get_metadata
+		print get_metadata('jenkinsapi').version
 
 License
 --------
