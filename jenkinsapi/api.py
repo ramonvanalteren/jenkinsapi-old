@@ -221,7 +221,13 @@ def search_artifact_by_regexp(jenkinsurl, jobid, artifactRegExp,
 
         artifacts = build.get_artifact_dict()
 
-        for name, art in artifacts.iteritems():
+        try:
+            it = artifacts.iteritems()
+        except AttributeError:
+            # Python3
+            it = artifacts.items()
+
+        for name, art in it:
             md_match = artifactRegExp.search(name)
 
             if md_match:

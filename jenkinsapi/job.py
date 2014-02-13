@@ -145,8 +145,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         assert isinstance(
             build_params, dict), 'Build parameters must be a dict'
+
+        try:
+            it = build_params.iteritems()
+        except AttributeError:
+            # Python3
+            it = build_params.items()
+
         return {'parameter': [
-            {'name': k, 'value': v} for k, v in build_params.iteritems()
+            {'name': k, 'value': v} for k, v in it
         ]}
 
     @staticmethod

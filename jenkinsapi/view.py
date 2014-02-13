@@ -54,7 +54,13 @@ class View(JenkinsBase):
         return self.get_job_dict().keys()
 
     def iteritems(self):
-        for name, url in self.get_job_dict().iteritems():
+        try:
+            it = self.get_job_dict().iteritems()
+        except AttributeError:
+            # Python3
+            it = self.get_job_dict().items()
+
+        for name, url in it:
             api_url = self.python_api_url(url)
             yield name, Job(api_url, name, self.jenkins_obj)
 
