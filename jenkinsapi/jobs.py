@@ -89,8 +89,13 @@ class Jobs(object):
             return self[job_name]
 
         params = {'name': job_name}
-        if isinstance(config, unicode):
-            config = str(config)
+        try:
+            if isinstance(config, unicode):  # pylint: disable=undefined-variable
+                config = str(config)
+        except NameError:
+            # Python3 already a str
+            pass
+
         self.jenkins.requester.post_xml_and_confirm_status(
             self.jenkins.get_create_url(),
             data=config,

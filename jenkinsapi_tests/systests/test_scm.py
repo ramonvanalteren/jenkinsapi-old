@@ -17,7 +17,11 @@
 #         ii.block(until='completed')
 #         self.assertFalse(ii.is_running())
 #         b = ii.get_build()
-#         self.assertIsInstance(b.get_revision(), basestring)
+#         try:
+#             self.assertIsInstance(b.get_revision(), basestring)
+#         except NameError:
+#             # Python3
+#             self.assertIsInstance(b.get_revision(), str)
 
 # if __name__ == '__main__':
 #     unittest.main()
