@@ -1,6 +1,7 @@
 """
 A lower-level implementation of copying a job in Jenkins
 """
+from __future__ import print_function
 
 import requests
 from jenkinsapi.jenkins import Jenkins
@@ -19,4 +20,4 @@ j = J.create_job(jobname=jobName, config=xml)
 
 h = {'Content-Type': 'application/x-www-form-urlencoded'}
 response = requests.post(url, data='dysjsjsjs', headers=h)
-print response.text.encode('UTF-8')
+print(response.text.encode('UTF-8'))

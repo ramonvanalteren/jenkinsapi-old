@@ -1,11 +1,14 @@
+from __future__ import print_function
+
 from jenkinsapi.view import View
 from jenkinsapi.jenkins import Jenkins
+
 J = Jenkins('http://localhost:8080')
-print J.items()
+print(J.items())
 j = J['foo']
 j = J.get_job("foo")
 b = j.get_last_build()
-print b
+print(b)
 mjn = b.get_master_job_name()
 print(mjn)
 

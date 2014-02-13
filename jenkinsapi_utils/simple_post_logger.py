@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import SimpleHTTPServer
 import SocketServer
 import logging
@@ -28,5 +30,5 @@ Handler = ServerHandler
 
 httpd = SocketServer.TCPServer(("", PORT), Handler)
 
-print "serving at port", PORT
+print("serving at port", PORT)
 httpd.serve_forever()

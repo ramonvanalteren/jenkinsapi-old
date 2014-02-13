@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import mock
 import unittest
 
@@ -78,7 +80,7 @@ class TestQueue(unittest.TestCase):
         )
 
         self.assertTrue(isinstance(req_return, dict))
-        print req_return.get('data')
+        print(req_return.get('data'))
         self.assertTrue(req_return.get('data'))
         self.assertTrue(req_return['data'] == 'some data')
 
@@ -180,7 +182,7 @@ class TestQueue(unittest.TestCase):
                 data='some data'
             )
 
-        print ae.exception.message
+        print(ae.exception.message)
         self.assertTrue(ae.exception.message == "Operation failed. url=None, data=some data, headers={'Content-Type': 'application/x-www-form-urlencoded'}, status=500, text=")
 
     @mock.patch.object(requests, 'get')
@@ -208,7 +210,7 @@ class TestQueue(unittest.TestCase):
                 params={'param': 'value'}
             )
 
-        print ae.exception.message
+        print(ae.exception.message)
         self.assertTrue(ae.exception.message == "Operation failed. url=None, headers=None, status=500, text=")
 
 if __name__ == "__main__":
