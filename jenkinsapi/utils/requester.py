@@ -3,7 +3,13 @@ Module for jenkinsapi requester (which is a wrapper around python-requests)
 """
 
 import requests
-import urlparse
+
+try:
+    import urlparse
+except ImportError:
+    # Python3
+    import urllib.parse as urlparse
+
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 # import logging
 

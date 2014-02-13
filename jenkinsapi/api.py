@@ -8,7 +8,12 @@ import os
 import time
 import logging
 
-from urllib2 import urlparse
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    # Python3
+    from urllib2 import urlparse
+
 from jenkinsapi import constants
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.artifact import Artifact

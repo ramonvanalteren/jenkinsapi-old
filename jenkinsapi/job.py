@@ -4,7 +4,13 @@ Module for jenkinsapi Job
 
 import json
 import logging
-import urlparse
+
+try:
+    import urlparse
+except ImportError:
+    # Python3
+    import urllib.parse as urlparse
+
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from time import sleep
