@@ -10,6 +10,11 @@ jenkinsapi
 .. image:: https://pypip.in/d/jenkinsapi/badge.png
         :target: https://crate.io/packages/jenkinsapi/
 
+Experimental Python 3 branch
+----------------------------
+
+This branch is not yet intended to production use. Some features may or may not work!
+
 About this library
 -------------------
 
