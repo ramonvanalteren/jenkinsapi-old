@@ -4,7 +4,13 @@ Module for jenkinsapi Job
 
 import json
 import logging
-import urlparse
+
+try:
+    import urlparse
+except ImportError:
+    # Python3
+    import urllib.parse as urlparse
+
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from time import sleep
@@ -139,8 +145,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         assert isinstance(
             build_params, dict), 'Build parameters must be a dict'
+
+        try:
+            it = build_params.iteritems()
+        except AttributeError:
+            # Python3
+            it = build_params.items()
+
         return {'parameter': [
-            {'name': k, 'value': v} for k, v in build_params.iteritems()
+            {'name': k, 'value': v} for k, v in it
         ]}
 
     @staticmethod
@@ -494,8 +507,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Also refresh the ElementTree object since the config has changed
         """
         url = self.get_config_xml_url()
-        if isinstance(config, unicode):
-            config = str(config)
+        try:
+            if isinstance(config, unicode):  # pylint: disable=undefined-variable
+                config = str(config)
+        except NameError:
+            # Python3 already a str
+            pass
+
         response = self.jenkins.requester.post_url(url, params={}, data=config)
         self._element_tree = ET.fromstring(config)
         return response.text

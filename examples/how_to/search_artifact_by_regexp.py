@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from jenkinsapi.api import search_artifact_by_regexp
 import re
 

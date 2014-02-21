@@ -5,7 +5,12 @@ Module for jenkinsapi Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import ArtifactBroken
 
-import urllib2
+try:
+    from urllib2 import HTTPError
+except ImportError:
+    # Python3
+    from urllib.error import HTTPError
+
 import re
 
 import logging
@@ -45,7 +50,7 @@ class Fingerprint(JenkinsBase):
         try:
             self.poll()
             self.unknown = False
-        except urllib2.HTTPError as err:
+        except HTTPError as err:
             # We can't really say anything about the validity of
             # fingerprints not found -- but the artifact can still
             # exist, so it is not possible to definitely say they are
@@ -86,7 +91,7 @@ class Fingerprint(JenkinsBase):
             assert self.valid()
         except AssertionError:
             raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (self.id_, self.baseurl))
-        except urllib2.HTTPError:
+        except HTTPError:
             raise ArtifactBroken("Unable to validate artifact id %s using %s" % (self.id_, self.baseurl))
         return True
 

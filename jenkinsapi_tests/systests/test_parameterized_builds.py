@@ -88,7 +88,7 @@ class TestParameterizedBuilds(BaseSystemTest):
         with self.assertRaises(WillNotBuild) as na:
             job.invoke(build_params=params)
         expected_msg = 'A build with these parameters is already queued.'
-        self.assertEqual(na.exception.message, expected_msg)
+        self.assertEqual(str(na.exception), expected_msg)
 
 
 if __name__ == '__main__':

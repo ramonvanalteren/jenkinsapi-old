@@ -1,6 +1,7 @@
 """
 jenkinsapi plugins
 """
+from __future__ import print_function
 
 import logging
 
@@ -18,7 +19,7 @@ class Plugins(JenkinsBase):
     def __init__(self, url, jenkins_obj):
         self.jenkins_obj = jenkins_obj
         JenkinsBase.__init__(self, url)
-        # print 'DEBUG: Plugins._data=', self._data
+        # print('DEBUG: Plugins._data=', self._data)
 
     def get_jenkins_obj(self):
         return self.jenkins_obj

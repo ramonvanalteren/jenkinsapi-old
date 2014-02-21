@@ -1,6 +1,9 @@
 import os
 import time
-import Queue
+try:
+    import Queue
+except ImportError:
+    import queue as Queue
 import random
 import shutil
 import logging

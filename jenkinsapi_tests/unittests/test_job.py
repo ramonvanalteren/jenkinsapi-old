@@ -91,7 +91,7 @@ class TestJob(unittest.TestCase):
             self.j._mk_json_from_build_parameters(build_params='bad parameter')
 
         self.assertEquals(
-            ar.exception.message, 'Build parameters must be a dict')
+            str(ar.exception), 'Build parameters must be a dict')
 
     def test__mk_json_from_build_parameters(self):
         params = {'param1': 'value1', 'param2': 'value2'}
@@ -105,7 +105,7 @@ class TestJob(unittest.TestCase):
             self.j.mk_json_from_build_parameters(build_params='bad parameter')
 
         self.assertEquals(
-            ar.exception.message, 'Build parameters must be a dict')
+            str(ar.exception), 'Build parameters must be a dict')
 
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_wrong_field__build_id_for_type(self):

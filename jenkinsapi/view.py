@@ -1,7 +1,12 @@
 """
 Module for jenkinsapi views
 """
-import urllib
+try:
+    from urllib import urlencode
+except ImportError:
+    # Python3
+    from urllib.parse import urlencode
+
 import logging
 
 from jenkinsapi.jenkinsbase import JenkinsBase
@@ -49,7 +54,13 @@ class View(JenkinsBase):
         return self.get_job_dict().keys()
 
     def iteritems(self):
-        for name, url in self.get_job_dict().iteritems():
+        try:
+            it = self.get_job_dict().iteritems()
+        except AttributeError:
+            # Python3
+            it = self.get_job_dict().items()
+
+        for name, url in it:
             api_url = self.python_api_url(url)
             yield name, Job(api_url, name, self.jenkins_obj)
 
@@ -142,7 +153,7 @@ class View(JenkinsBase):
         data[job.name] = 'on'
 
         data['json'] = data.copy()
-        data = urllib.urlencode(data)
+        data = urlencode(data)
         self.get_jenkins_obj().requester.post_and_confirm_status(
             '%s/configSubmit' % self.baseurl, data=data)
         self.poll()
