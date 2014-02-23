@@ -71,7 +71,7 @@ class JenkinsBase(object):
             raise JenkinsAPIException('Cannot parse %s' % response.content)
 
     def resolve_job_folders(self, jobs):
-        for job in jobs:
+        for job in list(jobs):
             if 'color' not in job.keys():
                 jobs.remove(job)
                 jobs += self.process_job_folder(job)
