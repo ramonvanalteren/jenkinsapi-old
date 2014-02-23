@@ -120,6 +120,67 @@ class TestJobFolders(unittest.TestCase):
         get_data_mock.assert_called_once_with('http://localhost:8080/job/Folder1/api/python')
 
     @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
+    def test_multiple_folders(self, get_data_mock):
+        get_data_mock.side_effect = [
+            # first call
+            {
+                'jobs': [
+                    {
+                        'name': "Foo",
+                        'url': "http://localhost:8080/job/Folder1/job/Foo",
+                        'color': "disabled",
+                    },
+                ]
+            },
+
+            # second call
+            {
+                'jobs': [
+                    {
+                        'name': "Bar",
+                        'url': "http://localhost:8080/job/Folder2/job/Bar",
+                        'color': "blue",
+                    },
+                ]
+            },
+        ]
+
+        jobs = [
+            {
+                'name': "Folder1",
+                'url': "http://localhost:8080/job/Folder1",
+            },
+            {
+                'name': "Folder2",
+                'url': "http://localhost:8080/job/Folder2",
+            },
+        ]
+
+        self.assertEquals(
+            self.jb.resolve_job_folders(jobs),
+            [
+                {
+                    'name': "Foo",
+                    'url': "http://localhost:8080/job/Folder1/job/Foo",
+                    'color': "disabled",
+                },
+                {
+                    'name': "Bar",
+                    'url': "http://localhost:8080/job/Folder2/job/Bar",
+                    'color': "blue",
+                },
+            ]
+        )
+
+        self.assertEquals(
+            get_data_mock.call_args_list,
+            [
+                mock.call('http://localhost:8080/job/Folder1/api/python'),
+                mock.call('http://localhost:8080/job/Folder2/api/python'),
+            ]
+        )
+
+    @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
     def test_multiple_folder_levels(self, get_data_mock):
         get_data_mock.side_effect = [
             # first call
