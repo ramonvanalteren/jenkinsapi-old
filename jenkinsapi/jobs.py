@@ -18,6 +18,7 @@ class Jobs(object):
     """
     def __init__(self, jenkins):
         self.jenkins = jenkins
+        self.jenkins.poll()
 
     def __len__(self):
         return len(self.keys)
