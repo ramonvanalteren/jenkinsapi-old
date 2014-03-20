@@ -60,6 +60,29 @@ class TestJenkins(unittest.TestCase):
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(Job, '_poll')
+    def test_lazy_loading(self, _base_poll, _poll, _job_poll):
+        _poll.return_value = {
+            'jobs': [
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
+            ]
+        }
+        _base_poll.return_value = _poll.return_value
+        _job_poll.return_value = {}
+        J = Jenkins('http://localhost:8080/',
+                    username='foouser', password='foopassword', lazy=True)
+
+        self.assertEquals(J._data, None)
+
+        for idx, (job_name, job) in enumerate(J.get_jobs()):
+            self.assertEquals(job_name, _poll.return_value['jobs'][idx]['name'])
+            self.assertTrue(isinstance(job, Job))
+            self.assertEquals(job.name, _poll.return_value['jobs'][idx]['name'])
+            self.assertEquals(job.baseurl, _poll.return_value['jobs'][idx]['url'])
+
+    @mock.patch.object(JenkinsBase, '_poll')
+    @mock.patch.object(Jenkins, '_poll')
+    @mock.patch.object(Job, '_poll')
     def test_get_jobs_info(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
