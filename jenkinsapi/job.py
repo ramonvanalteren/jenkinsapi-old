@@ -28,6 +28,7 @@ GIT_URL = './scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url'
 HG_URL = './scm/source'
 GIT_BRANCH = './scm/branches/hudson.plugins.git.BranchSpec/name'
 HG_BRANCH = './scm/branch'
+DEFAULT_HG_BRANCH_NAME = 'default'
 
 log = logging.getLogger(__name__)
 
@@ -53,13 +54,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         self._scmurlmap = {
             'svn': lambda element_tree: list(element_tree.findall(SVN_URL)),
             'git': lambda element_tree: list(element_tree.findall(GIT_URL)),
-            'hg': lambda element_tree: list(element_tree.find(HG_URL)),
+            'hg': lambda element_tree: list(element_tree.findall(HG_URL)),
             None: lambda element_tree: []
         }
         self._scmbranchmap = {
             'svn': lambda element_tree: [],
             'git': lambda element_tree: list(element_tree.findall(GIT_BRANCH)),
-            'hg': lambda element_tree: list(element_tree.find(HG_BRANCH)),
+            'hg': self._get_hg_branch,
             None: lambda element_tree: []
         }
         JenkinsBase.__init__(self, url)
@@ -72,6 +73,17 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_jenkins_obj(self):
         return self.jenkins
+
+    # When the name of the hg branch used in the job is default hg branch (i.e.
+    # default), Mercurial plugin doesn't store default branch name in config XML
+    # file of the job. Create XML node corresponding to default branch
+    def _get_hg_branch(self, element_tree):
+        branches = element_tree.findall(HG_BRANCH)
+        if not branches:
+            hg_default_branch = ET.Element('branch')
+            hg_default_branch.text = DEFAULT_HG_BRANCH_NAME
+            branches.append(hg_default_branch)
+        return branches
 
     def _poll(self):
         data = JenkinsBase._poll(self)
@@ -91,7 +103,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
             return data
         # do not call _buildid_for_type here: it would poll and do an infinite loop
         oldest_loaded_build_number = data["builds"][-1]["number"]
-        first_build_number = data["firstBuild"]["number"]
+        if not data['firstBuild']:
+            first_build_number = oldest_loaded_build_number
+        else:
+            first_build_number = data["firstBuild"]["number"]
         all_builds_loaded = (oldest_loaded_build_number == first_build_number)
         if all_builds_loaded:
             return data
@@ -111,10 +126,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
             self._element_tree = ET.fromstring(self._config)
         return self._element_tree
 
-    def get_build_triggerurl(self, build_params=None, files=None):
-        if build_params or files:
-            return "%s/buildWithParameters" % self.baseurl
-        return "%s/build" % self.baseurl
+    def get_build_triggerurl(self):
+        if not self.get_params_list():
+            return "%s/build" % self.baseurl
+        return "%s/buildWithParameters" % self.baseurl
 
     @staticmethod
     def _mk_json_from_build_parameters(build_params):
@@ -167,7 +182,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             log.info("Attempting to start %s on %s", self.name, repr(
                 self.get_jenkins_obj()))
 
-            url = self.get_build_triggerurl(build_params, files)
+            url = self.get_build_triggerurl()
 
             if cause:
                 build_params['cause'] = cause
@@ -207,6 +222,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """Gets a buildid for a given type of build"""
         self.poll()
         KNOWNBUILDTYPES = [
+            "lastStableBuild",
             "lastSuccessfulBuild",
             "lastBuild",
             "lastCompletedBuild",
@@ -223,6 +239,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Get the numerical ID of the first build.
         """
         return self._buildid_for_type("firstBuild")
+
+    def get_last_stable_buildnumber(self):
+        """
+        Get the numerical ID of the last stable build.
+        """
+        return self._buildid_for_type("lastStableBuild")
 
     def get_last_good_buildnumber(self):
         """
@@ -283,6 +305,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Return the next build number that Jenkins will assign.
         """
         return self._data.get('nextBuildNumber', 0)
+
+    def get_last_stable_build(self):
+        """
+        Get the last stable build
+        """
+        bn = self.get_last_stable_buildnumber()
+        return self.get_build(bn)
 
     def get_last_good_build(self):
         """
@@ -562,7 +591,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 'name': 'FOO_BAR'
             }
         """
-        for action in self._data['actions']:
+        actions = (x for x in self._data['actions'] if x is not None)
+        for action in actions:
             try:
                 for param in action['parameterDefinitions']:
                     yield param

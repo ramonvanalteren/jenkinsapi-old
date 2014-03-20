@@ -6,7 +6,6 @@ import ast
 import logging
 from jenkinsapi import config
 from jenkinsapi.custom_exceptions import JenkinsAPIException
-log = logging.getLogger(__name__)
 
 
 class JenkinsBase(object):
@@ -53,6 +52,8 @@ class JenkinsBase(object):
 
     def poll(self):
         self._data = self._poll()
+        if 'jobs' in self._data:
+            self._data['jobs'] = self.resolve_job_folders(self._data['jobs'])
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
@@ -61,11 +62,33 @@ class JenkinsBase(object):
     def get_data(self, url, params=None):
         requester = self.get_jenkins_obj().requester
         response = requester.get_url(url, params)
+        if response.status_code != 200:
+            response.raise_for_status()
         try:
             return ast.literal_eval(response.text)
         except Exception:
-            log.exception('Inappropriate content found at %s', url)
+            logging.exception('Inappropriate content found at %s', url)
             raise JenkinsAPIException('Cannot parse %s' % response.content)
+
+    def resolve_job_folders(self, jobs):
+        for job in list(jobs):
+            if 'color' not in job.keys():
+                jobs.remove(job)
+                jobs += self.process_job_folder(job)
+
+        return jobs
+
+    def process_job_folder(self, folder):
+        data = self.get_data(self.python_api_url(folder['url']))
+        result = []
+
+        for job in data.get('jobs', []):
+            if 'color' not in job.keys():
+                result += self.process_job_folder(job)
+            else:
+                result.append(job)
+
+        return result
 
     @classmethod
     def python_api_url(cls, url):

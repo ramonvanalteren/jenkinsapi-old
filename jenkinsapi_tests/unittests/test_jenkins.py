@@ -43,8 +43,8 @@ class TestJenkins(unittest.TestCase):
     def test_get_jobs(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -60,11 +60,34 @@ class TestJenkins(unittest.TestCase):
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(Job, '_poll')
+    def test_lazy_loading(self, _base_poll, _poll, _job_poll):
+        _poll.return_value = {
+            'jobs': [
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
+            ]
+        }
+        _base_poll.return_value = _poll.return_value
+        _job_poll.return_value = {}
+        J = Jenkins('http://localhost:8080/',
+                    username='foouser', password='foopassword', lazy=True)
+
+        self.assertEquals(J._data, None)
+
+        for idx, (job_name, job) in enumerate(J.get_jobs()):
+            self.assertEquals(job_name, _poll.return_value['jobs'][idx]['name'])
+            self.assertTrue(isinstance(job, Job))
+            self.assertEquals(job.name, _poll.return_value['jobs'][idx]['name'])
+            self.assertEquals(job.baseurl, _poll.return_value['jobs'][idx]['url'])
+
+    @mock.patch.object(JenkinsBase, '_poll')
+    @mock.patch.object(Jenkins, '_poll')
+    @mock.patch.object(Job, '_poll')
     def test_get_jobs_info(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -81,8 +104,8 @@ class TestJenkins(unittest.TestCase):
     def test_get_jobs_list(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -98,8 +121,8 @@ class TestJenkins(unittest.TestCase):
     def test_get_job(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -117,8 +140,8 @@ class TestJenkins(unittest.TestCase):
     def test_get_job_that_does_not_exist(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -135,8 +158,8 @@ class TestJenkins(unittest.TestCase):
     def test_has_job(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -152,8 +175,8 @@ class TestJenkins(unittest.TestCase):
     def test_has_no_job(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -169,8 +192,8 @@ class TestJenkins(unittest.TestCase):
     def test_create_dup_job(self, _base_poll, _poll, _job_poll):
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -193,16 +216,16 @@ class TestJenkins(unittest.TestCase):
         # This will be returned when job is not yet created
         {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8081/job_one'},
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
+                {'name': 'job_one', 'url': 'http://localhost:8081/job_one', 'color': 'blue'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
             ]
         },
         # This to simulate that the job has been created
         {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_two', 'url': 'http://localhost:8080/job_two'},
-                {'name': 'job_new', 'url': 'http://localhost:8080/job_new'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_two', 'url': 'http://localhost:8080/job_two', 'color': 'blue'},
+                {'name': 'job_new', 'url': 'http://localhost:8080/job_new', 'color': 'blue'},
             ]
         }
     ]
@@ -236,8 +259,8 @@ class TestJenkins(unittest.TestCase):
         _job_poll.return_value = {}
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -261,8 +284,8 @@ class TestJenkins(unittest.TestCase):
         _job_poll.return_value = {}
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -287,8 +310,8 @@ class TestJenkins(unittest.TestCase):
         _job_poll.return_value = {}
         _poll.return_value = {
             'jobs': [
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
-                {'name': 'job_one', 'url': 'http://localhost:8080/job_one'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
+                {'name': 'job_one', 'url': 'http://localhost:8080/job_one', 'color': 'blue'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -330,6 +353,20 @@ class TestJenkins(unittest.TestCase):
                     username='foouser', password='foopassword',
                     requester=mock_requester)
         self.assertEquals('0.0', J.version)
+
+    @mock.patch.object(JenkinsBase, 'get_data')
+    def test_get_master_data(self, _base_poll):
+        base_url = 'http://localhost:808'
+        _base_poll.return_value = {
+            "busyExecutors" : 59,
+            "totalExecutors" : 75
+        }
+        j = Jenkins(base_url,
+                    username='foouser', password='foopassword')
+        data = j.get_master_data()
+        self.assertEquals(data['busyExecutors'], 59)
+        self.assertEquals(data['totalExecutors'], 75)
+
 
 class TestJenkinsURLs(unittest.TestCase):
 

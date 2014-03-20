@@ -135,5 +135,5 @@ class Jobs(object):
         return self[new_job_name]
 
     def build(self, job_name, params):
-        assert(isinstance(params, dict))
+        assert isinstance(params, dict)
         self[job_name].invoke(build_params=params)

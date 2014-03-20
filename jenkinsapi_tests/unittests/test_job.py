@@ -118,6 +118,11 @@ class TestJob(unittest.TestCase):
         self.assertTrue(ret, 3)
 
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    def test_get_last_stable_buildnumber(self):
+        ret = self.j.get_last_stable_buildnumber()
+        self.assertTrue(ret, 3)
+
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_get_last_failed_buildnumber(self):
         with self.assertRaises(NoBuildData):
             self.j.get_last_failed_buildnumber()
