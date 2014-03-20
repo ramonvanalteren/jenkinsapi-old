@@ -415,10 +415,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
         scm = self._scm_map.get(scm_class)
         if not scm:
             raise NotSupportSCM(
-                "SCM class \"%s\" not supported by API, job \"%s\"" % (scm_class, self.name))
+                "SCM class \"%s\" not supported by API for job \"%s\"" % (scm_class, self.name))
         if scm == 'NullSCM':
             raise NotConfiguredSCM(
-                "SCM does not configured, job \"%s\"" % self.name)
+                "SCM is not configured for job \"%s\"" % self.name)
         return scm
 
     def get_scm_url(self):
