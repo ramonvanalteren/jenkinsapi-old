@@ -5,8 +5,8 @@ Module for jenkinsapi Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import ArtifactBroken
 
-import urllib2
 import re
+import requests
 
 import logging
 
@@ -45,16 +45,20 @@ class Fingerprint(JenkinsBase):
         try:
             self.poll()
             self.unknown = False
-        except urllib2.HTTPError as err:
+        except requests.exceptions.HTTPError as err:
             # We can't really say anything about the validity of
             # fingerprints not found -- but the artifact can still
             # exist, so it is not possible to definitely say they are
             # valid or not.
-            if err.code == 404:
+            # The response object is of type: requests.models.Response
+            # extract the status code from it
+            response_obj = err.response
+            if response_obj.status_code == 404:
                 self.unknown = True
                 return True
+            else:
+                return False
 
-            return False
         return True
 
     def validate_for_build(self, filename, job, build):
@@ -86,7 +90,7 @@ class Fingerprint(JenkinsBase):
             assert self.valid()
         except AssertionError:
             raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (self.id_, self.baseurl))
-        except urllib2.HTTPError:
+        except requests.exceptions.HTTPError:
             raise ArtifactBroken("Unable to validate artifact id %s using %s" % (self.id_, self.baseurl))
         return True
 
