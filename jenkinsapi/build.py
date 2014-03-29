@@ -40,8 +40,8 @@ class Build(JenkinsBase):
         JenkinsBase.__init__(self, url)
 
     def _poll(self):
-        #For build's we need more information for downstream and upstream builds
-        #so we override the poll to get at the extra data for build objects
+        # For build's we need more information for downstream and upstream builds
+        # so we override the poll to get at the extra data for build objects
         url = self.python_api_url(self.baseurl) + '?depth=1'
         return self.get_data(url)
 

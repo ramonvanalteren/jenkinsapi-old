@@ -97,7 +97,7 @@ def search_artifacts(jenkinsurl, jobid, artifact_ids=None,
         missing_artifacts = set(artifact_ids) - set(artifacts.keys())
         log.debug(msg="Artifacts %s missing from %s #%i"
                   % (", ".join(missing_artifacts), jobid, build_id))
-    #noinspection PyUnboundLocalVariable
+    # noinspection PyUnboundLocalVariable
     raise ArtifactsMissing(missing_artifacts)
 
 
@@ -136,7 +136,7 @@ def block_until_complete(jenkinsurl, jobs, maxwait=12000, interval=30,
                  % (str_still_running, time_left))
         time.sleep(interval)
     if raise_on_timeout:
-        #noinspection PyUnboundLocalVariable
+        # noinspection PyUnboundLocalVariable
         raise TimeOut("Waited too long for these jobs to complete: %s"
                       % str_still_running)
 
