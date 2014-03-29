@@ -197,7 +197,7 @@ class Jenkins(JenkinsBase):
         return Views(self)
 
     def get_view_by_url(self, str_view_url):
-        #for nested view
+        # for nested view
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
         return View(str_view_url, str_view_name, jenkins_obj=self)
 

@@ -86,7 +86,6 @@ class Views(object):
         :return: new View obj or None if view was not created
         """
         log.info(msg='Creating "%s" view "%s"' % (view_type, view_name))
-        #url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % person) if person else self.baseurl
 
         if view_name in self:
             log.warn(msg='View "%s" already exists' % view_name)
