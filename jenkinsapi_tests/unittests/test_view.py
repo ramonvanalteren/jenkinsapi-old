@@ -5,6 +5,7 @@ from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.view import View
 from jenkinsapi.job import Job
+from jenkinsapi.custom_exceptions import NotFound
 
 
 class TestView(unittest.TestCase):
@@ -109,7 +110,7 @@ class TestView(unittest.TestCase):
         self.assertEquals(self.v.get_job_url('foo'), 'http://halob:8080/job/foo/')
 
     def test_wrong_get_job_url(self):
-        with self.assertRaises(KeyError):
+        with self.assertRaises(NotFound):
             self.v.get_job_url('bar')
 
     # We have to re-patch JenkinsBase here because by the time
