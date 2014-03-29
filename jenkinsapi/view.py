@@ -60,9 +60,7 @@ class View(JenkinsBase):
         return [a for a in self.iteritems()]
 
     def _get_jobs(self):
-        if not 'jobs' in self._data:
-            pass
-        else:
+        if 'jobs' in self._data:
             for viewdict in self._data["jobs"]:
                 yield viewdict["name"], viewdict["url"]
 
@@ -77,7 +75,7 @@ class View(JenkinsBase):
             job_dict = self.get_job_dict()
             return job_dict[str_job_name]
         except KeyError:
-            #noinspection PyUnboundLocalVariable
+            # noinspection PyUnboundLocalVariable
             all_views = ", ".join(job_dict.keys())
             raise KeyError("Job %s is not known - available: %s" % (str_job_name, all_views))
 
