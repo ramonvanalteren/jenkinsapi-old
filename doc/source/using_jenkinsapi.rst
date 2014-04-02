@@ -55,8 +55,26 @@ Example 3: Disable/Enable a Jenkins Job
             
 Use the call ``job_instance.enable()`` to enable a Jenkins Job.
 
+Example 4: Get Plugin details
+-----------------------------
 
-Example 4: Getting version information from a completed build
+Below chunk of code gets the details of the plugins currently installed in the
+Jenkins instance.
+
+::
+
+    def get_plugin_details():
+        # Refer Example #1 for definition of function 'get_server_instance'
+        server = get_server_instance()
+        for plugin in server.get_plugins().values():
+            print "Short Name:%s" %(plugin.shortName)
+            print "Long Name:%s" %(plugin.longName)
+            print "Version:%s" %(plugin.version)
+            print "URL:%s" %(plugin.url)
+            print "Active:%s" %(plugin.active)
+            print "Enabled:%s" %(plugin.enabled)
+    
+Example 5: Getting version information from a completed build
 -------------------------------------------------------------
 
 This is a typical use of JenkinsAPI - it was the very first use I had in mind when the project was first built: In a continuous-integration environment you want to be able to programatically detect the version-control information of the last succsessful build in order to trigger some kind of release process.::
