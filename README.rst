@@ -19,26 +19,26 @@ Jenkins (and It's predecessor Hudson) are useful projects for automating common 
 
 This library can help you:
 
- * Query the test-results of a completed build
- * Get a objects representing the latest builds of a job
- * Search for artefacts by simple criteria
- * Block until jobs are complete
- * Install artefacts to custom-specified directory structures
- * username/password auth support for jenkins instances with auth turned on
- * Ability to search for builds by subversion revision
- * Ability to add/remove/query Jenkins slaves
- * Ability to add/remove/modify Jenkins views
+* Query the test-results of a completed build
+* Get objects representing the latest builds of a job
+* Search for artefacts by simple criteria
+* Block until jobs are complete
+* Install artefacts to custom-specified directory structures
+* username/password auth support for jenkins instances with auth turned on
+* Ability to search for builds by subversion revision
+* Ability to add/remove/query Jenkins slaves
+* Ability to add/remove/modify Jenkins views
 
 Known bugs
 ----------
- [ ] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
+* Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
- For other issues, please refer to the support URL below.
+For other issues, please refer to the support URL below.
 
 Important Links
 ---------------
 
-Support & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
+Support and bug-reports: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
 Project source code: github: https://github.com/salimfadhley/jenkinsapi
 
@@ -84,7 +84,7 @@ Example
 
 JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) into easily managed Python objects:
 
-.. code-block:: pycon
+.. code-block:: python
 
 	>>> import jenkinsapi
 	>>> from jenkinsapi.jenkins import Jenkins
@@ -121,17 +121,17 @@ missing test dependencies:
 Project Contributors
 --------------------
 
- * Salim Fadhley (sal@stodge.org)
- * Aleksey Maksimov (ctpeko3a@gmail.com)
- * Ramon van Alteren (ramon@vanalteren.nl)
- * Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
- * Cleber J Santos (cleber@simplesconsultoria.com.br)
- * William Zhang (jollychang@douban.com)
- * Victor Garcia (bravejolie@gmail.com)
- * Bradley Harris (bradley@ninelb.com)
- * Kyle Rockman (kyle.rockman@mac.com)
- * Sascha Peilicke (saschpe@gmx.de)
- * David Johansen (david@makewhat.is)
+* Salim Fadhley (sal@stodge.org)
+* Aleksey Maksimov (ctpeko3a@gmail.com)
+* Ramon van Alteren (ramon@vanalteren.nl)
+* Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
+* Cleber J Santos (cleber@simplesconsultoria.com.br)
+* William Zhang (jollychang@douban.com)
+* Victor Garcia (bravejolie@gmail.com)
+* Bradley Harris (bradley@ninelb.com)
+* Kyle Rockman (kyle.rockman@mac.com)
+* Sascha Peilicke (saschpe@gmx.de)
+* David Johansen (david@makewhat.is)
 
 Please do not contact these contributors directly for support questions! Use the GitHub tracker instead.
 
