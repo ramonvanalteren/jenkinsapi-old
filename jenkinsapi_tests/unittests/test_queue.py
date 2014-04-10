@@ -144,5 +144,26 @@ class TestQueue(unittest.TestCase):
         j = item40.get_job()
         self.assertIsInstance(j, Job)
 
+    @mock.patch.object(JenkinsBase, 'get_data', mockGetData)
+    def test_get_queue_item_for_job(self):
+        item40 = self.q.get_queue_items_for_job('klscuimkqo')
+        self.assertIsInstance(item40, list)
+        self.assertEquals(len(item40), 1)
+        self.assertIsInstance(item40[0], QueueItem)
+
+        item40 = self.q.get_queue_items_for_job()
+        self.assertIsInstance(item40, list)
+        self.assertEquals(len(item40), 3)
+
+    def test_qi_get_parameters(self):
+        act =  [{'parameters':
+                [{'name': 'name1', 'value': 'value1'},
+                {'name': 'node'}]}]
+        qi = QueueItem(jenkins=None, actions=act)
+
+        self.assertEquals(qi.get_parameters(), {'name1': 'value1',
+                                                'node': None})
+
+
 if __name__ == '__main__':
     unittest.main()

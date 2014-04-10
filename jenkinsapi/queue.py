@@ -57,11 +57,13 @@ class Queue(JenkinsBase):
         else:
             raise UnknownQueueItem(item_id)
 
-    def get_queue_items_for_job(self, job_name):
+    def get_queue_items_for_job(self, job_name=''):
         if not job_name:
-            return [QueueItem(self.jenkins, **item) for item in self._data['items']]
+            return [QueueItem(self.jenkins, **item)
+                    for item in self._data['items']]
         else:
-            return [QueueItem(self.jenkins, **item) for item in self._data['items']
+            return [QueueItem(self.jenkins, **item)
+                    for item in self._data['items']
                     if item['task']['name'] == job_name]
 
     def delete_item(self, queue_item):
@@ -74,8 +76,8 @@ class Queue(JenkinsBase):
 
 class QueueItem(object):
     """
-    Flexible class to handle queue items. If the Jenkins API changes this support
-    those changes
+    Flexible class to handle queue items.
+    If the Jenkins API changes this support those changes
     """
 
     def __init__(self, jenkins, **kwargs):
@@ -94,11 +96,13 @@ class QueueItem(object):
         for action in actions:
             if type(action) is dict and 'parameters' in action:
                 parameters = action['parameters']
-                return dict([(x['name'], x['value']) for x in parameters])
+                return dict([(x['name'], x.get('value', None))
+                             for x in parameters])
         return []
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__class__.__module__, self.__class__.__name__, str(self))
+        return "<%s.%s %s>" % (self.__class__.__module__,
+                               self.__class__.__name__, str(self))
 
     def __str__(self):
         return "%s #%i" % (self.task['name'], self.id)
