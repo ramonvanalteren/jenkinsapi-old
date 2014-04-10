@@ -153,5 +153,15 @@ class TestPlugins(unittest.TestCase):
         plugin = self.J.get_plugins()['subversion']
         self.assertEquals(p, plugin)
 
+    @mock.patch.object(Plugins, '_poll')
+    def test_get_plugin_details(self, _poll_plugins):
+        _poll_plugins.return_value = self.DATA
+        plugin = self.J.get_plugins()['subversion']
+        self.assertEquals('1.45', plugin.version)
+        self.assertEquals('subversion', plugin.shortName)
+        self.assertEquals('Jenkins Subversion Plug-in', plugin.longName)
+        self.assertEquals('http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
+                           plugin.url)
+
 if __name__ == '__main__':
     unittest.main()
