@@ -18,6 +18,7 @@ class Jobs(object):
     """
     def __init__(self, jenkins):
         self.jenkins = jenkins
+        self.jenkins.poll()
 
     def __len__(self):
         return len(self.keys)
@@ -36,7 +37,7 @@ class Jobs(object):
             self.jenkins.poll()
 
     def __setitem__(self, key, value):
-        raise NotImplementedError()
+        return self.create(key, value)
 
     def __getitem__(self, job_name):
         for row in self.jenkins._data.get('jobs', []):

@@ -64,7 +64,7 @@ class Node(JenkinsBase):
             raise AssertionError("Node is offline and not marked as temporarilyOffline" +
                                  ", check client connection: " +
                                  "offline = %s , temporarilyOffline = %s" %
-                                (self._data['offline'], self._data['temporarilyOffline']))
+                                 (self._data['offline'], self._data['temporarilyOffline']))
         elif self._data['offline'] and self._data['temporarilyOffline']:
             self.toggle_temporarily_offline()
             if self._data['offline']:

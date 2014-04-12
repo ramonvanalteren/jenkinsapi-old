@@ -37,9 +37,7 @@ class Plugins(JenkinsBase):
         return [a[1] for a in self.iteritems()]
 
     def _get_plugins(self):
-        if not 'plugins' in self._data:
-            pass
-        else:
+        if 'plugins' in self._data:
             for p_dict in self._data["plugins"]:
                 yield p_dict["shortName"], Plugin(p_dict)
 

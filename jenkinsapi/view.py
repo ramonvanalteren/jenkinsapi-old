@@ -11,6 +11,7 @@ import logging
 
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.job import Job
+from jenkinsapi.custom_exceptions import NotFound
 
 
 log = logging.getLogger(__name__)
@@ -71,9 +72,7 @@ class View(JenkinsBase):
         return [a for a in self.iteritems()]
 
     def _get_jobs(self):
-        if not 'jobs' in self._data:
-            pass
-        else:
+        if 'jobs' in self._data:
             for viewdict in self._data["jobs"]:
                 yield viewdict["name"], viewdict["url"]
 
@@ -84,13 +83,13 @@ class View(JenkinsBase):
         return len(self.get_job_dict().keys())
 
     def get_job_url(self, str_job_name):
-        try:
-            job_dict = self.get_job_dict()
-            return job_dict[str_job_name]
-        except KeyError:
-            #noinspection PyUnboundLocalVariable
-            all_views = ", ".join(job_dict.keys())
-            raise KeyError("Job %s is not known - available: %s" % (str_job_name, all_views))
+        if str_job_name in self:
+            return self.get_job_dict()[str_job_name]
+        else:
+            # noinspection PyUnboundLocalVariable
+            views_jobs = ", ".join(self.get_job_dict().keys())
+            raise NotFound("Job %s is not known, available jobs"
+                           " in view are: %s" % (str_job_name, views_jobs))
 
     def get_jenkins_obj(self):
         return self.jenkins_obj

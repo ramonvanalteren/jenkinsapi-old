@@ -37,7 +37,7 @@ class Jenkins(JenkinsBase):
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, requester=None):
+    def __init__(self, baseurl, username=None, password=None, requester=None, lazy=False):
         """
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
@@ -47,7 +47,12 @@ class Jenkins(JenkinsBase):
         self.username = username
         self.password = password
         self.requester = requester or Requester(username, password, baseurl=baseurl)
-        JenkinsBase.__init__(self, baseurl)
+        self.lazy = lazy
+        JenkinsBase.__init__(self, baseurl, poll=not lazy)
+
+    def _poll_if_needed(self):
+        if self.lazy and self._data is None:
+            self.poll()
 
     def _clone(self):
         return Jenkins(self.baseurl, username=self.username,
@@ -99,6 +104,7 @@ class Jenkins(JenkinsBase):
         """
         Fetch all the build-names on this Jenkins server.
         """
+        self._poll_if_needed()
         for info in self._data["jobs"]:
             yield info["name"], \
                 Job(info["url"], info["name"], jenkins_obj=self)
@@ -108,6 +114,7 @@ class Jenkins(JenkinsBase):
         Get the jobs information
         :return url, name
         """
+        self._poll_if_needed()
         for info in self._data["jobs"]:
             yield info["url"], info["name"]
 
@@ -130,6 +137,9 @@ class Jenkins(JenkinsBase):
     def create_job(self, jobname, config_):
         """
         Create a job
+
+        alternatively you can create job using Jobs object:
+        self.jobs['job_name'] = config
         :param jobname: name of new job, str
         :param config: configuration of new job, xml
         :return: new Job obj
@@ -166,6 +176,7 @@ class Jenkins(JenkinsBase):
         return self.jobs.rename(jobname, newjobname)
 
     def iterkeys(self):
+        self._poll_if_needed()
         for info in self._data["jobs"]:
             yield info["name"]
 
@@ -196,7 +207,7 @@ class Jenkins(JenkinsBase):
         return Views(self)
 
     def get_view_by_url(self, str_view_url):
-        #for nested view
+        # for nested view
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
         return View(str_view_url, str_view_name, jenkins_obj=self)
 
@@ -212,12 +223,15 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
+        self._poll_if_needed()
+
         for info in self._data["jobs"]:
             if info["name"] == jobname:
                 return Job(info["url"], info["name"], jenkins_obj=self)
         raise UnknownJob(jobname)
 
     def __len__(self):
+        self._poll_if_needed()
         return len(self._data["jobs"])
 
     def __contains__(self, jobname):
