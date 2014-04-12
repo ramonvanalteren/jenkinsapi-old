@@ -7,7 +7,11 @@ from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB
 from jenkinsapi_tests.test_utils.random_strings import random_string
 import logging
 import time
-import unittest2 as unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 
 log = logging.getLogger(__name__)

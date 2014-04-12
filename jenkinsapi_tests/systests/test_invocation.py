@@ -1,7 +1,11 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
-import unittest2 as unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import time
 from jenkinsapi.build import Build
 from jenkinsapi.invocation import Invocation

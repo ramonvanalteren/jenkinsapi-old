@@ -3,7 +3,11 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import time
 import logging
-import unittest2 as unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 from jenkinsapi.queue import Queue
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string

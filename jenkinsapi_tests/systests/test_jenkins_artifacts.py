@@ -7,7 +7,11 @@ import time
 import gzip
 import shutil
 import tempfile
-import unittest2 as unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_ARTIFACTS
