@@ -22,8 +22,8 @@ class BaseSystemTest(unittest.TestCase):
 
     def _delete_all_jobs(self):
         self.jenkins.poll()
-        for name in self.jenkins.get_jobs_list():
-            self.jenkins.delete_job(name)
+        for name in self.jenkins.keys():
+            del self.jenkins[name]
 
     def _delete_all_views(self):
         all_view_names = self.jenkins.views.keys()[1:]
