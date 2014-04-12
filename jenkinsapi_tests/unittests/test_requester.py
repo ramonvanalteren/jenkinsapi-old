@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import mock
 import unittest
 
@@ -29,7 +31,7 @@ class TestQueue(unittest.TestCase):
                 data=None,
                 headers=None
             )
-        self.assertTrue(na.exception.message == "Params must be a dict, got 'wrong'")
+        self.assertTrue(str(na.exception) == "Params must be a dict, got 'wrong'")
 
     def test_get_request_dict_correct_params(self):
         req = Requester('foo', 'bar')
@@ -53,7 +55,7 @@ class TestQueue(unittest.TestCase):
                 data=None,
                 headers='wrong'
             )
-        self.assertTrue(na.exception.message == "headers must be a dict, got 'wrong'")
+        self.assertTrue(str(na.exception) == "headers must be a dict, got 'wrong'")
 
     def test_get_request_dict_correct_headers(self):
         req = Requester('foo', 'bar')
@@ -78,7 +80,7 @@ class TestQueue(unittest.TestCase):
         )
 
         self.assertTrue(isinstance(req_return, dict))
-        print req_return.get('data')
+        print(req_return.get('data'))
         self.assertTrue(req_return.get('data'))
         self.assertTrue(req_return['data'] == 'some data')
 
@@ -125,7 +127,7 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertTrue(ae.exception.message == "Unexpected type of parameter 'data': <type 'NoneType'>. Expected (str, dict)")
+        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': <type 'NoneType'>. Expected (str, dict)")
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_some_xml(self, _post):
@@ -151,7 +153,7 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertTrue(ae.exception.message == "Unexpected type of parameter 'data': <type 'NoneType'>. Expected (str, dict)")
+        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': <type 'NoneType'>. Expected (str, dict)")
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_some_data(self, _post):
@@ -180,8 +182,8 @@ class TestQueue(unittest.TestCase):
                 data='some data'
             )
 
-        print ae.exception.message
-        self.assertTrue(ae.exception.message == "Operation failed. url=None, data=some data, headers={'Content-Type': 'application/x-www-form-urlencoded'}, status=500, text=")
+        print(str(ae.exception))
+        self.assertTrue(str(ae.exception) == "Operation failed. url=None, data=some data, headers={'Content-Type': 'application/x-www-form-urlencoded'}, status=500, text=")
 
     @mock.patch.object(requests, 'get')
     def test_get_and_confirm_status(self, _get):
@@ -208,8 +210,8 @@ class TestQueue(unittest.TestCase):
                 params={'param': 'value'}
             )
 
-        print ae.exception.message
-        self.assertTrue(ae.exception.message == "Operation failed. url=None, headers=None, status=500, text=")
+        print(str(ae.exception))
+        self.assertTrue(str(ae.exception) == "Operation failed. url=None, headers=None, status=500, text=")
 
 if __name__ == "__main__":
     unittest.main()

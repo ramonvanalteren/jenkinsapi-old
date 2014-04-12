@@ -12,7 +12,7 @@ SHORT_DESCRIPTION = 'A Python API for accessing resources on a Jenkins continuou
 
 try:
     DESCRIPTION = open(os.path.join(PROJECT_ROOT, "README.rst")).read()
-except IOError, _:
+except IOError:
     DESCRIPTION = SHORT_DESCRIPTION
 
 GLOBAL_ENTRY_POINTS = {

@@ -1,6 +1,9 @@
 import os
 import time
-import Queue
+try:
+    import Queue
+except ImportError:
+    import queue as Queue
 import random
 import shutil
 import logging
@@ -75,7 +78,12 @@ class JenkinsLancher(object):
         config_dest = os.path.join(self.jenkins_home, 'config.xml')
         config_dest_file = open(config_dest, 'w')
         config_source = pkg_resources.resource_string('jenkinsapi_tests.systests', 'config.xml')
-        config_dest_file.write(config_source.encode('UTF-8'))
+        try:
+            config_dest_file.write(config_source.encode('UTF-8'))
+        except AttributeError:
+            # Python 3.x
+            config_dest_file.write(config_source.decode('UTF-8'))
+
 
     def install_plugins(self):
         for i, url in enumerate(self.plugin_urls):
@@ -144,6 +152,9 @@ class JenkinsLancher(object):
         while True:
             try:
                 streamName, line = self.q.get(block=True, timeout=timeout)
+                # Python 3.x
+                if isinstance(line, bytes):
+                    line = line.decode('UTF-8')
             except Queue.Empty:
                 log.warn("Input ended unexpectedly")
                 break

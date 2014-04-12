@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import json
 import requests
 
@@ -12,7 +14,7 @@ def foo():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     form = {'json': json.dumps(toJson)}
     response = requests.post(url, data=form, headers=headers)
-    print response.text.encode('UTF-8')
+    print(response.text.encode('UTF-8'))
 
 if __name__ == '__main__':
     foo()

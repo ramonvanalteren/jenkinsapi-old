@@ -5,6 +5,11 @@ Module for jenkinsapi Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import ArtifactBroken
 
+    from urllib2 import HTTPError
+except ImportError:
+    # Python3
+    from urllib.error import HTTPError
+
 import re
 import requests
 

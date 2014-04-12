@@ -2,6 +2,8 @@
 A low level example:
 This is how JenkinsAPI creates views
 """
+from __future__ import print_function
+
 import requests
 import json
 
@@ -18,4 +20,4 @@ data = {
 }
 # Try 1
 result = requests.post(url, params=params, data=data, headers=headers)
-print result.text.encode('UTF-8')
+print(result.text.encode('UTF-8'))

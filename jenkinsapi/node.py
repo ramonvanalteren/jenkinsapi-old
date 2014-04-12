@@ -4,7 +4,12 @@ Module for jenkinsapi Node class
 
 from jenkinsapi.jenkinsbase import JenkinsBase
 import logging
-import urllib
+
+try:
+    from urllib import quote as urlquote
+except ImportError:
+    # Python3
+    from urllib.parse import quote as urlquote
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +93,7 @@ class Node(JenkinsBase):
         : param message: optional string can be used to explain why you are taking this node offline
         """
         initial_state = self.is_temporarily_offline()
-        url = self.baseurl + "/toggleOffline?offlineMessage=" + urllib.quote(message)
+        url = self.baseurl + "/toggleOffline?offlineMessage=" + urlquote(message)
         html_result = self.jenkins.requester.get_and_confirm_status(url)
         self.poll()
         log.debug(html_result)
