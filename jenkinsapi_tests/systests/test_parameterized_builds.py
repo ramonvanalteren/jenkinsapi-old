@@ -58,6 +58,7 @@ class TestParameterizedBuilds(BaseSystemTest):
             param_B = random_string()
             params = {'B': param_B}
             job.invoke(build_params=params)
+            time.sleep(0.25)
 
         self.assertTrue(job.has_queued_build(params))
 

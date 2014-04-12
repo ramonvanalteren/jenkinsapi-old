@@ -235,6 +235,9 @@ class Jenkins(JenkinsBase):
         """
         return jobname in self.jobs
 
+    def __delitem__(self, job_name):
+        del self.jobs[job_name]
+
     def get_node(self, nodename):
         """Get a node object for a specific node"""
         return self.get_nodes()[nodename]
