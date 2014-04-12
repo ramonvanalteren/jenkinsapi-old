@@ -1,4 +1,4 @@
-import unittest
+import unittest2 as unittest
 import jenkinsapi_tests.systests
 from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi.jenkins import Jenkins

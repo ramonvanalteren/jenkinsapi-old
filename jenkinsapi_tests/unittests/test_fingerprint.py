@@ -1,5 +1,5 @@
 import mock
-import unittest
+import unittest2 as unittest
 import hashlib
 import requests
 

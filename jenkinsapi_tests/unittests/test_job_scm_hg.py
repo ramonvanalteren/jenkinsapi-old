@@ -1,5 +1,5 @@
 import mock
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi import config
 from jenkinsapi.job import Job
@@ -91,7 +91,7 @@ class TestHgJob(unittest.TestCase):
     @mock.patch.object(Job,'get_config',configtree_with_branch)
     def test_hg_attributes(self):
         expected_url = ['http://cm5/hg/sandbox/v01.0/int']
-        self.assertEquals(self.j.get_scm_type(),'hg') 
+        self.assertEquals(self.j.get_scm_type(),'hg')
         self.assertEquals(self.j.get_scm_url(),expected_url)
         self.assertEquals(self.j.get_scm_branch(),['testme'])
 

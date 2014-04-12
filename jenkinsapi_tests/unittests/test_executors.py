@@ -1,6 +1,6 @@
 import mock
 import types
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 from jenkinsapi.jenkins import Jenkins

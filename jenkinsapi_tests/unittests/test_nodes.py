@@ -1,5 +1,5 @@
 import mock
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.nodes import Nodes

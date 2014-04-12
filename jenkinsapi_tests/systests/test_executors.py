@@ -7,7 +7,7 @@ from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB
 from jenkinsapi_tests.test_utils.random_strings import random_string
 import logging
 import time
-import unittest
+import unittest2 as unittest
 
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class TestNodes(BaseSystemTest):
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
         ii = job.invoke(invoke_pre_check_delay=2)
         ii.block(until='not_queued')
-        
+
         if job.is_running() is False:
             time.sleep(1)
         executors = self.jenkins.get_executors(node_name)

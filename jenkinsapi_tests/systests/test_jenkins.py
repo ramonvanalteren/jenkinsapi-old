@@ -1,7 +1,7 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
-import unittest
+import unittest2 as unittest
 from jenkinsapi.job import Job
 from jenkinsapi.invocation import Invocation
 from jenkinsapi_tests.systests.base import BaseSystemTest

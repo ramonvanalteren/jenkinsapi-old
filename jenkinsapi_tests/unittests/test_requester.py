@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import mock
-import unittest
+import unittest2 as unittest
 
 import requests
 from jenkinsapi.jenkins import Requester

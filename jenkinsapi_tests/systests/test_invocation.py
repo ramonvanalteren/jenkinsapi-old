@@ -1,7 +1,7 @@
 '''
 System tests for `jenkinsapi.jenkins` module.
 '''
-import unittest
+import unittest2 as unittest
 import time
 from jenkinsapi.build import Build
 from jenkinsapi.invocation import Invocation

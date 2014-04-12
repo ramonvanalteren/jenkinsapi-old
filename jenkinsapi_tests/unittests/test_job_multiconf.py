@@ -1,5 +1,5 @@
 # import mock
-# import unittest
+# import unittest2 as unittest
 
 # from jenkinsapi.job import Job
 # from jenkinsapi.jenkinsbase import JenkinsBase

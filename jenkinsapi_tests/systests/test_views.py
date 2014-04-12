@@ -2,7 +2,7 @@
 System tests for `jenkinsapi.jenkins` module.
 '''
 import logging
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi.view import View
 from jenkinsapi.views import Views

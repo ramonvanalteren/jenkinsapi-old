@@ -1,6 +1,6 @@
 import pytz
 import mock
-import unittest
+import unittest2 as unittest
 import datetime
 
 from jenkinsapi.build import Build

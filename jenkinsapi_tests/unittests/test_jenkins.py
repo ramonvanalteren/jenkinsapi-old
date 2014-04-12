@@ -1,5 +1,5 @@
 import mock
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi.plugins import Plugins
 from jenkinsapi.utils.requester import Requester

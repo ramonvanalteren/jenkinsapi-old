@@ -1,5 +1,5 @@
 import mock
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi.result_set import ResultSet
 from jenkinsapi.result import Result

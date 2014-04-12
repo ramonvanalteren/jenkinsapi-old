@@ -3,7 +3,7 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import re
 import time
-import unittest
+import unittest2 as unittest
 
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.systests.job_configs import MATRIX_JOB

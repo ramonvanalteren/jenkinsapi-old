@@ -3,7 +3,7 @@ System tests for `jenkinsapi.jenkins` module.
 '''
 import time
 import logging
-import unittest
+import unittest2 as unittest
 from jenkinsapi.custom_exceptions import NoBuildData
 from jenkinsapi_tests.systests.base import BaseSystemTest
 
