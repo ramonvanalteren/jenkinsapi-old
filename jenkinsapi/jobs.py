@@ -29,11 +29,24 @@ class Jobs(object):
         :param job_name: name of a exist job, str
         """
         if job_name in self:
-            delete_job_url = self[job_name].get_delete_url()
-            self.jenkins.requester.post_and_confirm_status(
-                delete_job_url,
-                data='some random bytes...'
-            )
+            try:
+                delete_job_url = self[job_name].get_delete_url()
+                self.jenkins.requester.post_and_confirm_status(
+                    delete_job_url,
+                    data='some random bytes...'
+                )
+            except JenkinsAPIException:
+                # Sometimes jenkins throws NPE when removing job
+                # It removes job ok, but it is good to be sure
+                # so we re-try if job was not deleted
+                self.jenkins.poll()
+                if job_name in self:
+                    delete_job_url = self[job_name].get_delete_url()
+                    self.jenkins.requester.post_and_confirm_status(
+                        delete_job_url,
+                        data='some random bytes...'
+                    )
+
             self.jenkins.poll()
 
     def __setitem__(self, key, value):
