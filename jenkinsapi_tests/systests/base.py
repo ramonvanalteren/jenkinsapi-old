@@ -1,4 +1,9 @@
-import unittest
+# For tests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
 import jenkinsapi_tests.systests
 from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
 from jenkinsapi.jenkins import Jenkins
@@ -17,8 +22,8 @@ class BaseSystemTest(unittest.TestCase):
 
     def _delete_all_jobs(self):
         self.jenkins.poll()
-        for name in self.jenkins.get_jobs_list():
-            self.jenkins.delete_job(name)
+        for name in self.jenkins.keys():
+            del self.jenkins[name]
 
     def _delete_all_views(self):
         all_view_names = self.jenkins.views.keys()[1:]
