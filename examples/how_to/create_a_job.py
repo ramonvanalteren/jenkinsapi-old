@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 logging.basicConfig()
 
@@ -7,12 +9,12 @@ J = Jenkins('http://localhost:8080')
 jobName = 'foo_job2'
 xml = resource_string('examples', 'addjob.xml')
 
-print xml
+print(xml)
 
 j = J.create_job(jobname=jobName, config=xml)
 
 j2 = J[jobName]
-print j
+print(j)
 
 # Delete job
 J.delete_job(jobName)

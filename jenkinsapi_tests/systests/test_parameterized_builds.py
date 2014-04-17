@@ -2,7 +2,11 @@
 System tests for `jenkinsapi.jenkins` module.
 '''
 import time
-import unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 from StringIO import StringIO
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
@@ -89,7 +93,7 @@ class TestParameterizedBuilds(BaseSystemTest):
         with self.assertRaises(WillNotBuild) as na:
             job.invoke(build_params=params)
         expected_msg = 'A build with these parameters is already queued.'
-        self.assertEqual(na.exception.message, expected_msg)
+        self.assertEqual(str(na.exception), expected_msg)
 
 
 if __name__ == '__main__':

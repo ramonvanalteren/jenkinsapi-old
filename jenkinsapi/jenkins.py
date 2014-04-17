@@ -4,9 +4,16 @@ Module for jenkinsapi Jenkins object
 
 
 import json
-import urllib
+
+try:
+    import urlparse
+    from urllib import quote as urlquote, urlencode
+except ImportError:
+    # Python3
+    import urllib.parse as urlparse
+    from urllib.parse import quote as urlquote, urlencode
+
 import logging
-import urlparse
 
 from jenkinsapi import config
 from jenkinsapi.executors import Executors
@@ -244,7 +251,7 @@ class Jenkins(JenkinsBase):
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
-        url = urlparse.urljoin(self.base_server_url(), 'computer/%s' % urllib.quote(nodename))
+        url = urlparse.urljoin(self.base_server_url(), 'computer/%s' % urlquote(nodename))
         return url
 
     def get_queue_url(self):
@@ -316,7 +323,7 @@ class Jenkins(JenkinsBase):
                 'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
             })
         }
-        url = self.get_node_url() + "doCreateItem?%s" % urllib.urlencode(params)
+        url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
         self.requester.get_and_confirm_status(url)
 
         return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)

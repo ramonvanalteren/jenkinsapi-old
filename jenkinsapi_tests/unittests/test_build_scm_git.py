@@ -1,5 +1,9 @@
 import mock
-import unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 from jenkinsapi.build import Build
 
 
@@ -98,7 +102,11 @@ class test_build(unittest.TestCase):
         """
         Can we extract git build revision data from a build object?
         """
-        self.assertIsInstance(self.b.get_revision(), basestring)
+        try:
+            self.assertIsInstance(self.b.get_revision(), basestring)
+        except NameError:
+            # Python3
+            self.assertIsInstance(self.b.get_revision(), str)
         self.assertEquals(self.b.get_revision(),
                           '7def9ed6e92580f37d00e4980c36c4d36e68f702')
 

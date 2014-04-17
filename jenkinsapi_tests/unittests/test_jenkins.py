@@ -1,5 +1,9 @@
 import mock
-import unittest
+# To run unittests on python 2.6 please use unittest2 library
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from jenkinsapi.plugins import Plugins
 from jenkinsapi.utils.requester import Requester
@@ -275,7 +279,7 @@ class TestJenkins(unittest.TestCase):
         with self.assertRaises(JenkinsAPIException) as ar:
             J.create_job('job_new', None)
 
-        self.assertEquals(ar.exception.message, 'Cannot create job job_new')
+        self.assertEquals(str(ar.exception), 'Cannot create job job_new')
 
     @mock.patch.object(JenkinsBase, '_poll')
     @mock.patch.object(Jenkins, '_poll')
