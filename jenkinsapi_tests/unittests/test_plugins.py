@@ -128,7 +128,8 @@ class TestPlugins(unittest.TestCase):
     def test_plugins_empty(self, _poll_plugins):
         _poll_plugins.return_value = {}
 
-        plugins = self.J.get_plugins().keys()
+        # list() is required here for python 3.x compatibility
+        plugins = list(self.J.get_plugins().keys())
         self.assertEquals([], plugins)
 
     @mock.patch.object(Plugins, '_poll')

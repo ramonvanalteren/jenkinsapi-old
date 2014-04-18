@@ -17,7 +17,7 @@ class TestFingerprint(unittest.TestCase):
     def setUp(self):
         self.baseurl = 'http://localhost:8080'
         m = hashlib.md5()
-        m.update("some dummy string")
+        m.update("some dummy string".encode('ascii'))
         self.dummy_md5 = m.hexdigest()
 
     @mock.patch.object(Jenkins, '_poll')

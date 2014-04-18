@@ -122,7 +122,7 @@ class TestJob(unittest.TestCase):
         params = {'param1': 'value1', 'param2': 'value2'}
         ret = self.j.mk_json_from_build_parameters(build_params=params)
         self.assertTrue(isinstance(ret, str))
-        self.assertEquals(ret,
+        self.assertItemsEqual(ret,
                           '{"parameter": [{"name": "param2", "value": "value2"}, {"name": "param1", "value": "value1"}]}')
 
     def test_wrong_mk_json_from_build_parameters(self):
