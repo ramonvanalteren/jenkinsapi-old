@@ -10,11 +10,6 @@ jenkinsapi
 .. image:: https://pypip.in/d/jenkinsapi/badge.png
         :target: https://crate.io/packages/jenkinsapi/
 
-Experimental Python 3 branch
-----------------------------
-
-This branch is not yet intended to production use. Some features may or may not work!
-
 About this library
 -------------------
 
@@ -37,6 +32,7 @@ This library can help you:
 Known bugs
 ----------
 * Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
+* Not all functionality works with Python 3
 
 For other issues, please refer to the support URL below.
 
