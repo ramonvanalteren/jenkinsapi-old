@@ -101,7 +101,7 @@ class TestDownstreamUpstream(BaseSystemTest):
 
         self.jenkins['A'].invoke()
 
-        for _ in xrange(10):
+        for _ in range(10):
             try:
                 self.jenkins['C'].get_last_completed_buildnumber() > 0
             except NoBuildData:

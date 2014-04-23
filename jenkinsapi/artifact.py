@@ -93,7 +93,10 @@ class Artifact(object):
         try:
             with open(fspath, 'rb') as f:
                 for chunk in iter(lambda: f.read(chunksize), ''):
-                    md5.update(chunk)
+                    if chunk:
+                        md5.update(chunk)
+                    else:
+                        break
         except:
             raise
         return md5.hexdigest()
