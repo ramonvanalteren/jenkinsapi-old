@@ -132,7 +132,7 @@ def block_until_complete(jenkinsurl, jobs, maxwait=12000, interval=30,
 
     obj_jenkins = Jenkins(jenkinsurl, username=username, password=password)
     obj_jobs = [obj_jenkins[jid] for jid in jobs]
-    for time_left in xrange(maxwait, 0, -interval):
+    for time_left in range(maxwait, 0, -interval):
         still_running = [j for j in obj_jobs if j.is_queued_or_running()]
         if not still_running:
             return
@@ -191,7 +191,7 @@ def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
                 # It's probably a static file,
                 # we can get it from the static collection
                 staticurl = urlparse.urljoin(basestaticurl, artifactname)
-                theartifact = Artifact(artifactname, staticurl)
+                theartifact = Artifact(artifactname, staticurl, None)
             theartifact.save(destpath)
             installed.append(destpath)
     return installed

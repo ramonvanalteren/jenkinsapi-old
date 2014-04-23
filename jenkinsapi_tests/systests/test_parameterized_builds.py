@@ -7,7 +7,10 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_FILE
@@ -25,11 +28,11 @@ class TestParameterizedBuilds(BaseSystemTest):
         job = self.jenkins.create_job(job_name, JOB_WITH_FILE)
         job.invoke(block=True, files={'file.txt': param_file})
 
-        b = job.get_last_build()
-        while b.is_running():
+        build = job.get_last_build()
+        while build.is_running():
             time.sleep(0.25)
 
-        artifacts = b.get_artifact_dict()
+        artifacts = build.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
         art_file = artifacts['file.txt']
         self.assertTrue(art_file.get_data().strip(), file_data)
@@ -41,16 +44,16 @@ class TestParameterizedBuilds(BaseSystemTest):
         job = self.jenkins.create_job(job_name, JOB_WITH_PARAMETERS)
         job.invoke(block=True, build_params={'B': param_B})
 
-        b = job.get_last_build()
-        while b.is_running():
+        build = job.get_last_build()
+        while build.is_running():
             time.sleep(0.25)
 
-        artifacts = b.get_artifact_dict()
+        artifacts = build.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
         artB = artifacts['b.txt']
         self.assertTrue(artB.get_data().strip(), param_B)
 
-        self.assertIn(param_B, b.get_console())
+        self.assertIn(param_B, build.get_console())
 
     def test_parameterized_job_build_queuing(self):
         """Accept multiple builds of parameterized jobs with unique
@@ -66,19 +69,19 @@ class TestParameterizedBuilds(BaseSystemTest):
 
         self.assertTrue(job.has_queued_build(params))
 
-        while(job.has_queued_build(params)):
+        while job.has_queued_build(params):
             time.sleep(0.25)
 
-        b = job.get_last_build()
-        while b.is_running():
+        build = job.get_last_build()
+        while build.is_running():
             time.sleep(0.25)
 
-        artifacts = b.get_artifact_dict()
+        artifacts = build.get_artifact_dict()
         self.assertIsInstance(artifacts, dict)
         artB = artifacts['b.txt']
         self.assertTrue(artB.get_data().strip(), param_B)
 
-        self.assertIn(param_B, b.get_console())
+        self.assertIn(param_B, build.get_console())
 
     def test_parameterized_job_build_rejection(self):
         """Reject build of paramterized job when existing build with same

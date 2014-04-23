@@ -364,7 +364,7 @@ class Build(JenkinsBase):
         Return the current state of the text console.
         """
         url = "%s/consoleText" % self.baseurl
-        return self.job.jenkins.requester.get_url(url).content
+        return self.job.jenkins.requester.get_url(url).content.decode('utf-8')
 
     def stop(self):
         """
