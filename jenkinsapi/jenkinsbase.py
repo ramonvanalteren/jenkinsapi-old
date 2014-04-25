@@ -63,6 +63,7 @@ class JenkinsBase(object):
         requester = self.get_jenkins_obj().requester
         response = requester.get_url(url, params)
         if response.status_code != 200:
+            logging.error('Failed request at %s with params: %s', url, params)
             response.raise_for_status()
         try:
             return ast.literal_eval(response.text)
