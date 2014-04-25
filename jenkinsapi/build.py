@@ -20,6 +20,7 @@ from jenkinsapi.result_set import ResultSet
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.constants import STATUS_SUCCESS
 from jenkinsapi.custom_exceptions import NoResults
+from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 
 log = logging.getLogger(__name__)
