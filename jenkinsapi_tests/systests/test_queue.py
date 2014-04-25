@@ -52,6 +52,7 @@ class TestQueue(BaseSystemTest):
         job_name = random_string()
         j = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
         j.invoke()
+        time.sleep(1)
         self.assertTrue(j.is_queued_or_running())
 
         while j.is_queued():
