@@ -29,10 +29,14 @@ This library can help you:
 * Ability to add/remove/query Jenkins slaves
 * Ability to add/remove/modify Jenkins views
 
+Python versions
+---------------
+
+The project have been tested and working on Python 2.6, 2.7 and 3.3
+
 Known bugs
 ----------
 * Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
-* Not all functionality works with Python 3
 
 For other issues, please refer to the support URL below.
 
