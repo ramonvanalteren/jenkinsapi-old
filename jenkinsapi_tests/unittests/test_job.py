@@ -8,14 +8,14 @@ except ImportError:
 from jenkinsapi import config
 from jenkinsapi.job import Job
 from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.custom_exceptions import NoBuildData
 
 
 class TestJob(unittest.TestCase):
     JOB_DATA = {
         "actions": [{
-            "parameterDefinitions": [
-            {
+            "parameterDefinitions": [{
                 "defaultParameterValue": {
                     "name": "param1",
                     "value": "test1"
@@ -23,8 +23,7 @@ class TestJob(unittest.TestCase):
                 "description": "",
                 "name": "param1",
                 "type": "StringParameterDefinition"
-            },
-            {
+            }, {
                 "defaultParameterValue": {
                     "name": "param2",
                     "value": ""
@@ -46,32 +45,45 @@ class TestJob(unittest.TestCase):
             {"number": 2, "url": "http://halob:8080/job/foo/2/"},
             {"number": 1, "url": "http://halob:8080/job/foo/1/"}
         ],
+        # allBuilds is not present in job dict returned by Jenkins
+        # it is inserted here to test _add_missing_builds()
+        "allBuilds": [
+            {"number": 3, "url": "http://halob:8080/job/foo/3/"},
+            {"number": 2, "url": "http://halob:8080/job/foo/2/"},
+            {"number": 1, "url": "http://halob:8080/job/foo/1/"}
+        ],
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/foo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png", "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
-        "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},
+        "lastCompletedBuild": {"number": 3,
+                               "url": "http://halob:8080/job/foo/3/"},
         "lastFailedBuild": None,
-        "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
-        "lastSuccessfulBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
+        "lastStableBuild": {"number": 3,
+                            "url": "http://halob:8080/job/foo/3/"},
+        "lastSuccessfulBuild": {"number": 3,
+                                "url": "http://halob:8080/job/foo/3/"},
         "lastUnstableBuild": None,
         "lastUnsuccessfulBuild": None,
         "nextBuildNumber": 4,
         "property": [],
         "queueItem": None,
         "concurrentBuild": False,
-        "downstreamProjects": [],
+        # test1 job exists, test2 does not
+        "downstreamProjects": [{'name': 'test1'}, {'name': 'test2'}],
         "scm": {},
         "upstreamProjects": []
     }
 
     URL_DATA = {'http://halob:8080/job/foo/%s' % config.JENKINS_API: JOB_DATA}
 
-    def fakeGetData(self, url, *args):
+    def fakeGetData(self, url, **args):
         try:
             return TestJob.URL_DATA[url]
         except KeyError:
@@ -108,8 +120,8 @@ class TestJob(unittest.TestCase):
         self.assertEquals(self.j.get_description(), 'test job')
 
     def test_get_build_triggerurl(self):
-        self.assertEquals(
-            self.j.get_build_triggerurl(), 'http://halob:8080/job/foo/buildWithParameters')
+        self.assertEquals(self.j.get_build_triggerurl(),
+                          'http://halob:8080/job/foo/buildWithParameters')
 
     def test_wrong__mk_json_from_build_parameters(self):
         with self.assertRaises(AssertionError) as ar:
@@ -206,15 +218,46 @@ class TestJob(unittest.TestCase):
             j.get_last_build()
 
     @mock.patch.object(JenkinsBase, 'get_data')
-    def test_empty_field__add_missing_builds(self, get_data):
+    def test__add_missing_builds_not_all_loaded(self, get_data):
         url = 'http://halob:8080/job/foo/%s' % config.JENKINS_API
         data = TestJob.URL_DATA[url].copy()
-        data.update({'firstBuild': None})
+        get_data.return_value = data
+        j = Job('http://halob:8080/job/foo/', 'foo', self.J)
+        # to test this function we change data to not have one build
+        # and set it to mark that firstBuild was not loaded
+        # in that condition function will call j.get_data
+        # and will use syntetic field 'allBuilds' to
+        # repopulate 'builds' field with all builds
+        mock_data = TestJob.URL_DATA[url].copy()
+        mock_data['firstBuild'] = {'number': 1}
+        del mock_data['builds'][-1]
+        self.assertEquals(len(mock_data['builds']), 2)
+        new_data = j._add_missing_builds(mock_data)
+        self.assertEquals(len(new_data['builds']), 3)
+
+    @mock.patch.object(JenkinsBase, 'get_data')
+    def test__add_missing_builds_no_first_build(self, get_data):
+        url = 'http://halob:8080/job/foo/%s' % config.JENKINS_API
+        data = TestJob.URL_DATA[url].copy()
         get_data.return_value = data
         j = Job('http://halob:8080/job/foo/', 'foo', self.J)
         initial_call_count = get_data.call_count
-        j._add_missing_builds(data)
-        self.assertEquals(get_data.call_count, initial_call_count)
+        mock_data = TestJob.URL_DATA[url].copy()
+        mock_data['firstBuild'] = None
+        j._add_missing_builds(mock_data)
+        self.assertEquals(initial_call_count, get_data.call_count)
+
+    @mock.patch.object(JenkinsBase, 'get_data')
+    def test__add_missing_builds_no_builds(self, get_data):
+        url = 'http://halob:8080/job/foo/%s' % config.JENKINS_API
+        data = TestJob.URL_DATA[url].copy()
+        get_data.return_value = data
+        j = Job('http://halob:8080/job/foo/', 'foo', self.J)
+        initial_call_count = get_data.call_count
+        mock_data = TestJob.URL_DATA[url].copy()
+        mock_data['builds'] = None
+        j._add_missing_builds(mock_data)
+        self.assertEquals(initial_call_count, get_data.call_count)
 
     @mock.patch.object(JenkinsBase, 'get_data')
     def test_get_params(self, get_data):

@@ -105,7 +105,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         Jenkins API loads the first 100 builds and thus may not contain all builds
         information. This method checks if all builds are loaded in the data object
         and updates it with the missing builds if needed.'''
-        if not (data.get("builds") and data.get("firstBuild")):
+        if not data.get("builds"):
             return data
         # do not call _buildid_for_type here: it would poll and do an infinite loop
         oldest_loaded_build_number = data["builds"][-1]["number"]
@@ -527,7 +527,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         try:
             for j in self._data['downstreamProjects']:
                 downstream_jobs.append(
-                    self.get_jenkins_obj().get_job(j['name']))
+                    self.get_jenkins_obj()[j['name']])
         except KeyError:
             return []
         return downstream_jobs
