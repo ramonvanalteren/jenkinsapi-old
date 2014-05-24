@@ -138,27 +138,29 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return "%s/buildWithParameters" % self.baseurl
 
     @staticmethod
-    def _mk_json_from_build_parameters(build_params):
+    def _mk_json_from_build_parameters(build_params, file_params=None):
         """
-        Build parameters must be submitted in a particular format - Key-Value pairs would be
-        far too simple, no no! Watch and read on and behold!
+        Build parameters must be submitted in a particular format
+        Key-Value pairs would be far too simple, no no!
+        Watch and read on and behold!
         """
         assert isinstance(
             build_params, dict), 'Build parameters must be a dict'
 
-        try:
-            it = build_params.iteritems()
-        except AttributeError:
-            # Python3
-            it = build_params.items()
+        build_p = [{'name': k, 'value': v}
+                   for k, v in build_params.items()]
+        out = {'parameter': build_p}
+        if file_params:
+            file_p = [{'name': k, 'file': k}
+                      for k in file_params.keys()]
+            out['parameter'].extend(file_p)
 
-        return {'parameter': [
-            {'name': k, 'value': v} for k, v in it
-        ]}
+        return out
 
     @staticmethod
-    def mk_json_from_build_parameters(build_params):
-        to_json_structure = Job._mk_json_from_build_parameters(build_params)
+    def mk_json_from_build_parameters(build_params, file_params=None):
+        to_json_structure = Job._mk_json_from_build_parameters(build_params,
+                                                               file_params)
         return json.dumps(to_json_structure)
 
     def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3,
@@ -196,6 +198,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 self.get_jenkins_obj()))
 
             url = self.get_build_triggerurl()
+            # If job has file parameters - it must be triggered
+            # using "/build", not by "/buildWithParameters"
+            # "/buildWithParameters" will ignore non-file parameters
+            if files:
+                url = "%s/build" % self.baseurl
 
             if cause:
                 build_params['cause'] = cause
@@ -203,6 +210,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             if securitytoken:
                 params['token'] = securitytoken
 
+            build_params['json'] = self.mk_json_from_build_parameters(build_params, files)
             data = build_params
 
             response = self.jenkins.requester.post_and_confirm_status(
