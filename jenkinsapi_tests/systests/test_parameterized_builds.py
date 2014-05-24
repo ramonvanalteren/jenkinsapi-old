@@ -14,6 +14,7 @@ except ImportError:
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_FILE
+from jenkinsapi_tests.systests.job_configs import JOB_WITH_FILE_AND_PARAMS
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_PARAMETERS
 from jenkinsapi.custom_exceptions import WillNotBuild
 
@@ -97,6 +98,27 @@ class TestParameterizedBuilds(BaseSystemTest):
             job.invoke(build_params=params)
         expected_msg = 'A build with these parameters is already queued.'
         self.assertEqual(str(na.exception), expected_msg)
+
+    def test_invoke_job_with_file_and_params(self):
+        file_data = random_string()
+        param_data = random_string()
+        param_file = StringIO(file_data)
+
+        job_name = 'create_%s' % random_string()
+        job = self.jenkins.create_job(job_name, JOB_WITH_FILE_AND_PARAMS)
+        job.invoke(block=True, files={'file.txt': param_file},
+                   build_params={'B': param_data})
+
+        build = job.get_last_build()
+        while build.is_running():
+            time.sleep(0.25)
+
+        artifacts = build.get_artifact_dict()
+        self.assertIsInstance(artifacts, dict)
+        art_file = artifacts['file.txt']
+        self.assertTrue(art_file.get_data().strip(), file_data)
+        art_param = artifacts['file1.txt']
+        self.assertTrue(art_param.get_data().strip(), param_data)
 
 
 if __name__ == '__main__':
