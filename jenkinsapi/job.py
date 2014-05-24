@@ -148,11 +148,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
             build_params, dict), 'Build parameters must be a dict'
 
         build_p = [{'name': k, 'value': v}
-                   for k, v in build_params.iteritems()]
+                   for k, v in build_params.items()]
         out = {'parameter': build_p}
         if file_params:
             file_p = [{'name': k, 'file': k}
-                      for k in file_params.iterkeys()]
+                      for k in file_params.keys()]
             out['parameter'].extend(file_p)
 
         return out
