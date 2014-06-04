@@ -37,6 +37,11 @@ class Build(JenkinsBase):
     def __init__(self, url, buildno, job, depth=1):
         """
         depth=1 is for backward compatibility consideration
+
+        About depth, the deeper it is, the more build data you get back. If
+        depth=0 is sufficient for you, don't go up to 1. See section 'Depth
+        control' of
+        https://wiki.jenkins-ci.org/display/JENKINS/Remote+access+API
         """
         assert type(buildno) == int
         self.buildno = buildno
