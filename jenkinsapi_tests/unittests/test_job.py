@@ -5,6 +5,7 @@ try:
 except ImportError:
     import unittest
 
+import jenkinsapi
 from jenkinsapi import config
 from jenkinsapi.job import Job
 from jenkinsapi.jenkinsbase import JenkinsBase
@@ -278,6 +279,24 @@ class TestJob(unittest.TestCase):
         self.assertIsInstance(params, list)
         self.assertEquals(len(params), 2)
         self.assertEquals(params, ['param1', 'param2'])
+
+    def test_get_build(self):
+        buildnumber = 1
+        with mock.patch('jenkinsapi.job.Build') as build_mock:
+            instance = build_mock.return_value
+            build = self.j.get_build(buildnumber)
+            self.assertEquals(build, instance)
+            build_mock.assert_called_with('http://halob:8080/job/foo/1/',
+                                          buildnumber, job=self.j)
+
+    def test_get_build_metadata(self):
+        buildnumber = 1
+        with mock.patch('jenkinsapi.job.Build') as build_mock:
+            instance = build_mock.return_value
+            build = self.j.get_build_metadata(buildnumber)
+            self.assertEquals(build, instance)
+            build_mock.assert_called_with('http://halob:8080/job/foo/1/',
+                                          buildnumber, job=self.j, depth=0)
 
 if __name__ == '__main__':
     unittest.main()
