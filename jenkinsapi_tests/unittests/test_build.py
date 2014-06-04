@@ -73,6 +73,11 @@ class test_build(unittest.TestCase):
         self.assertEquals(self.b.get_duration().microseconds, 782000)
         self.assertEquals(str(self.b.get_duration()), '0:00:05.782000')
 
+    @mock.patch.object(Build, 'get_data')
+    def test_build_depth(self, get_data_mock):
+        build = Build('http://halob:8080/job/foo/98', 98, self.j, depth=0)
+        get_data_mock.assert_called_with('http://halob:8080/job/foo/98/api/python?depth=0')
+
     ## TEST DISABLED - DOES NOT WORK
     # def test_downstream(self):
     #     expected = ['SingleJob','MultipleJobs']

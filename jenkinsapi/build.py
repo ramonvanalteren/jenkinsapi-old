@@ -34,16 +34,20 @@ class Build(JenkinsBase):
     STR_TOTALCOUNT = "totalCount"
     STR_TPL_NOTESTS_ERR = "%s has status %s, and does not have any test results"
 
-    def __init__(self, url, buildno, job):
+    def __init__(self, url, buildno, job, depth=1):
+        """
+        depth=1 is for backward compatibility consideration
+        """
         assert type(buildno) == int
         self.buildno = buildno
         self.job = job
+        self.depth = depth
         JenkinsBase.__init__(self, url)
 
     def _poll(self):
         # For build's we need more information for downstream and upstream builds
         # so we override the poll to get at the extra data for build objects
-        url = self.python_api_url(self.baseurl) + '?depth=1'
+        url = '%s?depth=%s' % (self.python_api_url(self.baseurl), self.depth)
         return self.get_data(url)
 
     def __str__(self):

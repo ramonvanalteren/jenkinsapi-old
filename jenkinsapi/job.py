@@ -389,6 +389,16 @@ class Job(JenkinsBase, MutableJenkinsThing):
         url = self.get_build_dict()[buildnumber]
         return Build(url, buildnumber, job=self)
 
+    def get_build_metadata(self, buildnumber):
+        """
+        Get the build metadata for a given build number. For large builds with
+        tons of tests, this method is faster than get_build by returning less
+        data.
+        """
+        assert type(buildnumber) == int
+        url = self.get_build_dict()[buildnumber]
+        return Build(url, buildnumber, job=self, depth=0)
+
     def __getitem__(self, buildnumber):
         return self.get_build(buildnumber)
 
