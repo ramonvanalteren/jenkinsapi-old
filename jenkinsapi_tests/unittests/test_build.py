@@ -16,6 +16,7 @@ class test_build(unittest.TestCase):
         'actions': [{'causes': [{'shortDescription': 'Started by user anonymous',
                                  'userId': None,
                                  'userName': 'anonymous'}]},
+                    None,
                     {'causes': []}],
         'artifacts': [],
         'building': False,
