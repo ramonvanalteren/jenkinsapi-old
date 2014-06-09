@@ -361,6 +361,21 @@ class Build(JenkinsBase):
             all_actions.update(dct_action)
         return all_actions
 
+    def get_causes(self):
+        '''
+        Returns a list of causes. There can be multiple causes lists and
+        some of the can be empty. For instance, when a build is manually
+        aborted, Jenkins could add an empty causes list to the actions
+        dict. Empty ones are ignored.
+        '''
+        all_causes = []
+        for dct_action in self._data["actions"]:
+            if dct_action is None:
+                continue
+            if 'causes' in dct_action and dct_action['causes']:
+                all_causes.extend(dct_action['causes'])
+        return all_causes
+
     def get_timestamp(self):
         '''
         Returns build timestamp in UTC
