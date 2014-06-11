@@ -15,7 +15,9 @@ class test_build(unittest.TestCase):
     DATA = {
         'actions': [{'causes': [{'shortDescription': 'Started by user anonymous',
                                  'userId': None,
-                                 'userName': 'anonymous'}]}],
+                                 'userName': 'anonymous'}]},
+                    None,
+                    {'causes': []}],
         'artifacts': [],
         'building': False,
         'builtOn': '',
@@ -72,6 +74,12 @@ class test_build(unittest.TestCase):
         self.assertEquals(self.b.get_duration().seconds, 5)
         self.assertEquals(self.b.get_duration().microseconds, 782000)
         self.assertEquals(str(self.b.get_duration()), '0:00:05.782000')
+
+    def test_get_causes(self):
+        self.assertEquals(self.b.get_causes(),
+                          [{'shortDescription': 'Started by user anonymous',
+                            'userId': None,
+                            'userName': 'anonymous'}])
 
     @mock.patch.object(Build, 'get_data')
     def test_build_depth(self, get_data_mock):
