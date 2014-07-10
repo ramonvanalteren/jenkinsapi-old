@@ -77,7 +77,7 @@ class Build(JenkinsBase):
         return getattr(self, '_get_%s_rev_branch' % vcs, lambda: None)()
 
     def _get_svn_rev(self):
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_svn_rev).")
         maxRevision = 0
         for repoPathSet in self._data["changeSet"]["revisions"]:
             maxRevision = max(repoPathSet["revision"], maxRevision)
@@ -92,7 +92,7 @@ class Build(JenkinsBase):
         return _actions[0]["lastBuiltRevision"]["SHA1"]
 
     def _get_hg_rev(self):
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (_get_hg_rev).")
         return [x['mercurialNodeName'] for x in self._data['actions'] if 'mercurialNodeName' in x][0]
 
     def _get_svn_rev_branch(self):
@@ -169,7 +169,6 @@ class Build(JenkinsBase):
         Get the master job name if it exist, None otherwise
         :return: String or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
         try:
             return self.get_actions()['parameters'][0]['value']
         except KeyError:
@@ -180,7 +179,7 @@ class Build(JenkinsBase):
         Get the master job object if it exist, None otherwise
         :return: Job or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_job).")
         if self.get_master_job_name():
             return self.get_jenkins_obj().get_job(self.get_master_job_name())
         else:
@@ -191,7 +190,7 @@ class Build(JenkinsBase):
         Get the master build number if it exist, None otherwise
         :return: int or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_build_number).")
         try:
             return int(self.get_actions()['parameters'][1]['value'])
         except KeyError:
@@ -202,7 +201,7 @@ class Build(JenkinsBase):
         Get the master build if it exist, None otherwise
         :return Build or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_build).")
         master_job = self.get_master_job()
         if master_job:
             return master_job.get_build(self.get_master_build_number())
@@ -214,7 +213,7 @@ class Build(JenkinsBase):
         Get the downstream jobs for this build
         :return List of jobs or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi.")
+        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_downstream_jobs).")
         downstream_jobs = []
         try:
             for job_name in self.get_downstream_job_names():
@@ -228,18 +227,6 @@ class Build(JenkinsBase):
         Get the downstream job names for this build
         :return List of string or None
         """
-# <<<<<<< HEAD
-#         downstream_jobs_names = self.job.get_downstream_job_names()
-#         fingerprint_data = self.get_data("%s?depth=2&tree=fingerprint[usage[name]]" \
-#                                            % self.python_api_url(self.baseurl))
-#         try:
-#             fingerprints = fingerprint_data['fingerprint'][0]
-#             return [
-#                 f['name']
-#                 for f in fingerprints['usage']
-#                 if f['name'] in downstream_jobs_names
-#             ]
-# =======
         downstream_job_names = self.job.get_downstream_job_names()
         downstream_names = []
         try:
@@ -249,7 +236,6 @@ class Build(JenkinsBase):
                     if job_usage['name'] in downstream_job_names:
                         downstream_names.append(job_usage['name'])
             return downstream_names
-# >>>>>>> unstable
         except (IndexError, KeyError):
             return []
 
@@ -258,18 +244,6 @@ class Build(JenkinsBase):
         Get the downstream builds for this build
         :return List of Build or None
         """
-# <<<<<<< HEAD
-#         downstream_jobs_names = set(self.job.get_downstream_job_names())
-#         msg = "%s?depth=2&tree=fingerprint[usage[name,ranges[ranges[end,start]]]]"
-#         fingerprint_data = self.get_data(msg % self.python_api_url(self.baseurl))
-#         try:
-#             fingerprints = fingerprint_data['fingerprint'][0]
-#             return [
-#                 self.get_jenkins_obj().get_job(f['name']).get_build(f['ranges']['ranges'][0]['start'])
-#                 for f in fingerprints['usage']
-#                 if f['name'] in downstream_jobs_names
-#             ]
-# =======
         downstream_job_names = self.get_downstream_job_names()
         downstream_builds = []
         try:
@@ -283,7 +257,6 @@ class Build(JenkinsBase):
                                                   job_range['end']):
                                 downstream_builds.append(job.get_build(build_id))
             return downstream_builds
-# >>>>>>> unstable
         except (IndexError, KeyError):
             return []
 

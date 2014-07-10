@@ -62,6 +62,7 @@ class TestQueue(BaseSystemTest):
             time.sleep(1)
 
         j.get_first_build().stop()
+        time.sleep(1)
         self.assertFalse(j.is_queued_or_running())
 
 

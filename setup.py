@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.2.18'
+REVISION = '0.2.20'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Aleksey Maksimov"
 # Please see readme.rst for a complete list of contributors
@@ -12,7 +12,7 @@ SHORT_DESCRIPTION = 'A Python API for accessing resources on a Jenkins continuou
 
 try:
     DESCRIPTION = open(os.path.join(PROJECT_ROOT, "README.rst")).read()
-except IOError:
+except IOError, _:
     DESCRIPTION = SHORT_DESCRIPTION
 
 GLOBAL_ENTRY_POINTS = {
@@ -29,7 +29,7 @@ setup(
     include_package_data=False,
     install_requires=['requests>=1.2.3', 'pytz>=2013b'],
     test_suite='nose.collector',
-    tests_require=['mock', 'nose', 'coverage', 'unittest2'],
+    tests_require=['mock', 'nose', 'coverage'],
     entry_points=GLOBAL_ENTRY_POINTS,
     url=PROJECT_URL,
     description=SHORT_DESCRIPTION,
