@@ -126,3 +126,10 @@ class NotInQueue(JenkinsAPIException):
     It's a job that is not in the queue
     """
     pass
+
+
+class PostRequired(JenkinsAPIException):
+    """
+    Method requires POST and not GET
+    """
+    pass
