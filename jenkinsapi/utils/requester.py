@@ -10,7 +10,7 @@ except ImportError:
     # Python3
     import urllib.parse as urlparse
 
-from jenkinsapi.custom_exceptions import JenkinsAPIException
+from jenkinsapi.custom_exceptions import JenkinsAPIException, PostRequired
 # import logging
 
 # # these two lines enable debugging at httplib level (requests->urllib3->httplib)
@@ -121,6 +121,9 @@ class Requester(object):
         valid = valid or self.VALID_STATUS_CODES
         response = self.get_url(url, params, headers)
         if not response.status_code in valid:
-            raise JenkinsAPIException('Operation failed. url={0}, headers={1}, status={2}, text={3}'.format(
-                response.url, headers, response.status_code, response.text.encode('UTF-8')))
+            if response.status_code == 405:         # POST required
+                raise PostRequired('POST required for url {0}'.format(url))
+            else:
+                raise JenkinsAPIException('Operation failed. url={0}, headers={1}, status={2}, text={3}'.format(
+                    response.url, headers, response.status_code, response.text.encode('UTF-8')))
         return response

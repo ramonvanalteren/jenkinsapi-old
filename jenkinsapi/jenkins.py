@@ -28,7 +28,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob
+from jenkinsapi.custom_exceptions import UnknownJob, PostRequired
 
 log = logging.getLogger(__name__)
 
@@ -286,7 +286,11 @@ class Jenkins(JenkinsBase):
         assert self.has_node(nodename), "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
-        self.requester.get_and_confirm_status(url)
+        try:
+            self.requester.get_and_confirm_status(url)
+        except PostRequired:
+            # Latest Jenkins requires POST here. GET kept for compatibility
+            self.requester.post_and_confirm_status(url, data={})
 
     def create_node(self, name, num_executors=2, node_description=None,
                     remote_fs='/var/lib/jenkins', labels=None, exclusive=False):
