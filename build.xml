@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="jenkinsapi" default="all">
 	<property file="build.properties" />
-
+	
+	<target name="release" depends="clean, compile, test, sdist, bdist, doc" />
+	
 	<target name="all" depends="clean, compile" />
 
 	<target name="clean">
@@ -40,9 +42,17 @@
 			<arg value="sdist" />
 			<arg value="upload" />
 		</exec>
-	</target>	
+	</target>
+	
+	<target name="bdist" depends="test">
+			<exec executable="python">
+				<arg value="setup.py" />
+				<arg value="bdist_wheel" />
+				<arg value="upload" />
+			</exec>
+		</target>	
 
-	<target name="doc" depends="sdist">
+	<target name="doc" depends="">
 		<exec executable="python">
 			<arg value="setup.py" />
 			<arg value="build_sphinx" />
