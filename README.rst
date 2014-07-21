@@ -10,7 +10,7 @@ jenkinsapi
 .. image:: https://pypip.in/d/jenkinsapi/badge.png
         :target: https://crate.io/packages/jenkinsapi/
 
-.. image:: https://github.com/salimfadhley/jenkinsapi.git
+.. image:: https://landscape.io/github/salimfadhley/jenkinsapi/master/landscape.png
         :target: https://landscape.io/github/salimfadhley/jenkinsapi
 
 About this library
