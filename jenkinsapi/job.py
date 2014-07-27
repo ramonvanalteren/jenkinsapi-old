@@ -645,7 +645,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         If job has parameters, returns True, else False
         """
-        return any("parameterDefinitions" in a for a in self._data["actions"])
+        return any("parameterDefinitions" in a for a in self._data["actions"] if a)
 
     def has_queued_build(self, build_params):
         """Returns True if a build with build_params is currently queued."""
