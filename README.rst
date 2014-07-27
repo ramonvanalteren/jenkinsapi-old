@@ -12,6 +12,9 @@ jenkinsapi
 
 .. image:: https://landscape.io/github/salimfadhley/jenkinsapi/master/landscape.png
         :target: https://landscape.io/github/salimfadhley/jenkinsapi
+        
+.. image:: https://travis-ci.org/salimfadhley/jenkinsapi.svg?branch=master
+        :target: https://travis-ci.org/salimfadhley/jenkinsapi
 
 About this library
 -------------------
