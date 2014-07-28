@@ -16,7 +16,8 @@ except IOError:
     DESCRIPTION = SHORT_DESCRIPTION
 
 GLOBAL_ENTRY_POINTS = {
-    "console_scripts": ["jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main"]
+    "console_scripts": ["jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main",
+                        "jenkinsapi_version=jenkinsapi.command_line.jenkinsapi_version:main"]
 }
 
 setup(
