@@ -45,7 +45,7 @@ Project Authors
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
-
+import pkg_resources
 from jenkinsapi import (
     # Modules
     command_line,
@@ -62,3 +62,5 @@ __all__ = [
     "fingerprint", "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"
 ]
 __docformat__ = "epytext"
+__version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
+
