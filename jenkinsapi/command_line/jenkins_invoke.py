@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 
 class JenkinsInvoke(object):
+
     """
     JenkinsInvoke object implements class to call from command line
     """
@@ -19,7 +20,8 @@ class JenkinsInvoke(object):
     @classmethod
     def mkparser(cls):
         parser = optparse.OptionParser()
-        DEFAULT_BASEURL = os.environ.get("JENKINS_URL", "http://localhost/jenkins")
+        DEFAULT_BASEURL = os.environ.get(
+            "JENKINS_URL", "http://localhost/jenkins")
         parser.help_text = "Execute a number of jenkins jobs on the server of your choice." + \
             " Optionally block until the jobs are complete."
         parser.add_option("-J", "--jenkinsbase", dest="baseurl",
@@ -51,14 +53,16 @@ class JenkinsInvoke(object):
     def __init__(self, options, jobs):
         self.options = options
         self.jobs = jobs
-        self.api = self._get_api(baseurl=options.baseurl, username=options.username, password=options.password)
+        self.api = self._get_api(
+            baseurl=options.baseurl, username=options.username, password=options.password)
 
     def _get_api(self, baseurl, username, password):
         return jenkins.Jenkins(baseurl, username, password)
 
     def __call__(self):
         for job in self.jobs:
-            self.invokejob(job, block=self.options.block, token=self.options.token)
+            self.invokejob(
+                job, block=self.options.block, token=self.options.token)
 
     def invokejob(self, jobname, block, token):
         assert type(block) == bool

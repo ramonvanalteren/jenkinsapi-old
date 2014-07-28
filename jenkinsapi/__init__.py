@@ -63,4 +63,3 @@ __all__ = [
 ]
 __docformat__ = "epytext"
 __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
-
