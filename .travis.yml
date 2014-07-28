@@ -4,15 +4,15 @@ python:
     - "2.6"
     - "2.7"
     - "3.3"
+    - "3.4"
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
     - python setup.py develop
-    - pip install --use-mirrors nose mock coverage pep8 pylint
+    - pip install nose mock coverage pep8 pylint
 
 # command to run tests, e.g. python setup.py test
 script:
     - pep8 --ignore=E501 jenkinsapi/*.py
     - pylint --rcfile=pylintrc jenkinsapi/*.py --disable R0912
     - nosetests jenkinsapi_tests
-#    - "nosetests jenkinsapi_tests/systests"
