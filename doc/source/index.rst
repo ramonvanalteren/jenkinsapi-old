@@ -30,13 +30,17 @@ Sections
 Important Links
 ---------------
 
-Support & bug-reportst: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
+Support & bug-reportst
+    https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
-Project source code: github: https://github.com/salimfadhley/jenkinsapi
+Project source code
+    github: https://github.com/salimfadhley/jenkinsapi
 
-Project documentation: https://jenkinsapi.readthedocs.org/en/latest/
+Project documentation
+    https://jenkinsapi.readthedocs.org/en/latest/
 
-Releases: http://pypi.python.org/pypi/jenkinsapi
+Releases
+    http://pypi.python.org/pypi/jenkinsapi
 
 Installation
 -------------
@@ -54,6 +58,9 @@ Or..
 .. code-block:: bash
 
     easy_install jenkinsapi
+
+ * In Jenkins > 1.518 you will need to disable "Prevent Cross Site Request Forgery exploits".
+ * Remember to set the Jenkins Location in general settings - Jenkins' REST web-interface will not work if this is set incorrectly.
 
 Examples
 --------
