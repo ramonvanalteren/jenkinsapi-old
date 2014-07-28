@@ -21,13 +21,11 @@ Sections
 .. toctree::
    :maxdepth: 2
 
-   examples
-
-Known bugs
-----------
- [ ] Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
-
- For other issues, please refer to the support URL below.
+   api
+   artifact
+   build
+   using_jenkinsapi
+   rules_for_contributors
 
 Important Links
 ---------------
@@ -46,11 +44,15 @@ Installation
 Egg-files for this project are hosted on PyPi. Most Python users should be able to use pip or setuptools to automatically install this project.
 
 Most users can do the following:
-::
+
+.. code-block:: bash
+
     pip install jenkinsapi
 
 Or..
-::
+
+.. code-block:: bash
+
     easy_install jenkinsapi
 
 Examples
@@ -94,14 +96,18 @@ Tips & Tricks
 Getting the installed version of JenkinsAPI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+This package supports PEP-396 by implementing a __version__ attribute. This contains a string in the format x.y.z:
+
+	>>> import jenkinsapi
+	>>> print(jenkinsapi.__version__)
+	0.2.23
+	
+There is also a command-line tool for use in the shell:
+
 .. code-block:: bash
-    pip install pkginfo
-    python
 
-
-.. code-block:: pythin
-    from pkginfo import get_metadata
-    print get_metadata('jenkinsapi').version
+    $ jenkinsapi_version
+    0.2.23
 
 Project Authors
 ===============
@@ -141,15 +147,6 @@ The project maintainers welcome any code-contributions. Please conside the follo
  * All contrubutions should come as github pull-requests. Please do not send code-snippets in email or as attachments to issues.
  * Please take a moment to clearly describe the intended goal of your pull-request.
  * Please ensure that any new feature is covered by a unit-test
-
-Package Contents
-================
-
-.. toctree::
-   jenkinsapi
-   jenkinsapi.command_line
-   jenkinsapi.utils
-   modules
 
 Indices and tables
 ==================
