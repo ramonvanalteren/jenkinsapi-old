@@ -332,12 +332,12 @@ class Jenkins(JenkinsBase):
 
         return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
 
-    def get_plugins_url(self):
+    def get_plugins_url(self, depth):
         # This only ever needs to work on the base object
-        return '%s/pluginManager/api/python?depth=1' % self.baseurl
+        return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
 
-    def get_plugins(self):
-        url = self.get_plugins_url()
+    def get_plugins(self, depth=1):
+        url = self.get_plugins_url(depth=depth)
         return Plugins(url, self)
 
     def has_plugin(self, plugin_name):

@@ -7,6 +7,7 @@ try:
 except ImportError:
     import unittest
 from jenkinsapi.job import Job
+from jenkinsapi.plugin import Plugin
 from jenkinsapi.invocation import Invocation
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.systests.job_configs import EMPTY_JOB
@@ -97,6 +98,23 @@ class JobTests(BaseSystemTest):
     def test_get_master_data(self):
         master_data = self.jenkins.get_master_data()
         self.assertEquals(master_data['totalExecutors'], 2)
+        
+    def test_get_missing_plugin(self):
+        plugins = self.jenkins.get_plugins()
+        with self.assertRaises(KeyError):
+            plugins["lsdajdaslkjdlkasj"] # this plugin surely does not exist!
+            
+    def test_get_single_plugin(self):
+        plugins = self.jenkins.get_plugins()
+        plugin_name, plugin = next(plugins.iteritems())
+        self.assertIsInstance(plugin_name, str)
+        self.assertIsInstance(plugin, Plugin)
+        self.assertFalse(plugin.dependencies[0])
+        
+    def test_get_single_plugin_depth_2(self):
+        plugins = self.jenkins.get_plugins(depth=2)
+        _, plugin = next(plugins.iteritems())
+        self.assertTrue(plugin.dependencies[0])
 
 if __name__ == '__main__':
     unittest.main()

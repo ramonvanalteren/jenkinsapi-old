@@ -51,6 +51,11 @@ class UnknownQueueItem(KeyError, NotFound):
     """
     pass
 
+class UnknownPlugin(KeyError, NotFound):
+    """
+    Jenkins does not recognize the plugin requested.
+    """
+    pass
 
 class NoBuildData(NotFound):
     """

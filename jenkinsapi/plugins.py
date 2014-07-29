@@ -4,9 +4,9 @@ jenkinsapi plugins
 from __future__ import print_function
 
 import logging
-
-from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.plugin import Plugin
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.custom_exceptions import UnknownPlugin
 
 
 log = logging.getLogger(__name__)
@@ -30,6 +30,8 @@ class Plugins(JenkinsBase):
     def keys(self):
         return self.get_plugins_dict().keys()
 
+    __iter__ = keys
+
     def iteritems(self):
         return self._get_plugins()
 
@@ -48,8 +50,11 @@ class Plugins(JenkinsBase):
         return len(self.get_plugins_dict().keys())
 
     def __getitem__(self, plugin_name):
-        return self.get_plugins_dict().get(plugin_name, None)
-
+        try:
+            return self.get_plugins_dict()[plugin_name]
+        except KeyError:
+            raise UnknownPlugin(plugin_name)
+        
     def __contains__(self, plugin_name):
         """
         True if plugin_name is the name of a defined plugin
