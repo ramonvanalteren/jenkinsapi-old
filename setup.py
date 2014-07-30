@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.2.24'
+REVISION = '0.2.25'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = "Salim Fadhley, Aleksey Maksimov"
 # Please see readme.rst for a complete list of contributors
@@ -28,7 +28,7 @@ setup(
     packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],
     zip_safe=True,
     include_package_data=False,
-    install_requires=['requests>=1.2.3', 'pytz>=2013b'],
+    install_requires=['requests>=2.3.0', 'pytz>=2014.4'],
     test_suite='nose.collector',
     tests_require=['mock', 'nose', 'coverage', 'unittest2'],
     entry_points=GLOBAL_ENTRY_POINTS,

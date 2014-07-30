@@ -12,6 +12,10 @@ jenkinsapi
 
 .. image:: https://landscape.io/github/salimfadhley/jenkinsapi/master/landscape.png
         :target: https://landscape.io/github/salimfadhley/jenkinsapi
+        
+.. image:: https://requires.io/github/salimfadhley/jenkinsapi/requirements.png?branch=master
+        :target: https://requires.io/github/salimfadhley/jenkinsapi/requirements/?branch=master
+        :alt: Requirements Status
 
 About this library
 -------------------
