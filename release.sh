@@ -5,3 +5,4 @@ pip install sphinx
 ant release
 git tag v`jenkinsapi_version`
 ant doc
+git push --tags
