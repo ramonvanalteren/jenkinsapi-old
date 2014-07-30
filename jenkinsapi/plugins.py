@@ -54,7 +54,7 @@ class Plugins(JenkinsBase):
             return self.get_plugins_dict()[plugin_name]
         except KeyError:
             raise UnknownPlugin(plugin_name)
-        
+
     def __contains__(self, plugin_name):
         """
         True if plugin_name is the name of a defined plugin

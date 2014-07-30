@@ -14,14 +14,13 @@ class Plugin(object):
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
-    
+
     def __str__(self):
         return self.shortName
-    
+
     def __repr__(self):
         return "<%s.%s %s>" % (
             self.__class__.__module__,
             self.__class__.__name__,
             str(self)
         )
-        

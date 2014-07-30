@@ -63,7 +63,7 @@ class Requester(object):
 
         requestKwargs['verify'] = self.ssl_verify
 
-        if not data is None:
+        if data:
             # It may seem odd, but some Jenkins operations require posting
             # an empty string.
             requestKwargs['data'] = data
@@ -112,7 +112,7 @@ class Requester(object):
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
         response = self.post_url(url, params, data, files, headers)
-        if not response.status_code in valid:
+        if response.status_code not in valid:
             raise JenkinsAPIException('Operation failed. url={0}, data={1}, headers={2}, status={3}, text={4}'.format(
                 response.url, data, headers, response.status_code, response.text.encode('UTF-8')))
         return response
@@ -120,7 +120,7 @@ class Requester(object):
     def get_and_confirm_status(self, url, params=None, headers=None, valid=None):
         valid = valid or self.VALID_STATUS_CODES
         response = self.get_url(url, params, headers)
-        if not response.status_code in valid:
+        if response.status_code not in valid:
             if response.status_code == 405:         # POST required
                 raise PostRequired('POST required for url {0}'.format(url))
             else:
