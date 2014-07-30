@@ -109,12 +109,10 @@ class JobTests(BaseSystemTest):
         plugin_name, plugin = next(plugins.iteritems())
         self.assertIsInstance(plugin_name, str)
         self.assertIsInstance(plugin, Plugin)
-        self.assertFalse(plugin.dependencies[0])
         
     def test_get_single_plugin_depth_2(self):
         plugins = self.jenkins.get_plugins(depth=2)
         _, plugin = next(plugins.iteritems())
-        self.assertTrue(plugin.dependencies[0])
 
 if __name__ == '__main__':
     unittest.main()
