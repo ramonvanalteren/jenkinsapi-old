@@ -59,7 +59,11 @@ class JenkinsBase(object):
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
-        return self.get_data(url)
+        try:
+            return self.get_data(url)
+        except Exception as e:
+            import pdb
+            pdb.set_trace()
 
     def get_data(self, url, params=None):
         requester = self.get_jenkins_obj().requester

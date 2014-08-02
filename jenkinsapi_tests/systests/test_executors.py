@@ -33,7 +33,7 @@ class TestNodes(BaseSystemTest):
         self.jenkins.create_node(node_name)
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
-        qq = job.invoke(invoke_pre_check_delay=2)
+        qq = job.invoke()
         qq.block_until_building()
 
         if job.is_running() is False:

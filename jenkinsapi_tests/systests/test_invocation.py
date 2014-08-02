@@ -24,7 +24,7 @@ class TestInvocation(BaseSystemTest):
     def test_invocation_object(self):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
-        qq = job.invoke(invoke_pre_check_delay=7)
+        qq = job.invoke()
         self.assertIsInstance(qq, QueueItem)
         # Let Jenkins catchup
         qq.block_until_building()
@@ -33,7 +33,7 @@ class TestInvocation(BaseSystemTest):
     def test_get_block_until_build_running(self):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
-        qq = job.invoke(invoke_pre_check_delay=7)
+        qq = job.invoke()
         time.sleep(3)
         bn = qq.block_until_building(delay=3).get_number()
         self.assertIsInstance(bn, int)
