@@ -60,15 +60,17 @@ class Queue(JenkinsBase):
         else:
             raise UnknownQueueItem(item_id)
 
-    def get_queue_items_for_job(self, job_name=''):
-        if not job_name:
-            return [QueueItem(self.jenkins, **item)
-                    for item in self._data['items']]
-        else:
-            return [QueueItem(self.jenkins, **item)
-                    for item in self._data['items']
-                    if item['task']['name'] == job_name]
-
+    def _get_queue_items_for_job(self, job_name):
+        for item in self._data["items"]:
+            if item['task']['name'] == job_name:
+                yield QueueItem(self.get_queue_item_url(item), jenkins_obj=self.jenkins)
+            
+    def get_queue_items_for_job(self, job_name):
+        return list(self._get_queue_items_for_job(job_name))
+    
+    def get_queue_item_url(self, item):
+        return "%s/item/%i" % (self.baseurl, item["id"])
+            
     def delete_item(self, queue_item):
         self.delete_item_by_id(queue_item.id)
 
@@ -97,11 +99,11 @@ class QueueItem(JenkinsBase):
         """
         Return the job associated with this queue item
         """
-        return self.jenkins[self.task['name']]
+        return self.jenkins[self._data['task']['name']]
 
     def get_parameters(self):
         """returns parameters of queue item"""
-        actions = getattr(self, 'actions', [])
+        actions = self._data.get('actions', [])
         for action in actions:
             if type(action) is dict and 'parameters' in action:
                 parameters = action['parameters']
