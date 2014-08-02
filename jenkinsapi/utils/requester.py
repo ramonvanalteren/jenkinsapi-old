@@ -46,8 +46,8 @@ class Requester(object):
         self.password = password
         self.ssl_verify = ssl_verify
 
-    def get_request_dict(self, params=None, data=None, files=None, headers=None):
-        requestKwargs = {}
+    def get_request_dict(self, params=None, data=None, files=None, headers=None, **kwargs):
+        requestKwargs = kwargs
         if self.username:
             requestKwargs['auth'] = (self.username, self.password)
 
@@ -90,12 +90,12 @@ class Requester(object):
             )
         return url
 
-    def get_url(self, url, params=None, headers=None):
-        requestKwargs = self.get_request_dict(params=params, headers=headers)
+    def get_url(self, url, params=None, headers=None, allow_redirects=True):
+        requestKwargs = self.get_request_dict(params=params, headers=headers, allow_redirects=allow_redirects)
         return requests.get(self._update_url_scheme(url), **requestKwargs)
 
-    def post_url(self, url, params=None, data=None, files=None, headers=None):
-        requestKwargs = self.get_request_dict(params=params, data=data, files=files, headers=headers)
+    def post_url(self, url, params=None, data=None, files=None, headers=None, allow_redirects=True):
+        requestKwargs = self.get_request_dict(params=params, data=data, files=files, headers=headers, allow_redirects=allow_redirects)
         return requests.post(self._update_url_scheme(url), **requestKwargs)
 
     def post_xml_and_confirm_status(self, url, params=None, data=None, valid=None):

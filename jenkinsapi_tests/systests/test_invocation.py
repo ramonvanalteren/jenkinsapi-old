@@ -7,75 +7,83 @@ try:
 except ImportError:
     import unittest
 import time
+import logging
 from jenkinsapi.build import Build
-from jenkinsapi.invocation import Invocation
+from jenkinsapi.queue import QueueItem
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB
 from jenkinsapi_tests.systests.job_configs import SHORTISH_JOB, EMPTY_JOB
 
 
+log = logging.getLogger(__name__)
+
+
 class TestInvocation(BaseSystemTest):
 
     def test_invocation_object(self):
         job_name = 'create_%s' % random_string()
-        job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
-        ii = job.invoke(invoke_pre_check_delay=7)
-        self.assertIsInstance(ii, Invocation)
+        job = self.jenkins.create_job(job_name, SHORTISH_JOB)
+        qq = job.invoke(invoke_pre_check_delay=7)
+        self.assertIsInstance(qq, QueueItem)
         # Let Jenkins catchup
-        time.sleep(3)
-        self.assertTrue(ii.is_queued_or_running())
-        self.assertEquals(ii.get_build_number(), 1)
+        qq.block_until_building()
+        self.assertEquals(qq.get_build_number(), 1)
 
     def test_get_block_until_build_running(self):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
-        ii = job.invoke(invoke_pre_check_delay=7)
+        qq = job.invoke(invoke_pre_check_delay=7)
         time.sleep(3)
-        bn = ii.get_build_number()
+        bn = qq.block_until_building(delay=3).get_number()
         self.assertIsInstance(bn, int)
-        ii.block(until='not_queued')
-        self.assertTrue(ii.is_running())
-        b = ii.get_build()
+        
+        b = qq.get_build()
         self.assertIsInstance(b, Build)
-        ii.stop()
-        self.assertFalse(ii.is_running())
-        self.assertIsInstance(ii.get_build().get_console(), str)
-        self.assertIn('Started by user', ii.get_build().get_console())
-
+        self.assertTrue(b.is_running())
+        
+        b.stop()
+        time.sleep(1)
+        self.assertFalse(b.poll().is_running())
+        console = b.get_console()
+        self.assertIsInstance(console, str)
+        self.assertIn('Started by user', console)
+ 
     def test_get_block_until_build_complete(self):
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
-        ii = job.invoke()
-        ii.block(until='completed')
-        self.assertFalse(ii.is_running())
-
+        qq = job.invoke()
+        qq.block_until_complete()
+        self.assertFalse(qq.get_build().is_running())
+ 
     def test_multiple_invocations_and_get_last_build(self):
         job_name = 'create_%s' % random_string()
-
+ 
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
-
+ 
         for _ in range(3):
             ii = job.invoke()
-            ii.block(until='completed')
-
+            ii.block_until_complete(delay=2)
+ 
         build_number = job.get_last_good_buildnumber()
         self.assertEquals(build_number, 3)
-
+ 
         build = job.get_build(build_number)
         self.assertIsInstance(build, Build)
-
+ 
     def test_multiple_invocations_and_get_build_number(self):
         job_name = 'create_%s' % random_string()
-
+ 
         job = self.jenkins.create_job(job_name, EMPTY_JOB)
-
+ 
         for invocation in range(3):
-            ii = job.invoke()
-            ii.block(until='completed')
-            build_number = ii.get_build_number()
+            qq = job.invoke()
+            qq.block_until_complete(delay=1)
+            build_number = qq.get_build_number()
             self.assertEquals(build_number, invocation + 1)
 
 
 if __name__ == '__main__':
+#     logging.basicConfig()
+#     logging.getLogger("").setLevel(logging.INFO)
     unittest.main()

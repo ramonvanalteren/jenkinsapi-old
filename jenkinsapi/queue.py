@@ -3,8 +3,9 @@ Queue module for jenkinsapi
 """
 
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.custom_exceptions import UnknownQueueItem
+from jenkinsapi.custom_exceptions import UnknownQueueItem, NotBuiltYet
 import logging
+import time
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +32,9 @@ class Queue(JenkinsBase):
 
     def iteritems(self):
         for item in self._data['items']:
-            yield item['id'], QueueItem(self.jenkins, **item)
+            id = item['id']
+            item_baseurl = "%s/item/%i" % (self.baseurl, id)
+            yield item['id'], QueueItem(baseurl=item_baseurl, jenkins_obj=self.jenkins)
 
     def iterkeys(self):
         for item in self._data['items']:
@@ -74,15 +77,21 @@ class Queue(JenkinsBase):
         self.get_jenkins_obj().requester.post_url(deleteurl)
 
 
-class QueueItem(object):
-    """
-    Flexible class to handle queue items.
-    If the Jenkins API changes this support those changes
+class QueueItem(JenkinsBase):
+    """An individual item in the queue
     """
 
-    def __init__(self, jenkins, **kwargs):
-        self.jenkins = jenkins
-        self.__dict__.update(kwargs)
+    def __init__(self, baseurl, jenkins_obj):
+        self.jenkins = jenkins_obj
+        JenkinsBase.__init__(self, baseurl)
+        
+    @property
+    def id(self):
+        return self._data['id']
+        
+
+    def get_jenkins_obj(self):
+        return self.jenkins
 
     def get_job(self):
         """
@@ -105,4 +114,45 @@ class QueueItem(object):
                                self.__class__.__name__, str(self))
 
     def __str__(self):
-        return "%s #%i" % (self.task['name'], self.id)
+        return "%s Queue #%i" % (self._data['task']['name'], self._data['id'])
+    
+    def get_build(self):
+        build_number = self.get_build_number()
+        job_name = self.get_job_name()
+        return self.jenkins[job_name][build_number]
+    
+        
+    def block_until_complete(self, delay=15):
+        build = self.block_until_building(delay)
+        return build.block_until_complete(delay=delay)
+            
+    
+    def block_until_building(self, delay=5):
+        while True:
+            try:
+                return self.poll().get_build()
+            except NotBuiltYet:
+                time.sleep(delay)
+                continue
+    
+    
+    def is_running(self):
+        """Return True if this queued item is running.
+        """
+        try:
+            return self.get_build().is_running()
+        except NotBuiltYet:
+            return False
+        
+    def get_build_number(self):
+        try:
+            return self._data['executable']['number']
+        except KeyError:
+            raise NotBuiltYet()
+        
+    def get_job_name(self):
+        try:
+            return self._data['task']['name']
+        except KeyError:
+            raise NotBuiltYet()
+            

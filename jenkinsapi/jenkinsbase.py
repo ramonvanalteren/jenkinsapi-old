@@ -3,6 +3,7 @@ Module for JenkinsBase class
 """
 
 import ast
+import pprint
 import logging
 from jenkinsapi import config
 from jenkinsapi.custom_exceptions import JenkinsAPIException
@@ -54,6 +55,7 @@ class JenkinsBase(object):
         self._data = self._poll()
         if 'jobs' in self._data:
             self._data['jobs'] = self.resolve_job_folders(self._data['jobs'])
+        return self
 
     def _poll(self):
         url = self.python_api_url(self.baseurl)
@@ -70,6 +72,11 @@ class JenkinsBase(object):
         except Exception:
             logging.exception('Inappropriate content found at %s', url)
             raise JenkinsAPIException('Cannot parse %s' % response.content)
+
+    def pprint(self):
+        """Print out all the data in this object for debugging.
+        """
+        pprint.pprint(self._data)
 
     def resolve_job_folders(self, jobs):
         for job in list(jobs):

@@ -66,6 +66,13 @@ class NoBuildData(NotFound):
     pass
 
 
+class NotBuiltYet(NotFound):
+    """
+    A job has no build data.
+    """
+    pass
+
+
 class ArtifactBroken(JenkinsAPIException):
     """
     An artifact is broken, wrong
