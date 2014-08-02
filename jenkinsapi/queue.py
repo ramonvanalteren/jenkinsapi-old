@@ -1,7 +1,7 @@
 """
 Queue module for jenkinsapi
 """
-
+from requests import HTTPError
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import UnknownQueueItem, NotBuiltYet
 import logging
@@ -117,14 +117,14 @@ class QueueItem(JenkinsBase):
                                self.__class__.__name__, str(self))
 
     def __str__(self):
-        return "%s Queue #%i" % (self._data['task']['name'], self._data['id'])
+        return "%s Queue #%i" % (self._data['name'], self._data['id'])
 
     def get_build(self):
         build_number = self.get_build_number()
         job_name = self.get_job_name()
         return self.jenkins[job_name][build_number]
 
-    def block_until_complete(self, delay=15):
+    def block_until_complete(self, delay=5):
         build = self.block_until_building(delay)
         return build.block_until_complete(delay=delay)
 
@@ -132,7 +132,7 @@ class QueueItem(JenkinsBase):
         while True:
             try:
                 return self.poll().get_build()
-            except NotBuiltYet:
+            except (NotBuiltYet, HTTPError):
                 time.sleep(delay)
                 continue
 
