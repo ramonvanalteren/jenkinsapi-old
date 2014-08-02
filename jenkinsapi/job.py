@@ -166,12 +166,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
                                                                file_params)
         return json.dumps(to_json_structure)
 
-    def invoke(self, securitytoken=None, block=False, skip_if_running=False, invoke_pre_check_delay=3,
-               invoke_block_delay=15, build_params=None, cause=None, files=None):
-        assert isinstance(invoke_pre_check_delay, (int, float))
-        assert isinstance(invoke_block_delay, (int, float))
+    def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None):
         assert isinstance(block, bool)
-        assert isinstance(skip_if_running, bool)
 
         # Either copy the params dict or make a new one.
         build_params = build_params and dict(
@@ -204,6 +200,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         queue_url = response.headers['location']
         qi = QueueItem(queue_url, self.jenkins)
+        
+        if block:
+            qi.block_until_complete(delay=10)
         return qi
 
     def _buildid_for_type(self, buildtype):
