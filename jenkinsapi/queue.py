@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class Queue(JenkinsBase):
+
     """
     Class that represents the Jenkins queue
     """
@@ -64,13 +65,13 @@ class Queue(JenkinsBase):
         for item in self._data["items"]:
             if item['task']['name'] == job_name:
                 yield QueueItem(self.get_queue_item_url(item), jenkins_obj=self.jenkins)
-            
+
     def get_queue_items_for_job(self, job_name):
         return list(self._get_queue_items_for_job(job_name))
-    
+
     def get_queue_item_url(self, item):
         return "%s/item/%i" % (self.baseurl, item["id"])
-            
+
     def delete_item(self, queue_item):
         self.delete_item_by_id(queue_item.id)
 
@@ -80,17 +81,17 @@ class Queue(JenkinsBase):
 
 
 class QueueItem(JenkinsBase):
+
     """An individual item in the queue
     """
 
     def __init__(self, baseurl, jenkins_obj):
         self.jenkins = jenkins_obj
         JenkinsBase.__init__(self, baseurl)
-        
+
     @property
     def id(self):
         return self._data['id']
-        
 
     def get_jenkins_obj(self):
         return self.jenkins
@@ -117,18 +118,16 @@ class QueueItem(JenkinsBase):
 
     def __str__(self):
         return "%s Queue #%i" % (self._data['task']['name'], self._data['id'])
-    
+
     def get_build(self):
         build_number = self.get_build_number()
         job_name = self.get_job_name()
         return self.jenkins[job_name][build_number]
-    
-        
+
     def block_until_complete(self, delay=15):
         build = self.block_until_building(delay)
         return build.block_until_complete(delay=delay)
-            
-    
+
     def block_until_building(self, delay=5):
         while True:
             try:
@@ -136,8 +135,7 @@ class QueueItem(JenkinsBase):
             except NotBuiltYet:
                 time.sleep(delay)
                 continue
-    
-    
+
     def is_running(self):
         """Return True if this queued item is running.
         """
@@ -145,16 +143,15 @@ class QueueItem(JenkinsBase):
             return self.get_build().is_running()
         except NotBuiltYet:
             return False
-        
+
     def get_build_number(self):
         try:
             return self._data['executable']['number']
         except KeyError:
             raise NotBuiltYet()
-        
+
     def get_job_name(self):
         try:
             return self._data['task']['name']
         except KeyError:
             raise NotBuiltYet()
-            

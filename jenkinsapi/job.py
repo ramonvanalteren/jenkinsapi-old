@@ -173,7 +173,6 @@ class Job(JenkinsBase, MutableJenkinsThing):
         assert isinstance(block, bool)
         assert isinstance(skip_if_running, bool)
 
-
         # Either copy the params dict or make a new one.
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
@@ -202,7 +201,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             params=params,
             files=files,
         )
-        
+
         queue_url = response.headers['location']
         qi = QueueItem(queue_url, self.jenkins)
         return qi
