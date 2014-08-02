@@ -200,7 +200,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         queue_url = response.headers['location']
         qi = QueueItem(queue_url, self.jenkins)
-        
+
         if block:
             qi.block_until_complete(delay=10)
         return qi

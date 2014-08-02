@@ -10,6 +10,7 @@ from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 
 class JenkinsBase(object):
+
     """
     This appears to be the base object that all other jenkins objects are inherited from
     """
@@ -33,7 +34,8 @@ class JenkinsBase(object):
             self.poll()
 
     def get_jenkins_obj(self):
-        raise NotImplementedError('Please implement this method on %s' % self.__class__.__name__)
+        raise NotImplementedError(
+            'Please implement this method on %s' % self.__class__.__name__)
 
     def __eq__(self, other):
         """
@@ -60,7 +62,6 @@ class JenkinsBase(object):
     def _poll(self):
         url = self.python_api_url(self.baseurl)
         return self.get_data(url)
-        
 
     def get_data(self, url, params=None):
         requester = self.get_jenkins_obj().requester
