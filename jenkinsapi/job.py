@@ -2,21 +2,8 @@
 Module for jenkinsapi Job
 """
 
-import json
-import logging
-
-try:
-    import urlparse
-except ImportError:
-    # Python3
-    import urllib.parse as urlparse
-
-import xml.etree.ElementTree as ET
 from collections import defaultdict
 from jenkinsapi.build import Build
-from jenkinsapi.queue import QueueItem
-from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
 from jenkinsapi.custom_exceptions import (
     NoBuildData,
     NotConfiguredSCM,
@@ -26,6 +13,21 @@ from jenkinsapi.custom_exceptions import (
     UnknownQueueItem,
     BadParams,
 )
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
+from jenkinsapi.queue import QueueItem
+import json
+import logging
+
+import xml.etree.ElementTree as ET
+
+
+try:
+    import urlparse
+except ImportError:
+    # Python3
+    import urllib.parse as urlparse
+
 
 SVN_URL = './scm/locations/hudson.scm.SubversionSCM_-ModuleLocation/remote'
 GIT_URL = './scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url'
