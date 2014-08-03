@@ -4,6 +4,7 @@ Module for custom_exceptions specialized for jenkinsapi
 
 
 class JenkinsAPIException(Exception):
+
     """
     Base class for all errors
     """
@@ -11,6 +12,7 @@ class JenkinsAPIException(Exception):
 
 
 class NotFound(JenkinsAPIException):
+
     """
     Resource cannot be found
     """
@@ -18,6 +20,7 @@ class NotFound(JenkinsAPIException):
 
 
 class ArtifactsMissing(NotFound):
+
     """
     Cannot find a build with all of the required artifacts.
     """
@@ -25,6 +28,7 @@ class ArtifactsMissing(NotFound):
 
 
 class UnknownJob(KeyError, NotFound):
+
     """
     Jenkins does not recognize the job requested.
     """
@@ -32,6 +36,7 @@ class UnknownJob(KeyError, NotFound):
 
 
 class UnknownView(KeyError, NotFound):
+
     """
     Jenkins does not recognize the view requested.
     """
@@ -39,6 +44,7 @@ class UnknownView(KeyError, NotFound):
 
 
 class UnknownNode(KeyError, NotFound):
+
     """
     Jenkins does not recognize the node requested.
     """
@@ -46,6 +52,7 @@ class UnknownNode(KeyError, NotFound):
 
 
 class UnknownQueueItem(KeyError, NotFound):
+
     """
     Jenkins does not recognize the requested queue item
     """
@@ -53,6 +60,7 @@ class UnknownQueueItem(KeyError, NotFound):
 
 
 class UnknownPlugin(KeyError, NotFound):
+
     """
     Jenkins does not recognize the plugin requested.
     """
@@ -60,6 +68,7 @@ class UnknownPlugin(KeyError, NotFound):
 
 
 class NoBuildData(NotFound):
+
     """
     A job has no build data.
     """
@@ -67,6 +76,7 @@ class NoBuildData(NotFound):
 
 
 class NotBuiltYet(NotFound):
+
     """
     A job has no build data.
     """
@@ -74,6 +84,7 @@ class NotBuiltYet(NotFound):
 
 
 class ArtifactBroken(JenkinsAPIException):
+
     """
     An artifact is broken, wrong
     """
@@ -81,6 +92,7 @@ class ArtifactBroken(JenkinsAPIException):
 
 
 class TimeOut(JenkinsAPIException):
+
     """
     Some jobs have taken too long to complete.
     """
@@ -88,6 +100,7 @@ class TimeOut(JenkinsAPIException):
 
 
 class NoResults(JenkinsAPIException):
+
     """
     A build did not publish any results.
     """
@@ -95,6 +108,7 @@ class NoResults(JenkinsAPIException):
 
 
 class FailedNoResults(NoResults):
+
     """
     A build did not publish any results because it failed
     """
@@ -102,6 +116,7 @@ class FailedNoResults(NoResults):
 
 
 class BadURL(ValueError, JenkinsAPIException):
+
     """
     A URL appears to be broken
     """
@@ -109,12 +124,14 @@ class BadURL(ValueError, JenkinsAPIException):
 
 
 class NotAuthorized(JenkinsAPIException):
+
     """Not Authorized to access resource"""
     # Usually thrown when we get a 403 returned
     pass
 
 
 class NotSupportSCM(JenkinsAPIException):
+
     """
     It's a SCM that does not supported by current version of jenkinsapi
     """
@@ -122,6 +139,7 @@ class NotSupportSCM(JenkinsAPIException):
 
 
 class NotConfiguredSCM(JenkinsAPIException):
+
     """
     It's a job that doesn't have configured SCM
     """
@@ -129,6 +147,7 @@ class NotConfiguredSCM(JenkinsAPIException):
 
 
 class NotInQueue(JenkinsAPIException):
+
     """
     It's a job that is not in the queue
     """
@@ -136,7 +155,16 @@ class NotInQueue(JenkinsAPIException):
 
 
 class PostRequired(JenkinsAPIException):
+
     """
     Method requires POST and not GET
+    """
+    pass
+
+
+class BadParams(JenkinsAPIException):
+
+    """
+    Invocation was given bad or inappropriate params
     """
     pass

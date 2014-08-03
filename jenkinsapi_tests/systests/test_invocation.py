@@ -14,6 +14,7 @@ from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.job_configs import LONG_RUNNING_JOB
 from jenkinsapi_tests.systests.job_configs import SHORTISH_JOB, EMPTY_JOB
+from jenkinsapi.custom_exceptions import BadParams
 
 
 log = logging.getLogger(__name__)
@@ -81,6 +82,12 @@ class TestInvocation(BaseSystemTest):
             qq.block_until_complete(delay=1)
             build_number = qq.get_build_number()
             self.assertEquals(build_number, invocation + 1)
+
+    def test_give_params_on_non_parameterized_job(self):
+        job_name = 'Ecreate_%s' % random_string()
+        job = self.jenkins.create_job(job_name, EMPTY_JOB)
+        with self.assertRaises(BadParams):
+            job.invoke(build_params={'foo':'bar', 'baz':99})
 
 
 if __name__ == '__main__':

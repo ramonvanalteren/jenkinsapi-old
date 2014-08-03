@@ -73,7 +73,7 @@ class Queue(JenkinsBase):
         return "%s/item/%i" % (self.baseurl, item["id"])
 
     def delete_item(self, queue_item):
-        self.delete_item_by_id(queue_item.id)
+        self.delete_item_by_id(queue_item.queue_id)
 
     def delete_item_by_id(self, item_id):
         deleteurl = '%s/cancelItem?id=%s' % (self.baseurl, item_id)

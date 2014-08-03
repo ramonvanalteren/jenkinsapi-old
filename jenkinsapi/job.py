@@ -24,6 +24,7 @@ from jenkinsapi.custom_exceptions import (
     NotInQueue,
     NotSupportSCM,
     UnknownQueueItem,
+    BadParams,
 )
 
 SVN_URL = './scm/locations/hudson.scm.SubversionSCM_-ModuleLocation/remote'
@@ -165,28 +166,24 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None, delay=5):
         assert isinstance(block, bool)
+        if build_params and (not self.has_params()):
+            raise BadParams("This job does not support parameters")
 
-        # Either copy the params dict or make a new one.
-        build_params = build_params and dict(
-            build_params.items()) or {}  # Via POSTed JSON
         params = {}  # Via Get string
-
-        url = self.get_build_triggerurl()
-        # If job has file parameters - it must be triggered
-        # using "/build", not by "/buildWithParameters"
-        # "/buildWithParameters" will ignore non-file parameters
-        if files:
-            url = "%s/build" % self.baseurl
-
-        if cause:
-            build_params['cause'] = cause
 
         if securitytoken:
             params['token'] = securitytoken
 
-        build_params['json'] = self.mk_json_from_build_parameters(
-            build_params, files)
-        data = build_params
+        # Either copy the params dict or make a new one.
+        build_params = build_params and dict(
+            build_params.items()) or {}  # Via POSTed JSON
+
+        url = self.get_build_triggerurl()
+        if cause:
+            build_params['cause'] = cause
+
+        data = {'json': self.mk_json_from_build_parameters(
+            build_params, files)}
 
         response = self.jenkins.requester.post_url(
             url,
@@ -196,12 +193,17 @@ class Job(JenkinsBase, MutableJenkinsThing):
         )
 
         redirect_url = response.headers['location']
-        if redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
-            qi = QueueItem(redirect_url, self.jenkins)
-            if block:
-                qi.block_until_complete(delay=delay)
-            return qi
-        raise ValueError("Not a Queue URL: %s" % redirect_url)
+
+        # It's possible that an error triggering the build will cause Jenkins
+        # not build, the signal is that we will be redirected to something
+        # other than a QueueItem URL.
+        if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
+            raise ValueError("Not a Queue URL: %s" % redirect_url)
+
+        qi = QueueItem(redirect_url, self.jenkins)
+        if block:
+            qi.block_until_complete(delay=delay)
+        return qi
 
     def _buildid_for_type(self, buildtype):
         """Gets a buildid for a given type of build"""

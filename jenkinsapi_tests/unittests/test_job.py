@@ -274,12 +274,13 @@ class TestJob(unittest.TestCase):
         get_data.return_value = TestJob.URL_DATA[url].copy()
         j = Job('http://halob:8080/job/foo/', 'foo', self.J)
 
+        self.assertTrue(j.has_params())
         params = j.get_params_list()
 
         self.assertIsInstance(params, list)
         self.assertEquals(len(params), 2)
         self.assertEquals(params, ['param1', 'param2'])
-
+    
     def test_get_build(self):
         buildnumber = 1
         with mock.patch('jenkinsapi.job.Build') as build_mock:
