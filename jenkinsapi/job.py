@@ -133,8 +133,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
             self._element_tree = ET.fromstring(self._config)
         return self._element_tree
 
-    def get_build_triggerurl(self):
-        if not self.has_params():
+    def get_build_triggerurl(self, files):
+        if files or (not self.has_params()):
+            # If job has file parameters - it must be triggered
+            # using "/build", not by "/buildWithParameters"
+            # "/buildWithParameters" will ignore non-file parameters
             return "%s/build" % self.baseurl
         return "%s/buildWithParameters" % self.baseurl
 
@@ -148,21 +151,28 @@ class Job(JenkinsBase, MutableJenkinsThing):
         assert isinstance(
             build_params, dict), 'Build parameters must be a dict'
 
-        build_p = [{'name': k, 'value': v}
-                   for k, v in build_params.items()]
+        build_p = [{'name': k, 'value': str(v)}
+                   for k, v in sorted(build_params.items())]
         out = {'parameter': build_p}
         if file_params:
             file_p = [{'name': k, 'file': k}
                       for k in file_params.keys()]
             out['parameter'].extend(file_p)
 
+        if len(out['parameter']) == 1:
+            out['parameter'] = out['parameter'][0]
+
         return out
 
     @staticmethod
     def mk_json_from_build_parameters(build_params, file_params=None):
-        to_json_structure = Job._mk_json_from_build_parameters(build_params,
-                                                               file_params)
-        return json.dumps(to_json_structure)
+        json_structure = Job._mk_json_from_build_parameters(
+            build_params,
+            file_params
+        )
+        json_structure['statusCode'] = "303"
+        json_structure['redirectTo'] = "."
+        return json.dumps(json_structure)
 
     def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None, delay=5):
         assert isinstance(block, bool)
@@ -178,12 +188,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
 
-        url = self.get_build_triggerurl()
+        url = self.get_build_triggerurl(files)
         if cause:
             build_params['cause'] = cause
-
+        
+        # Build require params as form fields
+        # and as Json.
         data = {'json': self.mk_json_from_build_parameters(
             build_params, files)}
+        data.update(build_params)
 
         response = self.jenkins.requester.post_url(
             url,
@@ -194,9 +207,6 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         redirect_url = response.headers['location']
 
-        # It's possible that an error triggering the build will cause Jenkins
-        # not build, the signal is that we will be redirected to something
-        # other than a QueueItem URL.
         if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
             raise ValueError("Not a Queue URL: %s" % redirect_url)
 
