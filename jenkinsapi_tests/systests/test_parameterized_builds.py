@@ -16,7 +16,6 @@ from jenkinsapi_tests.test_utils.random_strings import random_string
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_FILE
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_FILE_AND_PARAMS
 from jenkinsapi_tests.systests.job_configs import JOB_WITH_PARAMETERS
-from jenkinsapi.custom_exceptions import WillNotBuild
 
 
 class TestParameterizedBuilds(BaseSystemTest):
@@ -25,11 +24,11 @@ class TestParameterizedBuilds(BaseSystemTest):
         file_data = random_string()
         param_file = StringIO(file_data)
 
-        job_name = 'create_%s' % random_string()
+        job_name = 'create1_%s' % random_string()
         job = self.jenkins.create_job(job_name, JOB_WITH_FILE)
-        job.invoke(block=True, files={'file.txt': param_file})
+        item = job.invoke(block=True, files={'file.txt': param_file})
 
-        build = job.get_last_build()
+        build = job.poll().get_last_build()
         while build.is_running():
             time.sleep(0.25)
 
@@ -40,20 +39,20 @@ class TestParameterizedBuilds(BaseSystemTest):
 
 #     def test_invoke_job_parameterized(self):
 #         param_B = random_string()
-# 
-#         job_name = 'create_%s' % random_string()
+#  
+#         job_name = 'create2_%s' % random_string()
 #         job = self.jenkins.create_job(job_name, JOB_WITH_PARAMETERS)
 #         job.invoke(block=True, build_params={'B': param_B})
-# 
+#  
 #         build = job.get_last_build()
 #         while build.is_running():
 #             time.sleep(0.25)
-# 
+#  
 #         artifacts = build.get_artifact_dict()
 #         self.assertIsInstance(artifacts, dict)
 #         artB = artifacts['b.txt']
 #         self.assertTrue(artB.get_data().strip(), param_B)
-# 
+#  
 #         self.assertIn(param_B, build.get_console())
 # 
 #     def test_parameterized_job_build_queuing(self):

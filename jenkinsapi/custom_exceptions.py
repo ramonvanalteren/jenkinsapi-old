@@ -87,13 +87,6 @@ class TimeOut(JenkinsAPIException):
     pass
 
 
-class WillNotBuild(JenkinsAPIException):
-    """
-    Cannot trigger a new build.
-    """
-    pass
-
-
 class NoResults(JenkinsAPIException):
     """
     A build did not publish any results.

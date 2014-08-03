@@ -13,11 +13,9 @@ except ImportError:
 
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-from time import sleep
 from jenkinsapi.build import Build
 from jenkinsapi.queue import QueueItem
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.queue import QueueItem
 from jenkinsapi.mutable_jenkins_thing import MutableJenkinsThing
 from jenkinsapi.custom_exceptions import (
     NoBuildData,
@@ -25,7 +23,6 @@ from jenkinsapi.custom_exceptions import (
     NotFound,
     NotInQueue,
     NotSupportSCM,
-    WillNotBuild,
     UnknownQueueItem,
 )
 
@@ -166,7 +163,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
                                                                file_params)
         return json.dumps(to_json_structure)
 
-    def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None):
+    def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None, delay=5):
         assert isinstance(block, bool)
 
         # Either copy the params dict or make a new one.
@@ -198,12 +195,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
             files=files,
         )
 
-        queue_url = response.headers['location']
-        qi = QueueItem(queue_url, self.jenkins)
-
-        if block:
-            qi.block_until_complete(delay=10)
-        return qi
+        redirect_url = response.headers['location']
+        if redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
+            qi = QueueItem(redirect_url, self.jenkins)
+            if block:
+                qi.block_until_complete(delay=delay)
+            return qi
+        raise ValueError("Not a Queue URL: %s" % redirect_url)
 
     def _buildid_for_type(self, buildtype):
         """Gets a buildid for a given type of build"""

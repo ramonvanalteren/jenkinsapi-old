@@ -90,8 +90,12 @@ class QueueItem(JenkinsBase):
         JenkinsBase.__init__(self, baseurl)
 
     @property
-    def id(self):
+    def queue_id(self):
         return self._data['id']
+
+    @property
+    def name(self):
+        return self._data['task']['name']
 
     def get_jenkins_obj(self):
         return self.jenkins
@@ -117,7 +121,7 @@ class QueueItem(JenkinsBase):
                                self.__class__.__name__, str(self))
 
     def __str__(self):
-        return "%s Queue #%i" % (self._data['name'], self._data['id'])
+        return "%s Queue #%i" % (self.name, self.queue_id)
 
     def get_build(self):
         build_number = self.get_build_number()

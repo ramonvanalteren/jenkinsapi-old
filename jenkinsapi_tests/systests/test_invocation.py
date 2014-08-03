@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 class TestInvocation(BaseSystemTest):
 
     def test_invocation_object(self):
-        job_name = 'create_%s' % random_string()
+        job_name = 'Acreate_%s' % random_string()
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
         qq = job.invoke()
         self.assertIsInstance(qq, QueueItem)
@@ -31,7 +31,7 @@ class TestInvocation(BaseSystemTest):
         self.assertEquals(qq.get_build_number(), 1)
 
     def test_get_block_until_build_running(self):
-        job_name = 'create_%s' % random_string()
+        job_name = 'Bcreate_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
         qq = job.invoke()
         time.sleep(3)
@@ -50,14 +50,14 @@ class TestInvocation(BaseSystemTest):
         self.assertIn('Started by user', console)
  
     def test_get_block_until_build_complete(self):
-        job_name = 'create_%s' % random_string()
+        job_name = 'Ccreate_%s' % random_string()
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
         qq = job.invoke()
         qq.block_until_complete()
         self.assertFalse(qq.get_build().is_running())
  
     def test_multiple_invocations_and_get_last_build(self):
-        job_name = 'create_%s' % random_string()
+        job_name = 'Dcreate_%s' % random_string()
  
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
  
@@ -72,7 +72,7 @@ class TestInvocation(BaseSystemTest):
         self.assertIsInstance(build, Build)
  
     def test_multiple_invocations_and_get_build_number(self):
-        job_name = 'create_%s' % random_string()
+        job_name = 'Ecreate_%s' % random_string()
  
         job = self.jenkins.create_job(job_name, EMPTY_JOB)
  
