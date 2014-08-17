@@ -28,7 +28,7 @@ class Artifact(object):
         self.url = url
         self.build = build
 
-    def save(self, fspath):
+    def save(self, fspath, strict_validation=False):
         """
         Save the artifact to an explicit path. The containing directory must exist.
         Returns a reference to the file which has just been writen to.
@@ -42,20 +42,16 @@ class Artifact(object):
         if os.path.exists(fspath):
             if self.build:
                 try:
-                    if self._verify_download(fspath):
+                    if self._verify_download(fspath, strict_validation):
                         log.info(msg="Local copy of %s is already up to date." % self.filename)
                         return fspath
                 except ArtifactBroken:
-                    log.info("Jenkins artifact could not be identified.")
+                    log.warning("Jenkins artifact could not be identified.")
             else:
                 log.info("This file did not originate from Jenkins, so cannot check.")
         else:
             log.info("Local file is missing, downloading new.")
-        filepath = self._do_download(fspath)
-        try:
-            self._verify_download(filepath)
-        except ArtifactBroken:
-            log.warning("fingerprint of the downloaded artifact could not be verified")
+        self._verify_download(self._do_download(fspath), strict_validation)
         return fspath
 
     def get_jenkins_obj(self):
@@ -76,13 +72,17 @@ class Artifact(object):
             out.write(self.get_data())
         return fspath
 
-    def _verify_download(self, fspath):
+    def _verify_download(self, fspath, strict_validation=False):
         """
         Verify that a downloaded object has a valid fingerprint.
         """
         local_md5 = self._md5sum(fspath)
-        fp = Fingerprint(self.build.job.jenkins.baseurl, local_md5, self.build.job.jenkins)
-        return fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
+        baseurl = self.build.job.jenkins.baseurl
+        fp = Fingerprint(baseurl, local_md5, self.build.job.jenkins)
+        valid = fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
+        if not valid or (fp.unknown and strict_validation): # strict = 404 as invalid
+            raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (local_md5, baseurl))
+        return True
 
     def _md5sum(self, fspath, chunksize=2 ** 20):
         """
@@ -101,7 +101,7 @@ class Artifact(object):
             raise
         return md5.hexdigest()
 
-    def save_to_dir(self, dirpath):
+    def save_to_dir(self, dirpath, strict_validation=False):
         """
         Save the artifact to a folder. The containing directory must be exist, but use the artifact's
         default filename.
@@ -109,7 +109,7 @@ class Artifact(object):
         assert os.path.exists(dirpath)
         assert os.path.isdir(dirpath)
         outputfilepath = os.path.join(dirpath, self.filename)
-        return self.save(outputfilepath)
+        return self.save(outputfilepath, strict_validation)
 
     def __repr__(self):
         """
