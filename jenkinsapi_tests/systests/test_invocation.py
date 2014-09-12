@@ -42,8 +42,8 @@ class TestInvocation(BaseSystemTest):
         b = qq.get_build()
         self.assertIsInstance(b, Build)
         self.assertTrue(b.is_running())
-        
-        b.stop()
+        # if we call next line right away - Jenkins have no time to stop job
+        # so we wait a bit
         time.sleep(1)
         self.assertFalse(b.poll().is_running())
         console = b.get_console()

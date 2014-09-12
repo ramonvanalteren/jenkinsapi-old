@@ -54,10 +54,13 @@ class JenkinsBase(object):
         return url
 
     def poll(self, tree=None):
-        self._data = self._poll(tree=tree)
-        if 'jobs' in self._data:
-            self._data['jobs'] = self.resolve_job_folders(self._data['jobs'])
-        return self
+        data = self._poll(tree=tree)
+        if 'jobs' in data:
+            data['jobs'] = self.resolve_job_folders(data['jobs'])
+        if not tree:
+            self._data = data
+        else:
+            return data
 
     def _poll(self, tree=None):
         url = self.python_api_url(self.baseurl)
@@ -69,7 +72,7 @@ class JenkinsBase(object):
             if not params:
                 params = {'tree': tree}
             else:
-                params.update({'tree', tree})
+                params.update({'tree': tree})
 
         response = requester.get_url(url, params)
         if response.status_code != 200:

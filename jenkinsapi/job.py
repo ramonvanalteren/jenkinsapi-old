@@ -73,7 +73,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         JenkinsBase.__init__(self, url)
 
     def __str__(self):
-        return self._data["name"]
+        return self.name
 
     def get_description(self):
         return self._data["description"]
@@ -92,11 +92,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
             branches.append(hg_default_branch)
         return branches
 
-    def _poll(self, tree=None):
-        data = JenkinsBase._poll(self, tree=tree)
-        # jenkins loads only the first 100 builds, load more if needed
-        data = self._add_missing_builds(data)
-        return data
+    def poll(self, tree=None):
+        data = super(Job, self).poll(tree=tree)
+        if not tree:
+            self._data = self._add_missing_builds(self._data)
+        else:
+            return data
 
     # pylint: disable=E1123
     # Unexpected keyword arg 'params'
@@ -111,16 +112,14 @@ class Job(JenkinsBase, MutableJenkinsThing):
         # do not call _buildid_for_type here: it would poll and do an infinite
         # loop
         oldest_loaded_build_number = data["builds"][-1]["number"]
-        if not data['firstBuild']:
+        if not self._data['firstBuild']:
             first_build_number = oldest_loaded_build_number
         else:
-            first_build_number = data["firstBuild"]["number"]
+            first_build_number = self._data["firstBuild"]["number"]
         all_builds_loaded = (oldest_loaded_build_number == first_build_number)
         if all_builds_loaded:
             return data
-        api_url = self.python_api_url(self.baseurl)
-        response = self.get_data(
-            api_url, params={'tree': 'allBuilds[number,url]'})
+        response = self.poll(tree='allBuilds[number,url]')
         data['builds'] = response['allBuilds']
         return data
 
@@ -219,7 +218,6 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def _buildid_for_type(self, buildtype):
         """Gets a buildid for a given type of build"""
-        self.poll()
         KNOWNBUILDTYPES = [
             "lastStableBuild",
             "lastSuccessfulBuild",
@@ -229,9 +227,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
             "lastFailedBuild"]
         assert buildtype in KNOWNBUILDTYPES, 'Unknown build info type: %s' % buildtype
 
-        if not self._data.get(buildtype):
+        data = self.poll(tree='%s[number]' % buildtype)
+
+        if not data.get(buildtype):
             raise NoBuildData(buildtype)
-        return self._data[buildtype]["number"]
+        return data[buildtype]["number"]
 
     def get_first_buildnumber(self):
         """
@@ -270,10 +270,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self._buildid_for_type("lastCompletedBuild")
 
     def get_build_dict(self):
-        if "builds" not in self._data:
+        builds = self.poll(tree='builds[number,url]')
+        if not builds:
             raise NoBuildData(repr(self))
-        builds = self._data["builds"]
-        last_build = self._data['lastBuild']
+        builds = self._add_missing_builds(builds)
+        builds = builds['builds']
+        last_build = self.poll(tree='lastBuild[number,url]')['lastBuild']
         if builds and last_build and builds[0]['number'] != last_build['number']:
             builds = [last_build] + builds
         # FIXME SO how is this supposed to work if build is false-y?
@@ -387,8 +389,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self.is_queued() or self.is_running()
 
     def is_queued(self):
-        self.poll()
-        return self._data["inQueue"]
+        data = self.poll(tree='inQueue')
+        return data.get('inQueue', False)
 
     def get_queue_item(self):
         """
@@ -399,7 +401,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return QueueItem(self.jenkins, **self._data['queueItem'])
 
     def is_running(self):
-        self.poll()
+        # self.poll()
         try:
             build = self.get_last_build_or_none()
             if build is not None:
@@ -568,8 +570,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return upstream_jobs
 
     def is_enabled(self):
-        self.poll()
-        return self._data["color"] != 'disabled'
+        data = self.poll(tree='color')
+        return data.get('color', None) != 'disabled'
 
     def disable(self):
         '''Disable job'''
