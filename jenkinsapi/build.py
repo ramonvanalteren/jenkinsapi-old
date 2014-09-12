@@ -49,11 +49,11 @@ class Build(JenkinsBase):
         self.depth = depth
         JenkinsBase.__init__(self, url)
 
-    def _poll(self):
+    def _poll(self, tree=None):
         # For build's we need more information for downstream and upstream builds
         # so we override the poll to get at the extra data for build objects
         url = '%s?depth=%s' % (self.python_api_url(self.baseurl), self.depth)
-        return self.get_data(url)
+        return self.get_data(url, tree=tree)
 
     def __str__(self):
         return self._data['fullDisplayName']

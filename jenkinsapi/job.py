@@ -92,8 +92,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
             branches.append(hg_default_branch)
         return branches
 
-    def _poll(self):
-        data = JenkinsBase._poll(self)
+    def _poll(self, tree=None):
+        data = JenkinsBase._poll(self, tree=tree)
         # jenkins loads only the first 100 builds, load more if needed
         data = self._add_missing_builds(data)
         return data

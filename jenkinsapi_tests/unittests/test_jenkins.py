@@ -235,7 +235,7 @@ class TestJenkins(unittest.TestCase):
     ]
 
     # Mock function
-    def second_call_poll():
+    def second_call_poll(tree=None):
         return TestJenkins.create_job_returns.pop(0)
 
     # Patch Jenkins with mock function

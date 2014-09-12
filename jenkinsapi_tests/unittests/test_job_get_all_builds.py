@@ -137,7 +137,7 @@ class TestJobGetAllBuilds(unittest.TestCase):
         (JOB3_API_URL, str({'tree': 'allBuilds[number,url]'})): JOB3_ALL_BUILDS_DATA,
     }
 
-    def fakeGetData(self, url, params=None):
+    def fakeGetData(self, url, params=None, tree=None):
         TestJobGetAllBuilds.__get_data_call_count += 1
         if params is None:
             try:

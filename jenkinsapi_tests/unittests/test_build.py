@@ -84,7 +84,7 @@ class test_build(unittest.TestCase):
     @mock.patch.object(Build, 'get_data')
     def test_build_depth(self, get_data_mock):
         build = Build('http://halob:8080/job/foo/98', 98, self.j, depth=0)
-        get_data_mock.assert_called_with('http://halob:8080/job/foo/98/api/python?depth=0')
+        get_data_mock.assert_called_with('http://halob:8080/job/foo/98/api/python?depth=0', tree=None)
 
     def test_get_revision_no_scm(self):
         """ with no scm, get_revision should return None """
