@@ -89,7 +89,10 @@ class Build(JenkinsBase):
         _actions = [x for x in self._data['actions']
                     if x and "lastBuiltRevision" in x]
 
-        return _actions[0]["lastBuiltRevision"]["SHA1"]
+        if len(_actions) > 0:
+            return _actions[0]["lastBuiltRevision"]["SHA1"]
+
+        return None
 
     def _get_hg_rev(self):
         warnings.warn("This untested function may soon be removed from Jenkinsapi (_get_hg_rev).")
