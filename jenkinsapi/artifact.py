@@ -72,7 +72,7 @@ class Artifact(object):
             out.write(self.get_data())
         return fspath
 
-    def _verify_download(self, fspath, strict_validation=False):
+    def _verify_download(self, fspath, strict_validation):
         """
         Verify that a downloaded object has a valid fingerprint.
         """
