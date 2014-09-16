@@ -269,9 +269,11 @@ class Build(JenkinsBase):
         matrix configuration
         :return: Generator of Build
         """
-        if "runs" in self._data:
-            for rinfo in self._data["runs"]:
-                yield Build(rinfo["url"], rinfo["number"], self.job)
+        if 'runs' in self._data:
+            for rinfo in self._data['runs']:
+                number = rinfo['number']
+                if number == self._data['number']:
+                    yield Build(rinfo['url'], number, self.job)
 
     def is_running(self):
         """
