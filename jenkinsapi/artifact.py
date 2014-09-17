@@ -80,7 +80,7 @@ class Artifact(object):
         baseurl = self.build.job.jenkins.baseurl
         fp = Fingerprint(baseurl, local_md5, self.build.job.jenkins)
         valid = fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
-        if not valid or (fp.unknown and strict_validation): # strict = 404 as invalid
+        if not valid or (fp.unknown and strict_validation):  # strict = 404 as invalid
             raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (local_md5, baseurl))
         return True
 
