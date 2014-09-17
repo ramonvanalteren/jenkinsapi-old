@@ -50,7 +50,7 @@ class ArtifactTest(unittest.TestCase):
         # mock_open() only mocks out f.read(), which reads all content at a time.
         # However, _verify_download() reads the file in chunks.
         f = jenkinsapi.artifact.open.return_value
-        f.read.side_effect = ['chunk1', 'chunk2', ''] # empty string indicates EOF
+        f.read.side_effect = [b'chunk1', b'chunk2', b''] # empty string indicates EOF
 
         fp = MockFingerprint.return_value
         fp.validate_for_build.return_value = True
@@ -92,7 +92,7 @@ class ArtifactTest(unittest.TestCase):
     @patch('jenkinsapi.artifact.Fingerprint', spec=True)
     def test_verify_download_invalid(self, MockFingerprint):
         f = jenkinsapi.artifact.open.return_value
-        f.read.side_effect = ['chunk1', 'chunk2', ''] # empty string indicates EOF
+        f.read.side_effect = [b'chunk1', b'chunk2', b''] # empty string indicates EOF
 
         fp = MockFingerprint.return_value
         fp.validate_for_build.return_value = False
