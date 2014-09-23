@@ -102,7 +102,7 @@ class Requester(object):
         headers = {'Content-Type': 'text/xml'}
         return self.post_and_confirm_status(url, params=params, data=data, headers=headers, valid=valid)
 
-    def post_and_confirm_status(self, url, params=None, data=None, files=None, headers=None, valid=None):
+    def post_and_confirm_status(self, url, params=None, data=None, files=None, headers=None, valid=None, allow_redirects=True):
         valid = valid or self.VALID_STATUS_CODES
         assert isinstance(data, (
             str, dict)), \
@@ -111,7 +111,7 @@ class Requester(object):
         if not headers and not files:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-        response = self.post_url(url, params, data, files, headers)
+        response = self.post_url(url, params, data, files, headers, allow_redirects)
         if response.status_code not in valid:
             raise JenkinsAPIException('Operation failed. url={0}, data={1}, headers={2}, status={3}, text={4}'.format(
                 response.url, data, headers, response.status_code, response.text.encode('UTF-8')))

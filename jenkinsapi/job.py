@@ -192,24 +192,31 @@ class Job(JenkinsBase, MutableJenkinsThing):
         url = self.get_build_triggerurl(files)
         if cause:
             build_params['cause'] = cause
-        
+
         # Build require params as form fields
         # and as Json.
         data = {'json': self.mk_json_from_build_parameters(
-            build_params, files)}
+                build_params, files)}
         data.update(build_params)
 
-        response = self.jenkins.requester.post_url(
+        response = self.jenkins.requester.post_and_confirm_status(
             url,
             data=data,
             params=params,
             files=files,
+            valid=[200, 201, 303],
+            allow_redirects=False
         )
 
         redirect_url = response.headers['location']
 
         if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
-            raise ValueError("Not a Queue URL: %s" % redirect_url)
+            if files:
+                raise ValueError('Builds with file parameters are not '
+                                 'supported by this jenkinsapi version. '
+                                 'Please use previous version.')
+            else:
+                raise ValueError("Not a Queue URL: %s" % redirect_url)
 
         qi = QueueItem(redirect_url, self.jenkins)
         if block:

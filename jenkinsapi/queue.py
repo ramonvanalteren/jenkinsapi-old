@@ -135,7 +135,8 @@ class QueueItem(JenkinsBase):
     def block_until_building(self, delay=5):
         while True:
             try:
-                return self.poll().get_build()
+                self.poll()
+                return self.get_build()
             except (NotBuiltYet, HTTPError):
                 time.sleep(delay)
                 continue
