@@ -1,6 +1,6 @@
 """Module for custom_exceptions.
 
-Where possible we try to throw exceptions with non-generic, 
+Where possible we try to throw exceptions with non-generic,
 meaningful names.
 """
 

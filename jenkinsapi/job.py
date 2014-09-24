@@ -195,8 +195,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         # Build require params as form fields
         # and as Json.
-        data = {'json': self.mk_json_from_build_parameters(
-                build_params, files)}
+        data = {'json': self.mk_json_from_build_parameters(build_params, files)}
         data.update(build_params)
 
         response = self.jenkins.requester.post_and_confirm_status(
