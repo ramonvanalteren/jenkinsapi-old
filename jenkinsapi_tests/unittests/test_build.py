@@ -83,13 +83,20 @@ class test_build(unittest.TestCase):
 
     @mock.patch.object(Build, 'get_data')
     def test_build_depth(self, get_data_mock):
-        build = Build('http://halob:8080/job/foo/98', 98, self.j, depth=0)
-        get_data_mock.assert_called_with('http://halob:8080/job/foo/98/api/python?depth=0')
+        Build('http://halob:8080/job/foo/98', 98, self.j, depth=0)
+        get_data_mock.assert_called_with('http://halob:8080/job/foo/98/api/'
+                                         'python',
+                                         tree=None, params={'depth': 0})
+
+    def test_get_revision_no_scm(self):
+        """ with no scm, get_revision should return None """
+        self.assertEqual(self.b.get_revision(), None)
 
     ## TEST DISABLED - DOES NOT WORK
     # def test_downstream(self):
     #     expected = ['SingleJob','MultipleJobs']
     #     self.assertEquals(self.b.get_downstream_job_names(), expected)
+
 
 def main():
     unittest.main(verbosity=2)

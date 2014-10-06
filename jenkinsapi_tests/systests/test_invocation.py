@@ -38,45 +38,46 @@ class TestInvocation(BaseSystemTest):
         time.sleep(3)
         bn = qq.block_until_building(delay=3).get_number()
         self.assertIsInstance(bn, int)
-        
+
         b = qq.get_build()
         self.assertIsInstance(b, Build)
         self.assertTrue(b.is_running())
-        
         b.stop()
+        # if we call next line right away - Jenkins have no time to stop job
+        # so we wait a bit
         time.sleep(1)
-        self.assertFalse(b.poll().is_running())
+        self.assertFalse(b.is_running())
         console = b.get_console()
         self.assertIsInstance(console, str)
         self.assertIn('Started by user', console)
- 
+
     def test_get_block_until_build_complete(self):
         job_name = 'Ccreate_%s' % random_string()
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
         qq = job.invoke()
         qq.block_until_complete()
         self.assertFalse(qq.get_build().is_running())
- 
+
     def test_multiple_invocations_and_get_last_build(self):
         job_name = 'Dcreate_%s' % random_string()
- 
+
         job = self.jenkins.create_job(job_name, SHORTISH_JOB)
- 
+
         for _ in range(3):
             ii = job.invoke()
             ii.block_until_complete(delay=2)
- 
+
         build_number = job.get_last_good_buildnumber()
         self.assertEquals(build_number, 3)
- 
+
         build = job.get_build(build_number)
         self.assertIsInstance(build, Build)
- 
+
     def test_multiple_invocations_and_get_build_number(self):
         job_name = 'Ecreate_%s' % random_string()
- 
+
         job = self.jenkins.create_job(job_name, EMPTY_JOB)
- 
+
         for invocation in range(3):
             qq = job.invoke()
             qq.block_until_complete(delay=1)
@@ -87,7 +88,7 @@ class TestInvocation(BaseSystemTest):
         job_name = 'Ecreate_%s' % random_string()
         job = self.jenkins.create_job(job_name, EMPTY_JOB)
         with self.assertRaises(BadParams):
-            job.invoke(build_params={'foo':'bar', 'baz':99})
+            job.invoke(build_params={'foo': 'bar', 'baz': 99})
 
 
 if __name__ == '__main__':

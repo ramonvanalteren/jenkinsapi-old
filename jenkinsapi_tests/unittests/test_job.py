@@ -91,6 +91,18 @@ class TestJob(unittest.TestCase):
         except KeyError:
             raise Exception("Missing data for %s" % url)
 
+    def fakeGetDataTree(self, url, **args):
+        try:
+            if 'builds' in args['tree']:
+                return {'builds': TestJob.URL_DATA[url]['builds']}
+            else:
+                return {'lastBuild': TestJob.URL_DATA[url]['lastBuild']}
+        except KeyError:
+            raise Exception("Missing data for %s" % url)
+
+    def fake_get_data_tree_empty(self, url, **args):
+        return {}
+
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def setUp(self):
 
@@ -162,20 +174,19 @@ class TestJob(unittest.TestCase):
         ret = self.j.get_last_completed_buildnumber()
         self.assertEquals(ret, 3)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_get_build_dict(self):
         ret = self.j.get_build_dict()
         self.assertTrue(isinstance(ret, dict))
         self.assertEquals(len(ret), 4)
 
-    @mock.patch.object(Job, '_poll')
-    def test_nobuilds_get_build_dict(self, _poll):
-        # Bare minimum build dict, we only testing dissapearance of 'builds'
-        _poll.return_value = {"name": "foo"}
-
+    @mock.patch.object(JenkinsBase, 'get_data', fake_get_data_tree_empty)
+    def test_nobuilds_get_build_dict(self):
         j = Job('http://halob:8080/job/foo/', 'foo', self.J)
         with self.assertRaises(NoBuildData):
             j.get_build_dict()
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_get_build_ids(self):
         # We don't want to deal with listreverseiterator here
         # So we convert result to a list
@@ -264,6 +275,8 @@ class TestJob(unittest.TestCase):
         self.assertEquals(len(params), 2)
         self.assertEquals(params, ['param1', 'param2'])
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
+    # @mock.patch.object(JenkinsBase, 'get_data', fakeGetLastBuild)
     def test_get_build(self):
         buildnumber = 1
         with mock.patch('jenkinsapi.job.Build') as build_mock:
@@ -273,6 +286,7 @@ class TestJob(unittest.TestCase):
             build_mock.assert_called_with('http://halob:8080/job/foo/1/',
                                           buildnumber, job=self.j)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_get_build_metadata(self):
         buildnumber = 1
         with mock.patch('jenkinsapi.job.Build') as build_mock:

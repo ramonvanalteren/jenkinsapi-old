@@ -107,7 +107,7 @@ class TestQueue(unittest.TestCase):
     }
 
     @classmethod
-    def mockGetData(self, url):
+    def mockGetData(self, url, tree):
         try:
             return TestQueue.URL_DATA[url]
         except KeyError:
