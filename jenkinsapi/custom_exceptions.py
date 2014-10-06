@@ -151,3 +151,10 @@ class BadParams(JenkinsAPIException):
     """Invocation was given bad or inappropriate params
     """
     pass
+
+
+class AlreadyExists(JenkinsAPIException):
+    """
+    Method requires POST and not GET
+    """
+    pass

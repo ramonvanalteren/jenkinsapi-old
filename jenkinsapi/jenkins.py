@@ -16,6 +16,7 @@ except ImportError:
 import logging
 
 from jenkinsapi import config
+from jenkinsapi.credentials import Credentials
 from jenkinsapi.executors import Executors
 from jenkinsapi.job import Job
 from jenkinsapi.jobs import Jobs
@@ -412,3 +413,10 @@ class Jenkins(JenkinsBase):
         response = self.requester.get_and_confirm_status(self.baseurl)
         version_key = 'X-Jenkins'
         return response.headers.get(version_key, '0.0')
+
+    def get_credentials(self):
+        """
+        Return credentials
+        """
+        url = '%s/credential-store/domain/_/' % self.baseurl
+        return Credentials(url, self)
