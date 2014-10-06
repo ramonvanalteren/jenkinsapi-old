@@ -52,7 +52,7 @@ class TestParameterizedBuilds(BaseSystemTest):
         artifacts = build.get_artifact_dict()
         artB = artifacts['b.txt']
         self.assertEqual(
-            artB.get_data().strip(),
+            artB.get_data().strip().decode('UTF-8', 'replace'),
             param_B,
         )
 
