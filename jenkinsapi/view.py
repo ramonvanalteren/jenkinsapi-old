@@ -170,6 +170,14 @@ class View(JenkinsBase):
     def get_config_xml_url(self):
         return '%s/config.xml' % self.baseurl
 
+    def get_config(self):
+        """
+        Return the config.xml from the view
+        """
+        url = self.get_config_xml_url()
+        response = self.get_jenkins_obj().requester.get_and_confirm_status(url)
+        return response.text
+
     def update_config(self, config):
         """
         Update the config.xml to the view
