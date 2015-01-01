@@ -185,8 +185,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
                 elif self.is_running():
                     if skip_if_running:
-                        log.warn(
-                            "Will not request new build because %s is already running", self.name)
+                        raise WillNotBuild('%s is already running' % repr(self))
                     else:
                         log.warn(
                             "Will re-schedule %s even though it is already running", self.name)
