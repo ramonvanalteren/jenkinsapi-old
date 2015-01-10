@@ -1,17 +1,13 @@
 """
 Module for jenkinsapi Jenkins object
 """
-
-
-import json
-
 try:
     import urlparse
-    from urllib import quote as urlquote, urlencode
+    from urllib import quote as urlquote
 except ImportError:
     # Python3
     import urllib.parse as urlparse
-    from urllib.parse import quote as urlquote, urlencode
+    from urllib.parse import quote as urlquote
 
 import logging
 
@@ -20,7 +16,6 @@ from jenkinsapi.credentials import Credentials
 from jenkinsapi.executors import Executors
 from jenkinsapi.job import Job
 from jenkinsapi.jobs import Jobs
-from jenkinsapi.node import Node
 from jenkinsapi.view import View
 from jenkinsapi.nodes import Nodes
 from jenkinsapi.plugins import Plugins
@@ -282,6 +277,10 @@ class Jenkins(JenkinsBase):
         url = self.get_nodes_url()
         return Nodes(url, self)
 
+    @property
+    def nodes(self):
+        return self.get_nodes()
+
     def has_node(self, nodename):
         """
         Does a node by the name specified exist
@@ -313,7 +312,25 @@ class Jenkins(JenkinsBase):
                     remote_fs='/var/lib/jenkins',
                     labels=None, exclusive=False):
         """
-        Create a new slave node by name.
+        Create a new JNLP slave node by name.
+
+        To create SSH node, please use new method::
+
+            new_node_dict = {
+                'num_executors': 2,
+                'node_description': 'My new shiny node',
+                'remote_fs': '/var/lib/jenkins',
+                'labels': 'nodea, nodeb',
+                'exclusive': False,
+                'host': 'hostname',
+                'port': '22'
+                'credential_description': 'creds for nodename',
+                'jvm_options': '-Xmx=1024m',
+                'java_path': '/var/lib/java/bin',
+                'prefix_start_slave_cmd': '',
+                'suffix_start_slave_cmd': ''
+            }
+            jenkins.nodes['new_node_name'] = new_node_dict
 
         :param name: fqdn of slave, str
         :param num_executors: number of executors, int
@@ -323,39 +340,8 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
-        MODE = 'NORMAL' if not exclusive else 'EXCLUSIVE'
-        if self.has_node(name):
-            return Node(nodename=name,
-                        baseurl=self.get_node_url(nodename=name),
-                        jenkins_obj=self)
-        params = {
-            'name': name,
-            'type': NODE_TYPE,
-            'json': json.dumps({
-                'name': name,
-                'nodeDescription': node_description,
-                'numExecutors': num_executors,
-                'remoteFS': remote_fs,
-                'labelString': labels,
-                'mode': MODE,
-                'type': NODE_TYPE,
-                'retentionStrategy': {
-                    'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
-                },
-                'nodeProperties': {
-                    'stapler-class-bag': 'true'
-                },
-                'launcher': {
-                    'stapler-class': 'hudson.slaves.JNLPLauncher'
-                }
-            })
-        }
-        url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
-        self.requester.get_and_confirm_status(url)
-
-        return Node(nodename=name, baseurl=self.get_node_url(
-            nodename=name), jenkins_obj=self)
+        return self.nodes.create_jnlp_node(name, num_executors, node_description,
+                                           remote_fs, labels, exclusive)
 
     def get_plugins_url(self, depth):
         # This only ever needs to work on the base object
@@ -420,3 +406,7 @@ class Jenkins(JenkinsBase):
         """
         url = '%s/credential-store/domain/_/' % self.baseurl
         return Credentials(url, self)
+
+    @property
+    def credentials(self):
+        return self.get_credentials()

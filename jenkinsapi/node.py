@@ -4,6 +4,8 @@ Module for jenkinsapi Node class
 
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import PostRequired
+from jenkinsapi.custom_exceptions import JenkinsAPIException
+import json
 import logging
 
 try:
@@ -22,17 +24,109 @@ class Node(JenkinsBase):
     to the master jenkins instance
     """
 
-    def __init__(self, baseurl, nodename, jenkins_obj):
+    def __init__(self, baseurl, nodename, jenkins_obj,
+                 poll=True, node_dict=None):
         """
         Init a node object by providing all relevant pointers to it
         :param baseurl: basic url for querying information on a node
+            If url is not set - object will construct it itself. This is
+            useful when node is being created and not exists in Jenkins yet
         :param nodename: hostname of the node
         :param jenkins_obj: ref to the jenkins obj
+        :param bool poll: set to False if node does not exist or automatic
+            refresh from Jenkins is not required. Default is True.
+            If baseurl parameter is set to None - poll parameter will be
+            set to False
+        :param dict node_dict: Dict with node parameters as described below
+
+        JNLP Node:
+            {
+                'num_executors': int,
+                'node_description': str,
+                'remote_fs': str,
+                'labels': str,
+                'exclusive': bool
+            }
+
+        SSH Node:
+            {
+            'num_executors': int,
+            'node_description': str,
+            'remote_fs': str,
+            'labels': str,
+            'exclusive': bool,
+            'host': str,
+            'port': int
+            'credential_description': str,
+            'jvm_options': str,
+            'java_path': str,
+            'prefix_start_slave_cmd': str,
+            'suffix_start_slave_cmd': str
+            }
+
+        :return: None
         :return: Node obj
         """
         self.name = nodename
         self.jenkins = jenkins_obj
-        JenkinsBase.__init__(self, baseurl)
+        if not baseurl:
+            poll = False
+            baseurl = '%s/computer/%s' % (self.jenkins.baseurl, self.name)
+        JenkinsBase.__init__(self, baseurl, poll=poll)
+        self.node_attributes = node_dict
+
+    def get_node_attributes(self):
+        """
+        Gets node attributes as dict
+
+        Used by Nodes object when node is created
+
+        :return: Node attributes dict formatted for Jenkins API request
+            to create node
+        """
+        na = self.node_attributes
+        if not na.get('credential_description', False):
+            # If credentials description is not present - we will create
+            # JNLP node
+            launcher = {'stapler-class': 'hudson.slaves.JNLPLauncher'}
+        else:
+            try:
+                credential = self.jenkins.credentials[na['credential_description']]
+            except KeyError:
+                raise JenkinsAPIException('Credential with description "%s"'
+                                          ' not found'
+                                          % na['credential_descr'])
+            launcher = {
+                'stapler-class': 'hudson.plugins.sshslaves.SSHLauncher',
+                'host': na['host'],
+                'port': na['port'],
+                'credentialsId': credential.credential_id,
+                'jvmOptions': na['jvm_options'],
+                'javaPath': na['java_path'],
+                'prefixStartSlaveCmd': na['prefix_start_slave_cmd'],
+                'suffixStartSlaveCmd': na['suffix_start_slave_cmd']
+            }
+
+        params = {
+            'name': self.name,
+            'type': 'hudson.slaves.DumbSlave$DescriptorImpl',
+            'json': json.dumps({
+                'name': self.name,
+                'nodeDescription': na['node_description'],
+                'numExecutors': na['num_executors'],
+                'remoteFS': na['remote_fs'],
+                'labelString': na['labels'],
+                'mode': 'EXCLUSIVE' if na['exclusive'] else 'NORMAL',
+                'type': 'hudson.slaves.DumbSlave$DescriptorImpl',
+                'retentionStrategy': {'stapler-class':
+                                      'hudson.slaves.'
+                                      'RetentionStrategy$Always'},
+                'nodeProperties': {'stapler-class-bag': 'true'},
+                'launcher': launcher
+            })
+        }
+
+        return params
 
     def get_jenkins_obj(self):
         return self.jenkins

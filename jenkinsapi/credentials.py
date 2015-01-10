@@ -4,7 +4,11 @@ container-like interface for all of the Global credentials defined on a single
 Jenkins node.
 """
 import logging
-import urllib
+try:
+    from urllib import urlencode
+except ImportError:
+    # Python3
+    from urllib.parse import urlencode
 from jenkinsapi.credential import Credential
 from jenkinsapi.credential import UsernamePasswordCredential
 from jenkinsapi.jenkinsbase import JenkinsBase
@@ -57,7 +61,7 @@ class Credentials(JenkinsBase):
         return self.jenkins
 
     def __iter__(self):
-        for cred in self.credentials.itervalues():
+        for cred in self.credentials.values():
             yield cred.description
 
     def __contains__(self, description):
@@ -70,16 +74,16 @@ class Credentials(JenkinsBase):
         return list(self.iterkeys())
 
     def iteritems(self):
-        for cred in self.credentials.itervalues():
+        for cred in self.credentials.values():
             yield cred.description, cred
 
     def __getitem__(self, description):
-        for cred in self.credentials.itervalues():
+        for cred in self.credentials.values():
             if cred.description == description:
                 return cred
 
         raise KeyError('Credential with description "%s" not found'
-                        % description)
+                       % description)
 
     def __len__(self):
         return len(self.keys())
@@ -102,12 +106,16 @@ class Credentials(JenkinsBase):
                     # '_.id': '',
                     # 'keyStoreSource': '0',
                     # '_.keyStoreFile': '',
-                    # 'stapler-class': 'com.cloudbees.plugins.credentials.impl.CertificateCredentialsImpl%24FileOnMasterKeyStoreSource',
+                    # 'stapler-class': ('com.cloudbees.plugins.credentials.'
+                    # 'impl.CertificateCredentialsImpl%24FileOnMasterKeyStoreSource'),
                     # '_.uploadedKeystore': ' ',
-                    # 'stapler-class': 'com.cloudbees.plugins.credentials.impl.CertificateCredentialsImpl%24UploadedKeyStoreSource',
+                    # 'stapler-class':
+                    # 'com.cloudbees.plugins.credentials.impl.'
+                    # 'CertificateCredentialsImpl%24UploadedKeyStoreSource',
                     # '_.password': ' ',
                     # '_.description': ' ',
-                    # 'stapler-class': 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPassword',
+                    # 'stapler-class': 'com.cloudbees.jenkins.plugins.'
+                    # 'sshcredentials.impl.BasicSSHUserPassword',
                     # '_.id': ' ',
                     # '_.username': username,
                     # '_.password': password,
@@ -123,8 +131,9 @@ class Credentials(JenkinsBase):
                             "username": credential.username,
                             "password": credential.password,
                             "description": description
-                        }}
+                        }
                     }
+                }
             url = '%s/credential-store/domain/_/createCredentials' % self.jenkins.baseurl
         else:
             # update existing credentials
@@ -149,11 +158,13 @@ class Credentials(JenkinsBase):
                 % (self.jenkins.baseurl, cred.credential_id)
 
         try:
-            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urllib.urlencode(params))
-        except HTTPError:
+            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urlencode(params))
+        except JenkinsAPIException as jae:
             raise JenkinsAPIException('Latest version of Credentials '
                                       'plugin is required to be able '
-                                      'to create/update credentials')
+                                      'to create/update credentials. '
+                                      'Original exception: %s' % str(jae))
+
         self.poll()
         self.credentials = self._data['credentials']
         if description not in self:
@@ -170,11 +181,12 @@ class Credentials(JenkinsBase):
         url = ('%s/credential-store/domain/_/credential/%s/doDelete'
                % (self.jenkins.baseurl, self[description].credential_id))
         try:
-            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urllib.urlencode(params))
-        except HTTPError:
+            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urlencode(params))
+        except JenkinsAPIException as jae:
             raise JenkinsAPIException('Latest version of Credentials '
                                       'required to be able to create '
-                                      'credentials')
+                                      'credentials. Original exception: %s'
+                                      % str(jae))
         self.poll()
         self.credentials = self._data['credentials']
         if description in self:
