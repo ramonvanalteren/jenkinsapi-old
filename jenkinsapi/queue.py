@@ -41,7 +41,7 @@ class Queue(JenkinsBase):
         for item in self._data['items']:
             yield item['id']
 
-    def iterivalues(self):
+    def itervalues(self):
         for item in self._data['items']:
             yield QueueItem(self.jenkins, **item)
 

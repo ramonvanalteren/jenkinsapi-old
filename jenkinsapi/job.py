@@ -210,6 +210,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         redirect_url = response.headers['location']
 
         if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
+
             if files:
                 raise ValueError('Builds with file parameters are not '
                                  'supported by this jenkinsapi version. '

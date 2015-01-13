@@ -92,6 +92,10 @@ class test_build(unittest.TestCase):
         """ with no scm, get_revision should return None """
         self.assertEqual(self.b.get_revision(), None)
 
+    def test_get_revision_no_scm(self):
+        """ with no scm, get_revision should return None """
+        self.assertEqual(self.b.get_revision(), None)
+
     ## TEST DISABLED - DOES NOT WORK
     # def test_downstream(self):
     #     expected = ['SingleJob','MultipleJobs']
