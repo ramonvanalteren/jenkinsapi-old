@@ -1,105 +1,80 @@
-from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.fingerprint import Fingerprint
-from jenkinsapi.job import Job
-from jenkinsapi.view import View
-from jenkinsapi.node import Node
-from jenkinsapi.exceptions import UnknownJob, NotAuthorized
-from utils.urlopener import mkurlopener, mkopener, NoAuto302Handler
-import logging
-import time
-import urllib2
-import urllib
-import urlparse
-import cookielib
+"""
+Module for jenkinsapi Jenkins object
+"""
+
+
+import json
+
 try:
-    import json
+    import urlparse
+    from urllib import quote as urlquote, urlencode
 except ImportError:
-    import simplejson as json
+    # Python3
+    import urllib.parse as urlparse
+    from urllib.parse import quote as urlquote, urlencode
+
+import logging
+
+from jenkinsapi import config
+from jenkinsapi.executors import Executors
+from jenkinsapi.job import Job
+from jenkinsapi.jobs import Jobs
+from jenkinsapi.node import Node
+from jenkinsapi.view import View
+from jenkinsapi.nodes import Nodes
+from jenkinsapi.plugins import Plugins
+from jenkinsapi.views import Views
+from jenkinsapi.queue import Queue
+from jenkinsapi.fingerprint import Fingerprint
+from jenkinsapi.jenkinsbase import JenkinsBase
+from jenkinsapi.utils.requester import Requester
+from jenkinsapi.custom_exceptions import UnknownJob, PostRequired
 
 log = logging.getLogger(__name__)
+
 
 class Jenkins(JenkinsBase):
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, proxyhost=None, proxyport=None, proxyuser=None, proxypass=None, formauth=False):
+    def __init__(self, baseurl, username=None, password=None, requester=None, lazy=False):
         """
-
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
         :param password: password for jenkins auth, str
-        :param proxyhost: proxyhostname, str
-        :param proxyport: proxyport, int
-        :param proxyuser: proxyusername for proxy auth, str
-        :param proxypass: proxypassword for proxyauth, str
         :return: a Jenkins obj
         """
         self.username = username
         self.password = password
-        self.proxyhost = proxyhost
-        self.proxyport = proxyport
-        self.proxyuser = proxyuser
-        self.proxypass = proxypass
-        JenkinsBase.__init__(self, baseurl, formauth=formauth)
+        self.requester = requester or Requester(username, password, baseurl=baseurl)
+        self.lazy = lazy
+        JenkinsBase.__init__(self, baseurl, poll=not lazy)
 
-    def get_proxy_auth(self):
-        return self.proxyhost, self.proxyport, self.proxyuser, self.proxypass
+    def _poll_if_needed(self):
+        if self.lazy and self._data is None:
+            self.poll()
 
-    def get_jenkins_auth(self):
-        return self.username, self.password, self.baseurl
+    def _clone(self):
+        return Jenkins(self.baseurl, username=self.username,
+                       password=self.password, requester=self.requester)
 
-    def get_auth(self):
-        auth_args = []
-        auth_args.extend(self.get_jenkins_auth())
-        auth_args.extend(self.get_proxy_auth())
-        log.debug("args: %s" % auth_args)
-        return auth_args
+    def base_server_url(self):
+        if config.JENKINS_API in self.baseurl:
+            return self.baseurl[:-(len(config.JENKINS_API))]
+        else:
+            return self.baseurl
 
-    def get_opener(self):
-        if self.formauth:
-            return self.get_login_opener()
-        return mkurlopener(*self.get_auth())
-
-    def get_login_opener(self):
-        hdrs = []
-        if getattr(self, '_cookies', False):
-            mcj = cookielib.MozillaCookieJar()
-            for c in self._cookies:
-                mcj.set_cookie(c)
-            hdrs.append(urllib2.HTTPCookieProcessor(mcj))
-        return mkopener(*hdrs)
-
-    def login(self):
-        formdata = dict(j_username=self.username, j_password=self.password,
-                        remember_me=True, form='/')
-        formdata.update(dict(json=json.dumps(formdata), Submit='log in'))
-        formdata = urllib.urlencode(formdata)
-
-        loginurl = urlparse.urljoin(self.baseurl, 'j_acegi_security_check')
-        mcj = cookielib.MozillaCookieJar()
-        cookiehandler = urllib2.HTTPCookieProcessor(mcj)
-
-        urlopen = mkopener(NoAuto302Handler, cookiehandler)
-        res = urlopen(loginurl, data=formdata)
-        self._cookies = [c for c in mcj]
-        return res.getcode() == 302
-
-    def validate_fingerprint(self, id):
-        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
+    def validate_fingerprint(self, id_):
+        obj_fingerprint = Fingerprint(self.baseurl, id_, jenkins_obj=self)
         obj_fingerprint.validate()
-        log.info("Jenkins says %s is valid" % id)
+        log.info(msg="Jenkins says %s is valid" % id_)
 
-    def reload(self):
-        '''Try and reload the configuration from disk'''
-        try:
-            self.hit_url("%(baseurl)s/reload" % self.__dict__)
-        except urllib2.HTTPError, e:
-            if e.code == 403:
-                raise NotAuthorized("You are not authorized to reload this server")
-            raise
+    # def reload(self):
+    #     '''Try and reload the configuration from disk'''
+    #     self.requester.get_url("%(baseurl)s/reload" % self.__dict__)
 
-    def get_artifact_data(self, id):
-        obj_fingerprint = Fingerprint(self.baseurl, id, jenkins_obj=self)
+    def get_artifact_data(self, id_):
+        obj_fingerprint = Fingerprint(self.baseurl, id_, jenkins_obj=self)
         obj_fingerprint.validate()
         return obj_fingerprint.get_info()
 
@@ -110,29 +85,38 @@ class Jenkins(JenkinsBase):
     def get_jenkins_obj(self):
         return self
 
+    def get_jenkins_obj_from_url(self, url):
+        return Jenkins(url, self.username, self.password, self.requester)
+
+    def get_create_url(self):
+        # This only ever needs to work on the base object
+        return '%s/createItem' % self.baseurl
+
+    def get_nodes_url(self):
+        # This only ever needs to work on the base object
+        return '%s/computer' % self.baseurl
+
+    @property
+    def jobs(self):
+        return Jobs(self)
+
     def get_jobs(self):
         """
         Fetch all the build-names on this Jenkins server.
         """
-        for info in self._data["jobs"]:
-            yield info["name"], Job(info["url"], info["name"], jenkins_obj=self)
+        jobs = self.poll(tree='jobs[name,url]')['jobs']
+        for info in jobs:
+            yield info["name"], \
+                Job(info["url"], info["name"], jenkins_obj=self)
 
     def get_jobs_info(self):
         """
         Get the jobs information
         :return url, name
         """
-        for info in self._data["jobs"]:
+        jobs = self.poll(tree='jobs[name,url]')['jobs']
+        for info in jobs:
             yield info["url"], info["name"]
-
-    def get_jobs_list(self):
-        """
-        return jobs dict,'name:url'
-        """
-        jobs = []
-        for info in self._data["jobs"]:
-            jobs.append(info["name"])
-        return jobs
 
     def get_job(self, jobname):
         """
@@ -140,7 +124,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of the job, str
         :return: Job obj
         """
-        return self[jobname]
+        return self.jobs[jobname]
 
     def has_job(self, jobname):
         """
@@ -148,25 +132,31 @@ class Jenkins(JenkinsBase):
         :param jobname: string
         :return: boolean
         """
-        return jobname in self.get_jobs_list()
+        return jobname in self.jobs
 
-    def copy_job(self, jobname, newjobname):
+    def create_job(self, jobname, config_):
         """
-        Copy a job 
-        :param jobname: name of a exist job, str
-        :param newjobname: name of new job, str
+        Create a job
+
+        alternatively you can create job using Jobs object:
+        self.jobs['job_name'] = config
+        :param jobname: name of new job, str
+        :param config: configuration of new job, xml
         :return: new Job obj
         """
-        qs = urllib.urlencode({'name': newjobname,
-                               'mode': 'copy',
-                               'from': jobname})
-        copy_job_url = urlparse.urljoin(self.baseurl, "createItem?%s" % qs)
-        self.post_data(copy_job_url, '')
-        newjk = Jenkins(self.baseurl, username=self.username,
-                        password=self.password, proxyhost=self.proxyhost,
-                        proxyport=self.proxyport, proxyuser=self.proxyuser,
-                        proxypass=self.proxypass, formauth=self.formauth)
-        return newjk.get_job(newjobname)
+        return self.jobs.create(jobname, config_)
+
+    def copy_job(self, jobname, newjobname):
+        return self.jobs.copy(jobname, newjobname)
+
+    def build_job(self, jobname, params=None):
+        """
+        Invoke a build by job name
+        :param jobname: name of exist job, str
+        :param params: the job params, dict
+        :return: none
+        """
+        self[jobname].invoke(build_params=params or {})
 
     def delete_job(self, jobname):
         """
@@ -174,96 +164,58 @@ class Jenkins(JenkinsBase):
         :param jobname: name of a exist job, str
         :return: new jenkins_obj
         """
-        delete_job_url = urlparse.urljoin(Jenkins(self.baseurl).get_job(jobname).baseurl, "doDelete" )
-        self.post_data(delete_job_url, '')
-        newjk = Jenkins(self.baseurl, username=self.username,
-                        password=self.password, proxyhost=self.proxyhost,
-                        proxyport=self.proxyport, proxyuser=self.proxyuser,
-                        proxypass=self.proxypass, formauth=self.formauth)
-        return newjk
+        del self.jobs[jobname]
 
-    def iteritems(self):
-        return self.get_jobs()
+    def rename_job(self, jobname, newjobname):
+        """
+        Rename a job
+        :param jobname: name of a exist job, str
+        :param newjobname: name of new job, str
+        :return: new Job obj
+        """
+        return self.jobs.rename(jobname, newjobname)
 
     def iterkeys(self):
-        for info in self._data["jobs"]:
+        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
+        for info in jobs:
             yield info["name"]
 
+    def iteritems(self):
+        """
+        :param return: An iterator of pairs.
+            Each pair will be (job name, Job object)
+        """
+        return self.get_jobs()
+
+    def items(self):
+        """
+        :param return: A list of pairs. Each pair will be (job name, Job object)
+        """
+        return list(self.get_jobs())
+
     def keys(self):
-        return [ a for a in self.iterkeys() ]
+        return [a for a in self.iterkeys()]
+
+    # This is a function alias we retain for historical compatibility
+    get_jobs_list = keys
 
     def __str__(self):
         return "Jenkins server at %s" % self.baseurl
 
-    def _get_views(self):
-        if not self._data.has_key("views"):
-            pass
-        else:
-            for viewdict in self._data["views"]:
-                yield viewdict["name"], viewdict["url"]
-
-    def get_view_dict(self):
-        return dict(self._get_views())
-
-    def get_view_url(self, str_view_name):
-        try:
-            view_dict = self.get_view_dict()
-            return view_dict[ str_view_name ]
-        except KeyError:
-            #noinspection PyUnboundLocalVariable
-            all_views = ", ".join(view_dict.keys())
-            raise KeyError("View %s is not known - available: %s" % (str_view_name, all_views))
-
-    def get_view(self, str_view_name):
-        view_url = self.get_view_url(str_view_name)
-        view_api_url = self.python_api_url(view_url)
-        return View(view_url , str_view_name, jenkins_obj=self)
+    @property
+    def views(self):
+        return Views(self)
 
     def get_view_by_url(self, str_view_url):
-        #for nested view
+        # for nested view
         str_view_name = str_view_url.split('/view/')[-1].replace('/', '')
-        return View(str_view_url , str_view_name, jenkins_obj=self)
+        return View(str_view_url, str_view_name, jenkins_obj=self)
 
     def delete_view_by_url(self, str_url):
-        url = "%s/doDelete" %str_url
-        self.post_data(url, '')
-        newjk = Jenkins(self.baseurl, username=self.username,
-                        password=self.password, proxyhost=self.proxyhost,
-                        proxyport=self.proxyport, proxyuser=self.proxyuser,
-                        proxypass=self.proxypass, formauth=self.formauth)
-        return newjk
-
-    def create_view(self, str_view_name, people=None):
-        """
-        Create a view, viewExistsCheck
-        :param str_view_name: name of new view, str
-        :return: new view obj
-        """
-        url = urlparse.urljoin(self.baseurl, "user/%s/my-views/" % people) if people else self.baseurl
-        qs = urllib.urlencode({'value': str_view_name})
-        viewExistsCheck_url = urlparse.urljoin(url, "viewExistsCheck?%s" % qs)
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            r = fn_urlopen(viewExistsCheck_url).read()
-        except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % viewExistsCheck_url)
-            log.exception(e)
-            raise
-        """<div/>"""
-        if len(r) > 7: 
-            return 'A view already exists with the name "%s"' % (str_view_name)
-        else:
-            data = {"mode":"hudson.model.ListView", "Submit": "OK"}
-            data['name']=str_view_name
-            data['json'] = data.copy()
-            params = urllib.urlencode(data)
-            try:
-                createView_url = urlparse.urljoin(url, "createView")
-                result = self.post_data(createView_url, params)
-            except urllib2.HTTPError, e:
-                log.debug("Error post_data %s" % createView_url)
-                log.exception(e)
-            return urlparse.urljoin(url, "view/%s/" % str_view_name)
+        url = "%s/doDelete" % str_url
+        self.requester.post_and_confirm_status(url, data='')
+        self.poll()
+        return self
 
     def __getitem__(self, jobname):
         """
@@ -271,28 +223,49 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        for url, name in self.get_jobs_info():
-            if name == jobname:
-                return Job(url, name, jenkins_obj=self)
+        # We have to ask for 'color' here because folder resolution
+        # relies on it
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
+        for info in jobs:
+            if info["name"] == jobname:
+                return Job(info["url"], info["name"], jenkins_obj=self)
         raise UnknownJob(jobname)
 
-    def get_node_dict(self):
-        """Get registered slave nodes on this instance"""
-        url = self.python_api_url(self.get_node_url())
-        node_dict = dict(self.get_data(url))
-        return dict(
-            (node['displayName'], self.python_api_url(self.get_node_url(node['displayName'])))
-                for node in node_dict['computer'])
+    def __len__(self):
+        jobs = self.poll(tree='jobs[name]')['jobs']
+        return len(jobs)
+
+    def __contains__(self, jobname):
+        """
+        Does a job by the name specified exist
+        :param jobname: string
+        :return: boolean
+        """
+        return jobname in self.jobs
+
+    def __delitem__(self, job_name):
+        del self.jobs[job_name]
 
     def get_node(self, nodename):
         """Get a node object for a specific node"""
-        node_url = self.python_api_url(self.get_node_url(nodename))
-        return Node(node_url, nodename, jenkins_obj=self)
+        return self.get_nodes()[nodename]
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
-        url = "%(baseurl)s/computer/%(nodename)s" % {'baseurl': self.baseurl, 'nodename': urllib.quote(nodename)}
+        url = urlparse.urljoin(self.base_server_url(), 'computer/%s' % urlquote(nodename))
         return url
+
+    def get_queue_url(self):
+        url = "%s/%s" % (self.base_server_url(), 'queue')
+        return url
+
+    def get_queue(self):
+        queue_url = self.get_queue_url()
+        return Queue(queue_url, self)
+
+    def get_nodes(self):
+        url = self.get_nodes_url()
+        return Nodes(url, self)
 
     def has_node(self, nodename):
         """
@@ -300,7 +273,8 @@ class Jenkins(JenkinsBase):
         :param nodename: string, hostname
         :return: boolean
         """
-        return nodename in self.get_node_dict()
+        self.poll()
+        return nodename in self.get_nodes()
 
     def delete_node(self, nodename):
         """
@@ -313,14 +287,11 @@ class Jenkins(JenkinsBase):
         assert self.has_node(nodename), "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
-        fn_urlopen = self.get_jenkins_obj().get_opener()
         try:
-            fn_urlopen(url).read()
-        except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % url)
-            log.exception(e)
-            raise
-        return not self.has_node(nodename)
+            self.requester.get_and_confirm_status(url)
+        except PostRequired:
+            # Latest Jenkins requires POST here. GET kept for compatibility
+            self.requester.post_and_confirm_status(url, data={})
 
     def create_node(self, name, num_executors=2, node_description=None,
                     remote_fs='/var/lib/jenkins', labels=None, exclusive=False):
@@ -335,38 +306,57 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        NODE_TYPE   = 'jenkins.slaves.DumbSlave$DescriptorImpl'
+        NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
         MODE = 'NORMAL'
         if self.has_node(name):
             return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
         if exclusive:
             MODE = 'EXCLUSIVE'
         params = {
-            'name' : name,
-            'type' : NODE_TYPE,
-            'json' : json.dumps ({
-                'name'            : name,
-                'nodeDescription' : node_description,
-                'numExecutors'    : num_executors,
-                'remoteFS'        : remote_fs,
-                'labelString'     : labels,
-                'mode'            : MODE,
-                'type'            : NODE_TYPE,
-                'retentionStrategy' : { 'stapler-class'  : 'jenkins.slaves.RetentionStrategy$Always' },
-                'nodeProperties'    : { 'stapler-class-bag' : 'true' },
-                'launcher'          : { 'stapler-class' : 'jenkins.slaves.JNLPLauncher' }
+            'name': name,
+            'type': NODE_TYPE,
+            'json': json.dumps({
+                'name': name,
+                'nodeDescription': node_description,
+                'numExecutors': num_executors,
+                'remoteFS': remote_fs,
+                'labelString': labels,
+                'mode': MODE,
+                'type': NODE_TYPE,
+                'retentionStrategy': {'stapler-class': 'hudson.slaves.RetentionStrategy$Always'},
+                'nodeProperties': {'stapler-class-bag': 'true'},
+                'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
             })
         }
-        url = "%(nodeurl)s/doCreateItem?%(params)s" % {
-            'nodeurl': self.get_node_url(),
-            'params': urllib.urlencode(params)
-        }
-        print url
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            fn_urlopen(url).read()
-        except urllib2.HTTPError, e:
-            log.debug("Error reading %s" % url)
-            log.exception(e)
-            raise
+        url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
+        self.requester.get_and_confirm_status(url)
+
         return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
+
+    def get_plugins_url(self, depth):
+        # This only ever needs to work on the base object
+        return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
+
+    def get_plugins(self, depth=1):
+        url = self.get_plugins_url(depth=depth)
+        return Plugins(url, self)
+
+    def has_plugin(self, plugin_name):
+        return plugin_name in self.get_plugins()
+
+    def get_executors(self, nodename):
+        url = '%s/computer/%s' % (self.baseurl, nodename)
+        return Executors(url, nodename, self)
+
+    def get_master_data(self):
+        url = '%s/computer/api/python' % self.baseurl
+        return self.get_data(url)
+
+    @property
+    def version(self):
+        """
+        Return version number of Jenkins
+        """
+        response = self.requester.get_and_confirm_status(self.baseurl)
+        version_key = 'X-Jenkins'
+        return response.headers.get(version_key, '0.0')
