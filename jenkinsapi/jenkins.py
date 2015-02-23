@@ -104,7 +104,7 @@ class Jenkins(JenkinsBase):
         """
         Fetch all the build-names on this Jenkins server.
         """
-        jobs = self.poll(tree='jobs[name,url]')['jobs']
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
         for info in jobs:
             yield info["name"], \
                 Job(info["url"], info["name"], jenkins_obj=self)
@@ -114,7 +114,7 @@ class Jenkins(JenkinsBase):
         Get the jobs information
         :return url, name
         """
-        jobs = self.poll(tree='jobs[name,url]')['jobs']
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
         for info in jobs:
             yield info["url"], info["name"]
 
@@ -232,7 +232,7 @@ class Jenkins(JenkinsBase):
         raise UnknownJob(jobname)
 
     def __len__(self):
-        jobs = self.poll(tree='jobs[name]')['jobs']
+        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
         return len(jobs)
 
     def __contains__(self, jobname):
