@@ -45,6 +45,7 @@ Project Authors
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
+import sys
 import pkg_resources
 from jenkinsapi import (
     # Modules
@@ -63,7 +64,6 @@ __all__ = [
 ]
 __docformat__ = "epytext"
 
-import sys
 # In case of jenkinsapi is not installed in 'develop' mode
 if not sys.argv[0].endswith('nosetests'):
     __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
