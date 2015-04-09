@@ -614,13 +614,20 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 'name': 'FOO_BAR'
             }
         """
-        actions = (x for x in self._data['actions'] if x is not None)
-        for action in actions:
-            try:
-                for param in action['parameterDefinitions']:
-                    yield param
-            except KeyError:
-                continue
+        places = ['actions', 'property']
+        found_definitions = False
+
+        for place in places:
+            if found_definitions:
+                return
+            actions = (x for x in self._data[place] if x is not None)
+            for action in actions:
+                try:
+                    for param in action['parameterDefinitions']:
+                        found_definitions = True
+                        yield param
+                except KeyError:
+                    continue
 
     def get_params_list(self):
         """
