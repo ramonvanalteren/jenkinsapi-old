@@ -134,9 +134,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
             self._element_tree = ET.fromstring(self._config)
         return self._element_tree
 
-    def get_build_triggerurl(self, files):
-        if files or (not self.has_params()):
-            # If job has file parameters - it must be triggered
+    def get_build_triggerurl(self, files, build_params=None):
+        if (files and build_params) or (not self.has_params()):
+            # If job has file parameters and non-file parameters - it must be triggered
             # using "/build", not by "/buildWithParameters"
             # "/buildWithParameters" will ignore non-file parameters
             return "%s/build" % self.baseurl
@@ -189,7 +189,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
 
-        url = self.get_build_triggerurl(files)
+        url = self.get_build_triggerurl(files, build_params)
         if cause:
             build_params['cause'] = cause
 

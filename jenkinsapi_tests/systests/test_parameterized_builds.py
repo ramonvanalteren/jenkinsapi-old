@@ -27,19 +27,18 @@ class TestParameterizedBuilds(BaseSystemTest):
         job_name = 'create1_%s' % random_string()
         job = self.jenkins.create_job(job_name, JOB_WITH_FILE)
 
-        with self.assertRaises(ValueError) as ve:
-            item = job.invoke(block=True, files={'file.txt': param_file})
+        job.invoke(block=True, files={'file.txt': param_file})
 
-        # Following test is disabled because file parameters do not work
-        #
-        # build = job.get_last_build()
-        # while build.is_running():
-        #     time.sleep(0.25)
+        # Following test is enabled because standalone file parameters work
 
-        # artifacts = build.get_artifact_dict()
-        # self.assertIsInstance(artifacts, dict)
-        # art_file = artifacts['file.txt']
-        # self.assertTrue(art_file.get_data().strip(), file_data)
+        build = job.get_last_build()
+        while build.is_running():
+            time.sleep(0.25)
+
+        artifacts = build.get_artifact_dict()
+        self.assertIsInstance(artifacts, dict)
+        art_file = artifacts['file.txt']
+        self.assertTrue(art_file.get_data().strip(), file_data)
 
     def test_invoke_job_parameterized(self):
         param_B = random_string()
