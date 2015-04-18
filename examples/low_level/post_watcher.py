@@ -11,22 +11,15 @@ Serving on localhost:8000
 You can use this to test GET and POST methods.
 
 """
-
-import SimpleHTTPServer
-import SocketServer
+from six.moves import SimpleHTTPServer, socketserver
 import logging
 import cgi
 
-import sys
-
-
-
-PORT = 8080
+PORT = 8081  # <-- change this to be the actual port you want to run on
 I = "localhost"
 
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-
     def do_GET(self):
         logging.warning("======= GET STARTED =======")
         logging.warning(self.headers)
@@ -38,8 +31,8 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
+            environ={'REQUEST_METHOD': 'POST',
+                     'CONTENT_TYPE': self.headers['Content-Type'],
                      })
         logging.warning("======= POST VALUES =======")
         for item in form.list:
@@ -47,9 +40,10 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         logging.warning("\n")
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
+
 Handler = ServerHandler
 
-httpd = SocketServer.TCPServer(("", PORT), Handler)
+httpd = socketserver.TCPServer(("", PORT), Handler)
 
-print "Serving at: http://%(interface)s:%(port)s" % dict(interface=I or "localhost", port=PORT)
+print("Serving at: http://%(interface)s:%(port)s" % dict(interface=I or "localhost", port=PORT))
 httpd.serve_forever()

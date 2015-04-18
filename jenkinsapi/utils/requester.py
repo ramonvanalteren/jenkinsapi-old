@@ -105,8 +105,8 @@ class Requester(object):
     def post_and_confirm_status(self, url, params=None, data=None, files=None, headers=None, valid=None, allow_redirects=True):
         valid = valid or self.VALID_STATUS_CODES
         assert isinstance(data, (
-            str, dict)), \
-            "Unexpected type of parameter 'data': %s. Expected (str, dict)" % type(data)
+            str, dict, bytes)), \
+            "Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" % type(data)
 
         if not headers and not files:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}

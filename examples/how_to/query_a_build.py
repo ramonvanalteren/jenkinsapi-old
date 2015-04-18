@@ -1,6 +1,4 @@
 from __future__ import print_function
-
-from jenkinsapi.view import View
 from jenkinsapi.jenkins import Jenkins
 
 J = Jenkins('http://localhost:8080')
@@ -32,4 +30,4 @@ EMPTY_JOB_CONFIG = '''\
 </project>
 '''
 
-new_job = J.create_job(name='foo_job', config=EMPTY_JOB_CONFIG)
+new_job = J.create_job(jobname='foo_job', xml=EMPTY_JOB_CONFIG)

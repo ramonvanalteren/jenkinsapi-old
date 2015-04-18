@@ -18,7 +18,7 @@ api = Jenkins(jenkins_url)
 
 jobName = 'foo_job2'
 xml = resource_string('examples', 'addjob.xml')
-j = api.create_job(jobname=jobName, config=xml)
+j = api.create_job(jobname=jobName, xml=xml)
 
 # Create ListView in main view
 logger.info('Attempting to create new nested view')

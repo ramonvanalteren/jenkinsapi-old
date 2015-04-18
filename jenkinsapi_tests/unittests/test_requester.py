@@ -131,7 +131,7 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': %s. Expected (str, dict)" % type(None))
+        self.assertEqual(str(ae.exception),"Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" % type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_some_xml(self, _post):
@@ -157,7 +157,7 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': %s. Expected (str, dict)" % type(None))
+        self.assertEqual(str(ae.exception),"Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" % type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_some_data(self, _post):

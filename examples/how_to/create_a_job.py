@@ -11,7 +11,7 @@ xml = resource_string('examples', 'addjob.xml')
 
 print(xml)
 
-j = J.create_job(jobname=jobName, config=xml)
+j = J.create_job(jobname=jobName, xml=xml)
 
 j2 = J[jobName]
 print(j)
