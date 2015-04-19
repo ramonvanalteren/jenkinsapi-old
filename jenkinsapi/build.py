@@ -10,7 +10,6 @@ Build objects can be associated with Results and Artifacts.g
 
 import time
 import pytz
-import urllib
 import logging
 import warnings
 import datetime
@@ -23,6 +22,12 @@ from jenkinsapi.constants import STATUS_SUCCESS
 from jenkinsapi.custom_exceptions import NoResults
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 
+
+try:
+    from urllib import quote
+except ImportError:
+    # Python3
+    from urllib.parse import quote
 
 log = logging.getLogger(__name__)
 
@@ -119,7 +124,7 @@ class Build(JenkinsBase):
     def get_artifacts(self):
         data = self.poll(tree='artifacts[relativePath,fileName]')
         for afinfo in data["artifacts"]:
-            url = "%s/artifact/%s" % (self.baseurl, urllib.quote(afinfo["relativePath"]))
+            url = "%s/artifact/%s" % (self.baseurl, quote(afinfo["relativePath"]))
             af = Artifact(afinfo["fileName"], url, self)
             yield af
 
