@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 
 
 class Node(JenkinsBase):
+
     """
     Class to hold information on nodes that are attached as slaves to the master jenkins instance
     """
@@ -92,14 +93,19 @@ class Node(JenkinsBase):
         : param message: optional string can be used to explain why you are taking this node offline
         """
         initial_state = self.is_temporarily_offline()
-        url = self.baseurl + "/toggleOffline?offlineMessage=" + urlquote(message)
+        url = self.baseurl + \
+            "/toggleOffline?offlineMessage=" + urlquote(message)
         try:
             html_result = self.jenkins.requester.get_and_confirm_status(url)
         except PostRequired:
-            html_result = self.jenkins.requester.post_and_confirm_status(url, data={})
+            html_result = self.jenkins.requester.post_and_confirm_status(
+                url,
+                data={})
 
         self.poll()
         log.debug(html_result)
         state = self.is_temporarily_offline()
         if initial_state == state:
-            raise AssertionError("The node state has not changed: temporarilyOffline = %s" % state)
+            raise AssertionError(
+                "The node state has not changed: temporarilyOffline = %s" %
+                state)

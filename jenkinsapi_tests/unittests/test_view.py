@@ -111,7 +111,9 @@ class TestView(unittest.TestCase):
         self.assertTrue(self.v.deleted)
 
     def test_get_job_url(self):
-        self.assertEquals(self.v.get_job_url('foo'), 'http://halob:8080/job/foo/')
+        self.assertEquals(
+            self.v.get_job_url('foo'),
+            'http://halob:8080/job/foo/')
 
     def test_wrong_get_job_url(self):
         with self.assertRaises(NotFound):
@@ -132,6 +134,7 @@ class TestView(unittest.TestCase):
         self.assertTrue(result)
 
     class SelfPatchJenkins(object):
+
         def has_job(self, job_name):
             return False
 

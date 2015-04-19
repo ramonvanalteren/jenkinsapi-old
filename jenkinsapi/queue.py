@@ -110,7 +110,7 @@ class QueueItem(JenkinsBase):
         """returns parameters of queue item"""
         actions = self._data.get('actions', [])
         for action in actions:
-            if type(action) is dict and 'parameters' in action:
+            if isinstance(action, dict) and 'parameters' in action:
                 parameters = action['parameters']
                 return dict([(x['name'], x.get('value', None))
                              for x in parameters])

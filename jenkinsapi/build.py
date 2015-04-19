@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 
 
 class Build(JenkinsBase):
+
     """
     Represents a jenkins build, executed in context of a job.
     """
@@ -43,7 +44,7 @@ class Build(JenkinsBase):
         control' of
         https://wiki.jenkins-ci.org/display/JENKINS/Remote+access+API
         """
-        assert type(buildno) == int
+        assert isinstance(buildno, int)
         self.buildno = buildno
         self.job = job
         self.depth = depth
@@ -77,7 +78,8 @@ class Build(JenkinsBase):
         return getattr(self, '_get_%s_rev_branch' % vcs, lambda: None)()
 
     def _get_svn_rev(self):
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_svn_rev).")
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (get_svn_rev).")
         maxRevision = 0
         for repoPathSet in self._data["changeSet"]["revisions"]:
             maxRevision = max(repoPathSet["revision"], maxRevision)
@@ -95,8 +97,10 @@ class Build(JenkinsBase):
         return None
 
     def _get_hg_rev(self):
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (_get_hg_rev).")
-        return [x['mercurialNodeName'] for x in self._data['actions'] if 'mercurialNodeName' in x][0]
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (_get_hg_rev).")
+        return [x['mercurialNodeName']
+                for x in self._data['actions'] if 'mercurialNodeName' in x][0]
 
     def _get_svn_rev_branch(self):
         raise NotImplementedError('_get_svn_rev_branch is not yet implemented')
@@ -183,7 +187,8 @@ class Build(JenkinsBase):
         Get the master job object if it exist, None otherwise
         :return: Job or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_job).")
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (get_master_job).")
         if self.get_master_job_name():
             return self.get_jenkins_obj().get_job(self.get_master_job_name())
         else:
@@ -194,7 +199,8 @@ class Build(JenkinsBase):
         Get the master build number if it exist, None otherwise
         :return: int or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_build_number).")
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (get_master_build_number).")
         try:
             return int(self.get_actions()['parameters'][1]['value'])
         except KeyError:
@@ -205,7 +211,8 @@ class Build(JenkinsBase):
         Get the master build if it exist, None otherwise
         :return Build or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_master_build).")
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (get_master_build).")
         master_job = self.get_master_job()
         if master_job:
             return master_job.get_build(self.get_master_build_number())
@@ -217,11 +224,13 @@ class Build(JenkinsBase):
         Get the downstream jobs for this build
         :return List of jobs or None
         """
-        warnings.warn("This untested function may soon be removed from Jenkinsapi (get_downstream_jobs).")
+        warnings.warn(
+            "This untested function may soon be removed from Jenkinsapi (get_downstream_jobs).")
         downstream_jobs = []
         try:
             for job_name in self.get_downstream_job_names():
-                downstream_jobs.append(self.get_jenkins_obj().get_job(job_name))
+                downstream_jobs.append(
+                    self.get_jenkins_obj().get_job(job_name))
             return downstream_jobs
         except (IndexError, KeyError):
             return []
@@ -259,7 +268,8 @@ class Build(JenkinsBase):
                         for job_range in job_usage['ranges']['ranges']:
                             for build_id in range(job_range['start'],
                                                   job_range['end']):
-                                downstream_builds.append(job.get_build(build_id))
+                                downstream_builds.append(
+                                    job.get_build(build_id))
             return downstream_builds
         except (IndexError, KeyError):
             return []
@@ -292,14 +302,17 @@ class Build(JenkinsBase):
         Return a bool, true if the build was good.
         If the build is still running, return False.
         """
-        return (not self.is_running()) and self._data["result"] == STATUS_SUCCESS
+        return (not self.is_running()) and self._data[
+            "result"] == STATUS_SUCCESS
 
     def block_until_complete(self, delay=15):
         assert isinstance(delay, int)
         count = 0
         while self.is_running():
             total_wait = delay * count
-            log.info(msg="Waited %is for %s #%s to complete" % (total_wait, self.job.name, self.name))
+            log.info(
+                msg="Waited %is for %s #%s to complete" %
+                (total_wait, self.job.name, self.name))
             sleep(delay)
             count += 1
 
@@ -319,10 +332,14 @@ class Build(JenkinsBase):
         """
         result_url = self.get_result_url()
         if self.STR_TOTALCOUNT not in self.get_actions():
-            raise NoResults("%s does not have any published results" % str(self))
+            raise NoResults(
+                "%s does not have any published results" %
+                str(self))
         buildstatus = self.get_status()
         if not self.get_actions()[self.STR_TOTALCOUNT]:
-            raise NoResults(self.STR_TPL_NOTESTS_ERR % (str(self), buildstatus))
+            raise NoResults(
+                self.STR_TPL_NOTESTS_ERR %
+                (str(self), buildstatus))
         obj_results = ResultSet(result_url, build=self)
         return obj_results
 
@@ -360,7 +377,12 @@ class Build(JenkinsBase):
         Returns build timestamp in UTC
         '''
         # Java timestamps are given in miliseconds since the epoch start!
-        naive_timestamp = datetime.datetime(*time.gmtime(self._data['timestamp'] / 1000.0)[:6])
+        naive_timestamp = datetime.datetime(
+            *
+            time.gmtime(
+                self._data['timestamp'] /
+                1000.0)[
+                :6])
         return pytz.utc.localize(naive_timestamp)
 
     def get_console(self):

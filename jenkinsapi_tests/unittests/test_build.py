@@ -50,8 +50,7 @@ class test_build(unittest.TestCase):
                   'url': 'http//localhost:8080/job/foo/SHARD_NUM=1/1/'},
                  {'number': 2,
                   'url': 'http//localhost:8080/job/foo/SHARD_NUM=1/2/'}]
-        }
-
+    }
 
     @mock.patch.object(Build, '_poll')
     def setUp(self, _poll):
@@ -108,9 +107,9 @@ class test_build(unittest.TestCase):
         for build in self.b.get_matrix_runs():
             continue
         build_init_mock.assert_called_once_with('http//localhost:8080/job/foo/SHARD_NUM=1/1/',
-            1, self.j)
+                                                1, self.j)
 
-    ## TEST DISABLED - DOES NOT WORK
+    # TEST DISABLED - DOES NOT WORK
     # def test_downstream(self):
     #     expected = ['SingleJob','MultipleJobs']
     #     self.assertEquals(self.b.get_downstream_job_names(), expected)

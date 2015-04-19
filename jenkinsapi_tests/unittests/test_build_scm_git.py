@@ -23,8 +23,10 @@ class test_build(unittest.TestCase):
                         'revision': {
                             'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
                             'branch': [
-                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2', 'name': 'origin/HEAD'},
-                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2', 'name': 'origin/master'}
+                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
+                                 'name': 'origin/HEAD'},
+                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
+                                 'name': 'origin/master'}
                             ]
                         }
                     },
@@ -34,8 +36,10 @@ class test_build(unittest.TestCase):
                         'revision': {
                             'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
                             'branch': [
-                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2', 'name': 'origin/HEAD'},
-                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2', 'name': 'origin/master'}
+                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
+                                 'name': 'origin/HEAD'},
+                                {'SHA1': 'd2a5d435fa2df3bff572bd06e43c86544749c5d2',
+                                 'name': 'origin/master'}
                             ]
                         }
                     },
@@ -45,7 +49,8 @@ class test_build(unittest.TestCase):
                         'revision': {
                             'SHA1': 'c9d1c96bc926ff63a5209c51b3ed537e62ea50e6',
                             'branch': [
-                                {'SHA1': 'c9d1c96bc926ff63a5209c51b3ed537e62ea50e6', 'name': 'origin/python_3_compatibility'}
+                                {'SHA1': 'c9d1c96bc926ff63a5209c51b3ed537e62ea50e6',
+                                 'name': 'origin/python_3_compatibility'}
                             ]
                         }
                     },
@@ -55,7 +60,8 @@ class test_build(unittest.TestCase):
                         'revision': {
                             'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702',
                             'branch': [
-                                {'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702', 'name': 'origin/unstable'}
+                                {'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702',
+                                 'name': 'origin/unstable'}
                             ]
                         }
                     }
@@ -63,7 +69,8 @@ class test_build(unittest.TestCase):
                 'lastBuiltRevision': {
                     'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702',
                     'branch': [
-                        {'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702', 'name': 'origin/unstable'}
+                        {'SHA1': '7def9ed6e92580f37d00e4980c36c4d36e68f702',
+                         'name': 'origin/unstable'}
                     ]
                 },
                 'remoteUrls': ['https://github.com/salimfadhley/jenkinsapi.git'],

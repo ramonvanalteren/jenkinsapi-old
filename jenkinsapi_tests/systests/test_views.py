@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class TestViews(BaseSystemTest):
+
     def test_make_views(self):
         self._create_job()
         view_name = random_string()

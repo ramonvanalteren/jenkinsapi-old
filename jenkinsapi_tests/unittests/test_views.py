@@ -16,6 +16,7 @@ class TestDataMissing(Exception):
 
 
 class TestViews(unittest.TestCase):
+
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(JenkinsBase, '_poll')
     def test_create_view(self, _poll, _base_poll):
@@ -25,7 +26,8 @@ class TestViews(unittest.TestCase):
         _poll.return_value = {
             'views': [
                 {'name': 'All', 'url': 'http://localhost:8080/views/All'},
-                {'name': 'NewView', 'url': 'http://localhost:8080/views/NewView'},
+                {'name': 'NewView',
+                 'url': 'http://localhost:8080/views/NewView'},
             ]
         }
         _base_poll.return_value = _poll.return_value
@@ -59,7 +61,10 @@ class TestViews(unittest.TestCase):
 
         with mock.patch.object(JenkinsBase, 'get_data', mockGetData):
 
-            J = Jenkins('http://localhost:8080', username='foouser', password='foopassword')
+            J = Jenkins(
+                'http://localhost:8080',
+                username='foouser',
+                password='foopassword')
 
             new_view = J.views.create('NewView')
 

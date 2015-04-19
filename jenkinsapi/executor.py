@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class Executor(JenkinsBase):
+
     """
     Class to hold information on nodes that are attached as slaves to the
     master jenkins instance

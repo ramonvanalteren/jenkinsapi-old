@@ -95,7 +95,6 @@ class TestParameterizedBuilds(BaseSystemTest):
             params = {'B': random_string()}
             qq0 = job.invoke(build_params=params)
 
-
         qq1 = job.invoke(build_params=params)
         self.assertEqual(qq0, qq1)
 

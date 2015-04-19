@@ -168,7 +168,6 @@ class TestQueue(unittest.TestCase):
         self.assertEquals(len(item40), 1)
         self.assertIsInstance(item40[0], QueueItem)
 
-
     @mock.patch.object(JenkinsBase, 'get_data', mockGetData)
     def test_qi_get_parameters(self):
         qi = self.q[42]

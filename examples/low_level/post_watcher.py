@@ -20,6 +20,7 @@ I = "localhost"
 
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+
     def do_GET(self):
         logging.warning("======= GET STARTED =======")
         logging.warning(self.headers)
@@ -45,5 +46,9 @@ Handler = ServerHandler
 
 httpd = socketserver.TCPServer(("", PORT), Handler)
 
-print("Serving at: http://%(interface)s:%(port)s" % dict(interface=I or "localhost", port=PORT))
+print(
+    "Serving at: http://%(interface)s:%(port)s" %
+    dict(
+        interface=I or "localhost",
+        port=PORT))
 httpd.serve_forever()

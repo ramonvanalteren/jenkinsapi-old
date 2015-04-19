@@ -35,9 +35,15 @@ class JobTests(BaseSystemTest):
         j.invoke(block=True)  # run this at least once
 
         j.disable()
-        self.assertEquals(j.is_enabled(), False, 'A disabled job is reporting incorrectly')
+        self.assertEquals(
+            j.is_enabled(),
+            False,
+            'A disabled job is reporting incorrectly')
         j.enable()
-        self.assertEquals(j.is_enabled(), True, 'An enabled job is reporting incorrectly')
+        self.assertEquals(
+            j.is_enabled(),
+            True,
+            'An enabled job is reporting incorrectly')
 
     def test_get_job_and_update_config(self):
         job_name = 'config_%s' % random_string()
@@ -98,18 +104,18 @@ class JobTests(BaseSystemTest):
     def test_get_master_data(self):
         master_data = self.jenkins.get_master_data()
         self.assertEquals(master_data['totalExecutors'], 2)
-        
+
     def test_get_missing_plugin(self):
         plugins = self.jenkins.get_plugins()
         with self.assertRaises(KeyError):
-            plugins["lsdajdaslkjdlkasj"] # this plugin surely does not exist!
-            
+            plugins["lsdajdaslkjdlkasj"]  # this plugin surely does not exist!
+
     def test_get_single_plugin(self):
         plugins = self.jenkins.get_plugins()
         plugin_name, plugin = next(plugins.iteritems())
         self.assertIsInstance(plugin_name, str)
         self.assertIsInstance(plugin, Plugin)
-        
+
     def test_get_single_plugin_depth_2(self):
         plugins = self.jenkins.get_plugins(depth=2)
         _, plugin = next(plugins.iteritems())

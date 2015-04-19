@@ -44,9 +44,14 @@ class TestNodes(BaseSystemTest):
             if execs.is_idle() is False:
                 all_idle = False
                 self.assertNotEqual(execs.get_progress(), -1)
-                self.assertEqual(execs.get_current_executable(), qq.get_build_number())
+                self.assertEqual(
+                    execs.get_current_executable(),
+                    qq.get_build_number())
                 self.assertEqual(execs.likely_stuck(), False)
-        self.assertEqual(all_idle, True, "Executor should have been triggered.")
+        self.assertEqual(
+            all_idle,
+            True,
+            "Executor should have been triggered.")
 
     def test_idle_executors(self):
         node_name = random_string()

@@ -25,7 +25,11 @@ setup(
     version=REVISION,
     author=PROJECT_AUTHORS,
     author_email=PROJECT_EMAILS,
-    packages=['jenkinsapi', 'jenkinsapi.utils', 'jenkinsapi.command_line', 'jenkinsapi_tests'],
+    packages=[
+        'jenkinsapi',
+        'jenkinsapi.utils',
+        'jenkinsapi.command_line',
+        'jenkinsapi_tests'],
     zip_safe=True,
     include_package_data=False,
     install_requires=['requests>=2.3.0', 'pytz>=2014.4'],

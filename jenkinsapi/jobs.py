@@ -10,12 +10,14 @@ log = logging.getLogger(__name__)
 
 
 class Jobs(object):
+
     """
     This class provides a container-like API which gives
     access to all jobs defined on the Jenkins server. It behaves
     like a dict in which keys are Job-names and values are actual
     jenkinsapi.Job objects.
     """
+
     def __init__(self, jenkins):
         self.jenkins = jenkins
         self.jenkins.poll()
@@ -104,7 +106,8 @@ class Jobs(object):
 
         params = {'name': job_name}
         try:
-            if isinstance(config, unicode):  # pylint: disable=undefined-variable
+            if isinstance(
+                    config, unicode):  # pylint: disable=undefined-variable
                 config = str(config)
         except NameError:
             # Python3 already a str

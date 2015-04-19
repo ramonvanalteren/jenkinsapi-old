@@ -37,4 +37,3 @@ print(et.tostring(root))
 J[jobname].update_config(et.tostring(root))
 
 # J.delete_job(jobname)
-

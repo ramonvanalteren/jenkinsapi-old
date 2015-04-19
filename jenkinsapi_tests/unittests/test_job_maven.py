@@ -82,7 +82,7 @@ class TestJob(unittest.TestCase):
             return TestJob.URL_DATA[url]
         except KeyError:
             raise Exception("Missing data for %s" % url)
-        
+
 #     def fake_add_missing_builds(self, data):
 #         return data
 
@@ -98,11 +98,10 @@ class TestJob(unittest.TestCase):
         ret = self.j.get_last_good_buildnumber()
         self.assertTrue(ret, 3)
 
-    
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
     def test_has_params(self):
         self.assertFalse(self.j.has_params())
-        
-    
+
+
 if __name__ == '__main__':
     unittest.main()

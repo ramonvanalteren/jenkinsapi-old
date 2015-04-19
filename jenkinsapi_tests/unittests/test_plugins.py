@@ -166,8 +166,8 @@ class TestPlugins(unittest.TestCase):
         self.assertEquals('subversion', plugin.shortName)
         self.assertEquals('Jenkins Subversion Plug-in', plugin.longName)
         self.assertEquals('http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
-                           plugin.url)
-        
+                          plugin.url)
+
     def test_plugin_repr(self):
         p = Plugin(
             {

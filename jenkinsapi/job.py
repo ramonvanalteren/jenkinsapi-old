@@ -175,7 +175,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         json_structure['redirectTo'] = "."
         return json.dumps(json_structure)
 
-    def invoke(self, securitytoken=None, block=False, build_params=None, cause=None, files=None, delay=5):
+    def invoke(self, securitytoken=None, block=False,
+               build_params=None, cause=None, files=None, delay=5):
         assert isinstance(block, bool)
         if build_params and (not self.has_params()):
             raise BadParams("This job does not support parameters")
@@ -195,7 +196,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         # Build require params as form fields
         # and as Json.
-        data = {'json': self.mk_json_from_build_parameters(build_params, files)}
+        data = {
+            'json': self.mk_json_from_build_parameters(
+                build_params,
+                files)}
         data.update(build_params)
 
         response = self.jenkins.requester.post_and_confirm_status(
@@ -283,7 +287,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         builds = self._add_missing_builds(builds)
         builds = builds['builds']
         last_build = self.poll(tree='lastBuild[number,url]')['lastBuild']
-        if builds and last_build and builds[0]['number'] != last_build['number']:
+        if builds and last_build and builds[0][
+                'number'] != last_build['number']:
             builds = [last_build] + builds
         # FIXME SO how is this supposed to work if build is false-y?
         # I don't think that builds *can* be false here, so I don't
@@ -372,7 +377,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             raise NotFound("Couldn't find a build with that revision")
 
     def get_build(self, buildnumber):
-        assert type(buildnumber) == int
+        assert isinstance(buildnumber, int)
         url = self.get_build_dict()[buildnumber]
         return Build(url, buildnumber, job=self)
 
@@ -382,7 +387,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         tons of tests, this method is faster than get_build by returning less
         data.
         """
-        assert type(buildnumber) == int
+        assert isinstance(buildnumber, int)
         url = self.get_build_dict()[buildnumber]
         return Build(url, buildnumber, job=self, depth=0)
 
@@ -458,7 +463,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         element_tree = self._get_config_element_tree()
         scm = self.get_scm_type()
-        return [scm_branch.text for scm_branch in self._scmbranchmap[scm](element_tree)]
+        return [
+            scm_branch.text for scm_branch in self._scmbranchmap[scm](element_tree)]
 
     def modify_scm_branch(self, new_branch, old_branch=None):
         """
@@ -513,7 +519,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         url = self.get_config_xml_url()
         try:
-            if isinstance(config, unicode):  # pylint: disable=undefined-variable
+            if isinstance(
+                    config, unicode):  # pylint: disable=undefined-variable
                 config = str(config)
         except NameError:
             # Python3 already a str
@@ -639,7 +646,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         If job has parameters, returns True, else False
         """
-        return any("parameterDefinitions" in a for a in (self._data["actions"] or self._data["property"]) if a)
+        return any("parameterDefinitions" in a for a in (
+            self._data["actions"] or self._data["property"]) if a)
 
     def has_queued_build(self, build_params):
         """Returns True if a build with build_params is currently queued."""

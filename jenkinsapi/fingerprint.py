@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 
 class Fingerprint(JenkinsBase):
+
     """
     Represents a jenkins fingerprint on a single artifact file ??
     """
@@ -22,7 +23,8 @@ class Fingerprint(JenkinsBase):
     def __init__(self, baseurl, id_, jenkins_obj):
         logging.basicConfig()
         self.jenkins_obj = jenkins_obj
-        assert self.RE_MD5.search(id_), "%s does not look like a valid id" % id_
+        assert self.RE_MD5.search(
+            id_), "%s does not look like a valid id" % id_
         url = "%s/fingerprint/%s/" % (baseurl, id_)
         JenkinsBase.__init__(self, url, poll=False)
         self.id_ = id_
@@ -73,7 +75,9 @@ class Fingerprint(JenkinsBase):
                 if self._data["original"]["number"] == build:
                     return True
         if self._data["fileName"] != filename:
-            log.info(msg="Filename from jenkins (%s) did not match provided (%s)" % (self._data["fileName"], filename))
+            log.info(
+                msg="Filename from jenkins (%s) did not match provided (%s)" %
+                (self._data["fileName"], filename))
             return False
         for usage_item in self._data["usage"]:
             if usage_item["name"] == job:
@@ -89,9 +93,13 @@ class Fingerprint(JenkinsBase):
         try:
             assert self.valid()
         except AssertionError:
-            raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (self.id_, self.baseurl))
+            raise ArtifactBroken(
+                "Artifact %s seems to be broken, check %s" %
+                (self.id_, self.baseurl))
         except requests.exceptions.HTTPError:
-            raise ArtifactBroken("Unable to validate artifact id %s using %s" % (self.id_, self.baseurl))
+            raise ArtifactBroken(
+                "Unable to validate artifact id %s using %s" %
+                (self.id_, self.baseurl))
         return True
 
     def get_info(self):
@@ -99,4 +107,5 @@ class Fingerprint(JenkinsBase):
         Returns a tuple of build-name, build# and artifiact filename for a good build.
         """
         self.poll()
-        return self._data["original"]["name"], self._data["original"]["number"], self._data["fileName"]
+        return self._data["original"]["name"], self._data[
+            "original"]["number"], self._data["fileName"]

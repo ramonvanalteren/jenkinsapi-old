@@ -11,12 +11,14 @@ log = logging.getLogger(__name__)
 
 
 class Executors(JenkinsBase):
+
     """
     This class provides a container-like API which gives
     access to all executors on a Jenkins node.
 
     Returns a list of Executor Objects.
     """
+
     def __init__(self, baseurl, nodename, jenkins):
         self.nodename = nodename
         self.jenkins = jenkins

@@ -25,11 +25,14 @@ class TestJobGetAllBuilds(unittest.TestCase):
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/foo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png",
+             "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},
         "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
         "lastFailedBuild": None,
         "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -102,11 +105,14 @@ class TestJobGetAllBuilds(unittest.TestCase):
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/fullfoo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png",
+             "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"},  # build running
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"},
         "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
         "lastFailedBuild": None,
         "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
@@ -148,18 +154,22 @@ class TestJobGetAllBuilds(unittest.TestCase):
             try:
                 return dict(TestJobGetAllBuilds.URL_DATA[(url, str(params))])
             except KeyError:
-                raise Exception("Missing data for url: %s with parameters %s" % (url, repr(params)))
+                raise Exception(
+                    "Missing data for url: %s with parameters %s" %
+                    (url, repr(params)))
 
     def fakeGetDataTree(self, url, **args):
         TestJobGetAllBuilds.__get_data_call_count += 1
         try:
             if args['tree']:
                 if 'builds' in args['tree']:
-                    return {'builds': TestJobGetAllBuilds.URL_DATA[url]['builds']}
+                    return {
+                        'builds': TestJobGetAllBuilds.URL_DATA[url]['builds']}
                 elif 'allBuilds' in args['tree']:
                     return TestJobGetAllBuilds.URL_DATA[(url, args['tree'])]
                 elif 'lastBuild' in args['tree']:
-                    return {'lastBuild': TestJobGetAllBuilds.URL_DATA[url]['lastBuild']}
+                    return {
+                        'lastBuild': TestJobGetAllBuilds.URL_DATA[url]['lastBuild']}
             else:
                 return dict(TestJobGetAllBuilds.URL_DATA[url])
         except KeyError:
@@ -190,14 +200,18 @@ class TestJobGetAllBuilds(unittest.TestCase):
 
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_complete_builds_list_will_call_jenkins_once(self):
-        # The job data contains all builds, so we will not gather remaining builds
+        # The job data contains all builds, so we will not gather remaining
+        # builds
         TestJobGetAllBuilds.__get_data_call_count = 0
         self.j = Job('http://halob:8080/job/fullfoo/', 'fullfoo', self.J)
         self.assertEquals(TestJobGetAllBuilds.__get_data_call_count, 1)
 
     @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_nobuilds_get_build_dict(self):
-        j = Job('http://halob:8080/job/look_ma_no_builds/', 'look_ma_no_builds', self.J)
+        j = Job(
+            'http://halob:8080/job/look_ma_no_builds/',
+            'look_ma_no_builds',
+            self.J)
 
         ret = j.get_build_dict()
         self.assertTrue(isinstance(ret, dict))

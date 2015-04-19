@@ -4,6 +4,7 @@ Module for jenkinsapi Result
 
 
 class Result(object):
+
     """
     Result class
     """

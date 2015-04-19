@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import logging
 from pkg_resources import resource_string
-
-from jenkinsapi.view import View
 from jenkinsapi.views import Views
 from jenkinsapi.jenkins import Jenkins
 

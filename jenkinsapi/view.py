@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class View(JenkinsBase):
+
     """
     View class
     """
@@ -116,7 +117,9 @@ class View(JenkinsBase):
                 top_jenkins = self.get_jenkins_obj().get_jenkins_obj_from_url(
                     self.baseurl.split('view/')[0])
                 if not top_jenkins.has_job(str_job_name):
-                    log.error(msg='Job "%s" is not known to Jenkins' % str_job_name)
+                    log.error(
+                        msg='Job "%s" is not known to Jenkins' %
+                        str_job_name)
                     return False
                 else:
                     job = top_jenkins.get_job(str_job_name)
@@ -184,7 +187,8 @@ class View(JenkinsBase):
         """
         url = self.get_config_xml_url()
         try:
-            if isinstance(config, unicode):  # pylint: disable=undefined-variable
+            if isinstance(
+                    config, unicode):  # pylint: disable=undefined-variable
                 config = str(config)
         except NameError:
             # Python3 already a str
@@ -196,4 +200,5 @@ class View(JenkinsBase):
 
     @property
     def views(self):
-        return self.get_jenkins_obj().get_jenkins_obj_from_url(self.baseurl).views
+        return self.get_jenkins_obj().get_jenkins_obj_from_url(
+            self.baseurl).views

@@ -20,10 +20,10 @@ class TestNodes(BaseSystemTest):
         try:
             self.jenkins.create_node(node_name)
             self.assertTrue(self.jenkins.has_node(node_name))
-    
+
             N = self.jenkins.get_node(node_name)
             self.assertEquals(N.baseurl, self.jenkins.get_node_url(node_name))
-        
+
         finally:
             self.jenkins.delete_node(node_name)
             self.assertFalse(self.jenkins.has_node(node_name))

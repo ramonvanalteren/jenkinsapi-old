@@ -13,9 +13,11 @@ log = logging.getLogger(__name__)
 
 
 class Plugins(JenkinsBase):
+
     """
     Plugins class for jenkinsapi
     """
+
     def __init__(self, url, jenkins_obj):
         self.jenkins_obj = jenkins_obj
         JenkinsBase.__init__(self, url)
@@ -62,5 +64,6 @@ class Plugins(JenkinsBase):
         return plugin_name in self.keys()
 
     def __str__(self):
-        plugins = [plugin["shortName"] for plugin in self._data.get("plugins", [])]
+        plugins = [plugin["shortName"]
+                   for plugin in self._data.get("plugins", [])]
         return str(sorted(plugins))

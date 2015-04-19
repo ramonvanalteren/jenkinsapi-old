@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class Views(object):
+
     """
     An abstraction on a Jenkins object's views
     """
@@ -100,6 +101,9 @@ class Views(object):
             "json": json.dumps({"name": view_name, "mode": view_type})
         }
 
-        self.jenkins.requester.post_and_confirm_status(url, data=data, headers=headers)
+        self.jenkins.requester.post_and_confirm_status(
+            url,
+            data=data,
+            headers=headers)
         self.jenkins.poll()
         return self[view_name]

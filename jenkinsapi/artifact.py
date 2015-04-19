@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class Artifact(object):
+
     """
     Represents a single Jenkins artifact, usually some kind of file
     generated as a by-product of executing a Jenkins build.
@@ -38,24 +39,30 @@ class Artifact(object):
         """
         log.info(msg="Saving artifact @ %s to %s" % (self.url, fspath))
         if not fspath.endswith(self.filename):
-            log.warn(msg="Attempt to change the filename of artifact %s on save." % self.filename)
+            log.warn(
+                msg="Attempt to change the filename of artifact %s on save." %
+                self.filename)
         if os.path.exists(fspath):
             if self.build:
                 try:
                     if self._verify_download(fspath):
-                        log.info(msg="Local copy of %s is already up to date." % self.filename)
+                        log.info(
+                            msg="Local copy of %s is already up to date." %
+                            self.filename)
                         return fspath
                 except ArtifactBroken:
                     log.info("Jenkins artifact could not be identified.")
             else:
-                log.info("This file did not originate from Jenkins, so cannot check.")
+                log.info(
+                    "This file did not originate from Jenkins, so cannot check.")
         else:
             log.info("Local file is missing, downloading new.")
         filepath = self._do_download(fspath)
         try:
             self._verify_download(filepath)
         except ArtifactBroken:
-            log.warning("fingerprint of the downloaded artifact could not be verified")
+            log.warning(
+                "fingerprint of the downloaded artifact could not be verified")
         return fspath
 
     def get_jenkins_obj(self):
@@ -65,7 +72,8 @@ class Artifact(object):
         """
         Grab the text of the artifact
         """
-        response = self.get_jenkins_obj().requester.get_and_confirm_status(self.url)
+        response = self.get_jenkins_obj().requester.get_and_confirm_status(
+            self.url)
         return response.content
 
     def _do_download(self, fspath):
@@ -81,8 +89,12 @@ class Artifact(object):
         Verify that a downloaded object has a valid fingerprint.
         """
         local_md5 = self._md5sum(fspath)
-        fp = Fingerprint(self.build.job.jenkins.baseurl, local_md5, self.build.job.jenkins)
-        return fp.validate_for_build(os.path.basename(fspath), self.build.job.name, self.build.buildno)
+        fp = Fingerprint(
+            self.build.job.jenkins.baseurl,
+            local_md5,
+            self.build.job.jenkins)
+        return fp.validate_for_build(
+            os.path.basename(fspath), self.build.job.name, self.build.buildno)
 
     def _md5sum(self, fspath, chunksize=2 ** 20):
         """
@@ -115,4 +127,5 @@ class Artifact(object):
         """
         Produce a handy repr-string.
         """
-        return """<%s.%s %s>""" % (self.__class__.__module__, self.__class__.__name__, self.url)
+        return """<%s.%s %s>""" % (
+            self.__class__.__module__, self.__class__.__name__, self.url)

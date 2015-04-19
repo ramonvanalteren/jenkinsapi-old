@@ -34,10 +34,13 @@ log = logging.getLogger(__name__)
 
 
 class Jenkins(JenkinsBase):
+
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, requester=None, lazy=False):
+
+    def __init__(
+            self, baseurl, username=None, password=None, requester=None, lazy=False):
         """
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
@@ -46,7 +49,10 @@ class Jenkins(JenkinsBase):
         """
         self.username = username
         self.password = password
-        self.requester = requester or Requester(username, password, baseurl=baseurl)
+        self.requester = requester or Requester(
+            username,
+            password,
+            baseurl=baseurl)
         self.lazy = lazy
         JenkinsBase.__init__(self, baseurl, poll=not lazy)
 
@@ -252,7 +258,10 @@ class Jenkins(JenkinsBase):
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
-        url = urlparse.urljoin(self.base_server_url(), 'computer/%s' % urlquote(nodename))
+        url = urlparse.urljoin(
+            self.base_server_url(),
+            'computer/%s' %
+            urlquote(nodename))
         return url
 
     def get_queue_url(self):
@@ -284,7 +293,8 @@ class Jenkins(JenkinsBase):
         :param nodename: string holding a hostname
         :return: None
         """
-        assert self.has_node(nodename), "This node: %s is not registered as a slave" % nodename
+        assert self.has_node(
+            nodename), "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
         try:
@@ -309,7 +319,8 @@ class Jenkins(JenkinsBase):
         NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
         MODE = 'NORMAL'
         if self.has_node(name):
-            return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
+            return Node(nodename=name, baseurl=self.get_node_url(
+                nodename=name), jenkins_obj=self)
         if exclusive:
             MODE = 'EXCLUSIVE'
         params = {
@@ -331,7 +342,8 @@ class Jenkins(JenkinsBase):
         url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
         self.requester.get_and_confirm_status(url)
 
-        return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
+        return Node(nodename=name, baseurl=self.get_node_url(
+            nodename=name), jenkins_obj=self)
 
     def get_plugins_url(self, depth):
         # This only ever needs to work on the base object

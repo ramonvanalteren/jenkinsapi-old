@@ -7,9 +7,11 @@ from jenkinsapi.result import Result
 
 
 class ResultSet(JenkinsBase):
+
     """
     Represents a result from a completed Jenkins run.
     """
+
     def __init__(self, url, build):
         """
         Init a resultset

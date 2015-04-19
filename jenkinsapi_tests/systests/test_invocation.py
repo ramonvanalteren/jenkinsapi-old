@@ -92,6 +92,6 @@ class TestInvocation(BaseSystemTest):
 
 
 if __name__ == '__main__':
-#     logging.basicConfig()
-#     logging.getLogger("").setLevel(logging.INFO)
+    #     logging.basicConfig()
+    #     logging.getLogger("").setLevel(logging.INFO)
     unittest.main()
