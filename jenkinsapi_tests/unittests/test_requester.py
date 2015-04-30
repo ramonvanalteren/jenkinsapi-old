@@ -124,7 +124,7 @@ class TestQueue(unittest.TestCase):
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_empty_xml(self, _post):
-        _post.return_value = 'SUCCESS'
+        _post.return_value = mock.Mock()
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_xml_and_confirm_status(
@@ -132,12 +132,6 @@ class TestQueue(unittest.TestCase):
                 params={'param': 'value'},
                 data=None
             )
-
-        self.assertEqual(
-            str(
-                ae.exception),
-            "Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" %
-            type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_some_xml(self, _post):
@@ -154,7 +148,8 @@ class TestQueue(unittest.TestCase):
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_empty_data(self, _post):
-        _post.return_value = 'SUCCESS'
+        mock_response = mock.Mock()
+        _post.return_value = mock_response
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_and_confirm_status(
@@ -163,11 +158,6 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertEqual(
-            str(
-                ae.exception),
-            "Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" %
-            type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_some_data(self, _post):
