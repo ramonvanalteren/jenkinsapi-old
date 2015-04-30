@@ -1,8 +1,6 @@
 """
 Module for jenkinsapi requester (which is a wrapper around python-requests)
 """
-import six
-
 import requests
 
 try:
@@ -120,11 +118,6 @@ class Requester(object):
     def post_and_confirm_status(
             self, url, params=None, data=None, files=None, headers=None, valid=None, allow_redirects=True):
         valid = valid or self.VALID_STATUS_CODES
-        assert isinstance(data, (
-            dict, six.binary_type)), \
-            "Unexpected type of parameter 'data': %s. Expected (str, dict, bytes)" % type(
-                data)
-
         if not headers and not files:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
