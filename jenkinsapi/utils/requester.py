@@ -121,7 +121,7 @@ class Requester(object):
         if not headers and not files:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-        assert data, "Post messages must have data"
+        assert data is not None, "Post messages must have data"
 
         response = self.post_url(
             url,
