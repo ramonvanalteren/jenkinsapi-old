@@ -1,11 +1,12 @@
 """
-Artifacts can be used to represent data created as a side-effect of running a Jenkins build.
+Artifacts can be used to represent data created as a side-effect of running
+a Jenkins build.
 
-Artifacts are files which are associated with a single build. A build can have any number of
-artifacts associated with it.
+Artifacts are files which are associated with a single build. A build can
+have any number of artifacts associated with it.
 
-This module provides a class called Artifact which allows you to download objects from the server
-and also access them as a stream.
+This module provides a class called Artifact which allows you to download
+objects from the server and also access them as a stream.
 """
 import os
 import logging
@@ -31,8 +32,8 @@ class Artifact(object):
 
     def save(self, fspath):
         """
-        Save the artifact to an explicit path. The containing directory must exist.
-        Returns a reference to the file which has just been writen to.
+        Save the artifact to an explicit path. The containing directory must
+        exist. Returns a reference to the file which has just been writen to.
 
         :param fspath: full pathname including the filename, str
         :return: filepath
@@ -53,8 +54,8 @@ class Artifact(object):
                 except ArtifactBroken:
                     log.info("Jenkins artifact could not be identified.")
             else:
-                log.info(
-                    "This file did not originate from Jenkins, so cannot check.")
+                log.info("This file did not originate from Jenkins, "
+                         "so cannot check.")
         else:
             log.info("Local file is missing, downloading new.")
         filepath = self._do_download(fspath)
@@ -98,8 +99,8 @@ class Artifact(object):
 
     def _md5sum(self, fspath, chunksize=2 ** 20):
         """
-        A MD5 hashing function intended to produce the same results as that used by
-        Jenkins.
+        A MD5 hashing function intended to produce the same results as that
+        used by Jenkins.
         """
         md5 = hashlib.md5()
         try:
@@ -115,8 +116,8 @@ class Artifact(object):
 
     def save_to_dir(self, dirpath):
         """
-        Save the artifact to a folder. The containing directory must be exist, but use the artifact's
-        default filename.
+        Save the artifact to a folder. The containing directory must exist,
+        but use the artifact's default filename.
         """
         assert os.path.exists(dirpath)
         assert os.path.isdir(dirpath)
@@ -127,5 +128,5 @@ class Artifact(object):
         """
         Produce a handy repr-string.
         """
-        return """<%s.%s %s>""" % (
-            self.__class__.__module__, self.__class__.__name__, self.url)
+        return """<%s.%s %s>""" % (self.__class__.__module__,
+                                   self.__class__.__name__, self.url)

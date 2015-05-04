@@ -82,8 +82,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
         return self.jenkins
 
     # When the name of the hg branch used in the job is default hg branch (i.e.
-    # default), Mercurial plugin doesn't store default branch name in config XML
-    # file of the job. Create XML node corresponding to default branch
+    # default), Mercurial plugin doesn't store default branch name in
+    # config XML file of the job. Create XML node corresponding to
+    # default branch
     def _get_hg_branch(self, element_tree):
         branches = element_tree.findall(HG_BRANCH)
         if not branches:
@@ -102,11 +103,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
     # pylint: disable=E1123
     # Unexpected keyword arg 'params'
     def _add_missing_builds(self, data):
-        '''Query Jenkins to get all builds of the job in the data object.
+        """
+        Query Jenkins to get all builds of the job in the data object.
 
-        Jenkins API loads the first 100 builds and thus may not contain all builds
-        information. This method checks if all builds are loaded in the data object
-        and updates it with the missing builds if needed.'''
+        Jenkins API loads the first 100 builds and thus may not contain
+        all builds information. This method checks if all builds are loaded
+        in the data object and updates it with the missing builds if needed.
+        """
         if not data.get("builds"):
             return data
         # do not call _buildid_for_type here: it would poll and do an infinite
@@ -125,7 +128,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def _get_config_element_tree(self):
         """
-        The ElementTree objects creation is unnecessary, it can be a singleton per job
+        The ElementTree objects creation is unnecessary, it can be
+        a singleton per job
         """
         if self._config is None:
             self.load_config()
@@ -136,8 +140,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_build_triggerurl(self, files, build_params=None):
         if (files and build_params) or (not self.has_params()):
-            # If job has file parameters and non-file parameters - it must be triggered
-            # using "/build", not by "/buildWithParameters"
+            # If job has file parameters and non-file parameters - it must be
+            # triggered using "/build", not by "/buildWithParameters"
             # "/buildWithParameters" will ignore non-file parameters
             return "%s/build" % self.baseurl
         return "%s/buildWithParameters" % self.baseurl
@@ -199,7 +203,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         data = {
             'json': self.mk_json_from_build_parameters(
                 build_params,
-                files)}
+                files)
+        }
         data.update(build_params)
 
         response = self.jenkins.requester.post_and_confirm_status(
@@ -214,7 +219,6 @@ class Job(JenkinsBase, MutableJenkinsThing):
         redirect_url = response.headers['location']
 
         if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
-
             if files:
                 raise ValueError('Builds with file parameters are not '
                                  'supported by this jenkinsapi version. '
@@ -236,7 +240,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
             "lastCompletedBuild",
             "firstBuild",
             "lastFailedBuild"]
-        assert buildtype in KNOWNBUILDTYPES, 'Unknown build info type: %s' % buildtype
+        assert buildtype in KNOWNBUILDTYPES, ('Unknown build info type: %s'
+                                              % buildtype)
 
         data = self.poll(tree='%s[number]' % buildtype)
 
@@ -287,8 +292,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         builds = self._add_missing_builds(builds)
         builds = builds['builds']
         last_build = self.poll(tree='lastBuild[number,url]')['lastBuild']
-        if builds and last_build and builds[0][
-                'number'] != last_build['number']:
+        if builds and last_build and \
+                builds[0]['number'] != last_build['number']:
             builds = [last_build] + builds
         # FIXME SO how is this supposed to work if build is false-y?
         # I don't think that builds *can* be false here, so I don't
@@ -297,14 +302,15 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_revision_dict(self):
         """
-        Get dictionary of all revisions with a list of buildnumbers (int) that used that particular revision
+        Get dictionary of all revisions with a list of buildnumbers (int)
+        that used that particular revision
         """
         revs = defaultdict(list)
         if 'builds' not in self._data:
             raise NoBuildData(repr(self))
         for buildnumber in self.get_build_ids():
-            revs[self.get_build(
-                buildnumber).get_revision()].append(buildnumber)
+            revs[self.get_build(buildnumber)
+                 .get_revision()].append(buildnumber)
         return revs
 
     def get_build_ids(self):
@@ -364,7 +370,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
 
         :param revision: subversion revision to look for, int
-        :param refresh: boolean, whether or not to refresh the revision -> buildnumber map
+        :param refresh: boolean, whether or not to refresh the
+            revision -> buildnumber map
         :return: list of buildnumbers, [int]
         """
         if self.get_scm_type() == 'svn' and not isinstance(revision, int):
@@ -406,7 +413,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_queue_item(self):
         """
-        Return a QueueItem if this object is in a queue, otherwise raise an exception
+        Return a QueueItem if this object is in a queue, otherwise raise
+        an exception
         """
         if not self.is_queued():
             raise UnknownQueueItem()
@@ -420,7 +428,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
                 return build.is_running()
         except NoBuildData:
             log.info(
-                "No build info available for %s, assuming not running.", str(self))
+                "No build info available for %s, assuming not running.",
+                str(self))
         return False
 
     def get_config(self):
@@ -438,10 +447,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
         scm = self._scm_map.get(scm_class)
         if not scm:
             raise NotSupportSCM(
-                "SCM class \"%s\" not supported by API for job \"%s\"" % (scm_class, self.name))
+                'SCM class "%s" not supported by API for job "%s"'
+                % (scm_class, self.name))
         if scm == 'NullSCM':
             raise NotConfiguredSCM(
-                "SCM is not configured for job \"%s\"" % self.name)
+                'SCM is not configured for job "%s"' % self.name)
         return scm
 
     def get_scm_url(self):
@@ -463,18 +473,20 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         element_tree = self._get_config_element_tree()
         scm = self.get_scm_type()
-        return [
-            scm_branch.text for scm_branch in self._scmbranchmap[scm](element_tree)]
+        return [scm_branch.text
+                for scm_branch in self._scmbranchmap[scm](element_tree)]
 
     def modify_scm_branch(self, new_branch, old_branch=None):
         """
         Modify SCM ("Source Code Management") branch name for configured job.
         :param new_branch : new repository branch name to set.
-                            If job has multiple branches configured and "old_branch"
-                            not provided - method will allways modify first url.
-        :param old_branch (optional): exact value of branch name to be replaced.
-                            For some SCM's jenkins allow set multiple branches per job
-                            this parameter intended to indicate which branch need to be modified
+            If job has multiple branches configured and "old_branch"
+            not provided - method will allways modify first url.
+        :param old_branch (optional): exact value of branch name
+            to be replaced.
+            For some SCM's jenkins allow set multiple branches per job
+            this parameter intended to indicate which branch need to be
+            modified
         """
         element_tree = self._get_config_element_tree()
         scm = self.get_scm_type()
@@ -492,10 +504,12 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         Modify SCM ("Source Code Management") url for configured job.
         :param new_source_url : new repository url to set.
-                                If job has multiple repositories configured and "old_source_url"
-                                not provided - method will allways modify first url.
-        :param old_source_url (optional): for some SCM's jenkins allow set multiple repositories per job
-                                this parameter intended to indicate which repository need to be modified
+            If job has multiple repositories configured and "old_source_url"
+            not provided - method will allways modify first url.
+        :param old_source_url (optional): for some SCM's jenkins allows
+            settting multiple repositories per job
+            this parameter intended to indicate which repository need
+            to be modified
         """
         element_tree = self._get_config_element_tree()
         scm = self.get_scm_type()

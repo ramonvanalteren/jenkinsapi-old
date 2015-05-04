@@ -35,7 +35,8 @@ class Queue(JenkinsBase):
         for item in self._data['items']:
             queue_id = item['id']
             item_baseurl = "%s/item/%i" % (self.baseurl, queue_id)
-            yield item['id'], QueueItem(baseurl=item_baseurl, jenkins_obj=self.jenkins)
+            yield item['id'], QueueItem(baseurl=item_baseurl,
+                                        jenkins_obj=self.jenkins)
 
     def iterkeys(self):
         for item in self._data['items']:
@@ -64,7 +65,8 @@ class Queue(JenkinsBase):
     def _get_queue_items_for_job(self, job_name):
         for item in self._data["items"]:
             if item['task']['name'] == job_name:
-                yield QueueItem(self.get_queue_item_url(item), jenkins_obj=self.jenkins)
+                yield QueueItem(self.get_queue_item_url(item),
+                                jenkins_obj=self.jenkins)
 
     def get_queue_items_for_job(self, job_name):
         return list(self._get_queue_items_for_job(job_name))

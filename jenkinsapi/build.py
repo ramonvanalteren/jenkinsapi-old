@@ -33,7 +33,8 @@ class Build(JenkinsBase):
     """
 
     STR_TOTALCOUNT = "totalCount"
-    STR_TPL_NOTESTS_ERR = "%s has status %s, and does not have any test results"
+    STR_TPL_NOTESTS_ERR = ("%s has status %s, and does not have "
+                           "any test results")
 
     def __init__(self, url, buildno, job, depth=1):
         """
@@ -51,8 +52,9 @@ class Build(JenkinsBase):
         JenkinsBase.__init__(self, url)
 
     def _poll(self, tree=None):
-        # For build's we need more information for downstream and upstream builds
-        # so we override the poll to get at the extra data for build objects
+        # For build's we need more information for downstream and
+        # upstream builds so we override the poll to get at the extra
+        # data for build objects
         url = self.python_api_url(self.baseurl)
         return self.get_data(url, params={'depth': self.depth}, tree=tree)
 
@@ -79,7 +81,8 @@ class Build(JenkinsBase):
 
     def _get_svn_rev(self):
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (get_svn_rev).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(get_svn_rev).")
         maxRevision = 0
         for repoPathSet in self._data["changeSet"]["revisions"]:
             maxRevision = max(repoPathSet["revision"], maxRevision)
@@ -98,7 +101,8 @@ class Build(JenkinsBase):
 
     def _get_hg_rev(self):
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (_get_hg_rev).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(_get_hg_rev).")
         return [x['mercurialNodeName']
                 for x in self._data['actions'] if 'mercurialNodeName' in x][0]
 
@@ -188,7 +192,8 @@ class Build(JenkinsBase):
         :return: Job or None
         """
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (get_master_job).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(get_master_job).")
         if self.get_master_job_name():
             return self.get_jenkins_obj().get_job(self.get_master_job_name())
         else:
@@ -200,7 +205,8 @@ class Build(JenkinsBase):
         :return: int or None
         """
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (get_master_build_number).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(get_master_build_number).")
         try:
             return int(self.get_actions()['parameters'][1]['value'])
         except KeyError:
@@ -212,7 +218,8 @@ class Build(JenkinsBase):
         :return Build or None
         """
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (get_master_build).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(get_master_build).")
         master_job = self.get_master_job()
         if master_job:
             return master_job.get_build(self.get_master_build_number())
@@ -225,7 +232,8 @@ class Build(JenkinsBase):
         :return List of jobs or None
         """
         warnings.warn(
-            "This untested function may soon be removed from Jenkinsapi (get_downstream_jobs).")
+            "This untested function may soon be removed from Jenkinsapi "
+            "(get_downstream_jobs).")
         downstream_jobs = []
         try:
             for job_name in self.get_downstream_job_names():
@@ -302,8 +310,8 @@ class Build(JenkinsBase):
         Return a bool, true if the build was good.
         If the build is still running, return False.
         """
-        return (not self.is_running()) and self._data[
-            "result"] == STATUS_SUCCESS
+        return (not self.is_running()) and \
+            self._data["result"] == STATUS_SUCCESS
 
     def block_until_complete(self, delay=15):
         assert isinstance(delay, int)
@@ -378,11 +386,7 @@ class Build(JenkinsBase):
         '''
         # Java timestamps are given in miliseconds since the epoch start!
         naive_timestamp = datetime.datetime(
-            *
-            time.gmtime(
-                self._data['timestamp'] /
-                1000.0)[
-                :6])
+            *time.gmtime(self._data['timestamp'] / 1000.0)[:6])
         return pytz.utc.localize(naive_timestamp)
 
     def get_console(self):
@@ -404,7 +408,8 @@ class Build(JenkinsBase):
     def stop(self):
         """
         Stops the build execution if it's running
-        :return boolean True if succeded False otherwise or the build is not running
+        :return boolean True if succeded False otherwise or the build
+            is not running
         """
         if self.is_running():
             url = "%s/stop" % self.baseurl

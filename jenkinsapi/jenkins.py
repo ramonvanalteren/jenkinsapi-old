@@ -40,7 +40,9 @@ class Jenkins(JenkinsBase):
     """
 
     def __init__(
-            self, baseurl, username=None, password=None, requester=None, lazy=False):
+            self, baseurl,
+            username=None, password=None,
+            requester=None, lazy=False):
         """
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
@@ -195,7 +197,8 @@ class Jenkins(JenkinsBase):
 
     def items(self):
         """
-        :param return: A list of pairs. Each pair will be (job name, Job object)
+        :param return: A list of pairs.
+            Each pair will be (job name, Job object)
         """
         return list(self.get_jobs())
 
@@ -293,8 +296,8 @@ class Jenkins(JenkinsBase):
         :param nodename: string holding a hostname
         :return: None
         """
-        assert self.has_node(
-            nodename), "This node: %s is not registered as a slave" % nodename
+        assert self.has_node(nodename), \
+            "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
         try:
@@ -304,7 +307,8 @@ class Jenkins(JenkinsBase):
             self.requester.post_and_confirm_status(url, data={})
 
     def create_node(self, name, num_executors=2, node_description=None,
-                    remote_fs='/var/lib/jenkins', labels=None, exclusive=False):
+                    remote_fs='/var/lib/jenkins',
+                    labels=None, exclusive=False):
         """
         Create a new slave node by name.
 
@@ -317,12 +321,11 @@ class Jenkins(JenkinsBase):
         :return: node obj
         """
         NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
-        MODE = 'NORMAL'
+        MODE = 'NORMAL' if not exclusive else 'EXCLUSIVE'
         if self.has_node(name):
-            return Node(nodename=name, baseurl=self.get_node_url(
-                nodename=name), jenkins_obj=self)
-        if exclusive:
-            MODE = 'EXCLUSIVE'
+            return Node(nodename=name,
+                        baseurl=self.get_node_url(nodename=name),
+                        jenkins_obj=self)
         params = {
             'name': name,
             'type': NODE_TYPE,
@@ -334,9 +337,15 @@ class Jenkins(JenkinsBase):
                 'labelString': labels,
                 'mode': MODE,
                 'type': NODE_TYPE,
-                'retentionStrategy': {'stapler-class': 'hudson.slaves.RetentionStrategy$Always'},
-                'nodeProperties': {'stapler-class-bag': 'true'},
-                'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
+                'retentionStrategy': {
+                    'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
+                },
+                'nodeProperties': {
+                    'stapler-class-bag': 'true'
+                },
+                'launcher': {
+                    'stapler-class': 'hudson.slaves.JNLPLauncher'
+                }
             })
         }
         url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)

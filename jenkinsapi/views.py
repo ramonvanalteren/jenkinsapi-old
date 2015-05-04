@@ -18,7 +18,8 @@ class Views(object):
     NESTED_VIEW = 'hudson.plugins.nested_view.NestedView'
     MY_VIEW = 'hudson.model.MyView'
     DASHBOARD_VIEW = 'hudson.plugins.view.dashboard.Dashboard'
-    PIPELINE_VIEW = 'au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView'
+    PIPELINE_VIEW = ('au.com.centrumsystems.hudson.'
+                     'plugin.buildpipeline.BuildPipelineView')
 
     def __init__(self, jenkins):
         self.jenkins = jenkins
