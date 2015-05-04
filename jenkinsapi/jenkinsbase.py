@@ -12,7 +12,8 @@ from jenkinsapi.custom_exceptions import JenkinsAPIException
 class JenkinsBase(object):
 
     """
-    This appears to be the base object that all other jenkins objects are inherited from
+    This appears to be the base object that all other jenkins objects are
+    inherited from
     """
     RETRY_ATTEMPTS = 1
 
@@ -39,7 +40,8 @@ class JenkinsBase(object):
 
     def __eq__(self, other):
         """
-        Return true if the other object represents a connection to the same server
+        Return true if the other object represents a connection to the
+        same server
         """
         if not isinstance(other, self.__class__):
             return False
@@ -86,7 +88,8 @@ class JenkinsBase(object):
             raise JenkinsAPIException('Cannot parse %s' % response.content)
 
     def pprint(self):
-        """Print out all the data in this object for debugging.
+        """
+        Print out all the data in this object for debugging.
         """
         pprint.pprint(self._data)
 
