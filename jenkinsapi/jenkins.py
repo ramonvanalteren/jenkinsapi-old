@@ -358,6 +358,33 @@ class Jenkins(JenkinsBase):
         # This only ever needs to work on the base object
         return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
 
+    def install_plugin(self, plugin):
+        if not isinstance(plugin, basestring) or '@' not in plugin:
+            raise ValueError(
+                ('argument must be a string like "plugin-name@version",'
+                 ' info, not "{0}"').format(plugin))
+        payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
+        payload = payload.format(plugin)
+        url = '%s/pluginManager/installNecessaryPlugins'%(self.baseurl,)
+        headers = {'Content-Type': 'text/xml'}
+        return self.requester.post_xml_and_confirm_status(
+            url, data=payload)
+
+    def install_plugins(self, plugin_list, restart=False):
+        for plugin in plugin_list:
+            self.install_plugin(plugin)
+        if restart:
+            self.safe_restart()
+
+    def safe_restart(self):
+        """ restarts jenkins when no jobs are running """
+        # NB: unlike other methods, the value of resp.status_code
+        # here can be 503 even when everything is normal
+        url = '%s/safeRestart' % (self.baseurl,)
+        valid = self.requester.VALID_STATUS_CODES + [503]
+        resp = self.requester.post_and_confirm_status(url, data='', valid=valid)
+        return resp
+
     def get_plugins(self, depth=1):
         url = self.get_plugins_url(depth=depth)
         return Plugins(url, self)
