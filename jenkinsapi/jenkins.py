@@ -366,7 +366,6 @@ class Jenkins(JenkinsBase):
         payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
         payload = payload.format(plugin)
         url = '%s/pluginManager/installNecessaryPlugins'%(self.baseurl,)
-        headers = {'Content-Type': 'text/xml'}
         return self.requester.post_xml_and_confirm_status(
             url, data=payload)
 
