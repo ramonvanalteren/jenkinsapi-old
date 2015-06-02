@@ -179,26 +179,28 @@ class TestPlugins(unittest.TestCase):
             self.J.install_plugin(['test@1.0'])
 
     @mock.patch.object(Requester, 'post_xml_and_confirm_status')
-    def test_install_plugin_good_input(self, post_mock):
+    def test_install_plugin_good_input(self, _post):
         self.J.install_plugin('test@1.0')
         expected_data = '<jenkins> <install plugin="test@1.0" /> </jenkins>'
-        post_mock.assert_called_with(
-            '/'.join([self.J.baseurl,'pluginManager','installNecessaryPlugins']),
+        _post.assert_called_with(
+            '/'.join([self.J.baseurl,
+                      'pluginManager',
+                      'installNecessaryPlugins']),
             data=expected_data)
 
     @mock.patch.object(Requester, 'post_xml_and_confirm_status')
     @mock.patch.object(Jenkins, 'safe_restart')
-    def test_install_plugins_good_input_no_restart(self, restart_mock, post_mock):
-        self.J.install_plugins(['test@1.0','test@1.0',])
-        self.assertEqual(post_mock.call_count, 2)
-        self.assertEqual(restart_mock.call_count, 0)
+    def test_install_plugins_good_input_no_restart(self, _restart, _post):
+        self.J.install_plugins(['test@1.0', 'test@1.0'])
+        self.assertEqual(_post.call_count, 2)
+        self.assertEqual(_restart.call_count, 0)
 
     @mock.patch.object(Requester, 'post_xml_and_confirm_status')
     @mock.patch.object(Jenkins, 'safe_restart')
-    def test_install_plugins_good_input_with_restart(self, restart_mock, post_mock):
-        self.J.install_plugins(['test@1.0','test@1.0',], restart=True)
-        self.assertEqual(post_mock.call_count, 2)
-        self.assertEqual(restart_mock.call_count, 1)
+    def test_install_plugins_good_input_with_restart(self, _restart, _post):
+        self.J.install_plugins(['test@1.0', 'test@1.0'], restart=True)
+        self.assertEqual(_post.call_count, 2)
+        self.assertEqual(_restart.call_count, 1)
 
     def test_plugin_repr(self):
         p = Plugin(
