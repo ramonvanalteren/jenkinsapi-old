@@ -13,6 +13,11 @@ except ImportError:
     import urllib.parse as urlparse
     from urllib.parse import quote as urlquote, urlencode
 
+try:
+    basestring
+except NameError:
+    # Python3
+    basestring = str
 import logging
 
 from jenkinsapi import config
@@ -365,7 +370,7 @@ class Jenkins(JenkinsBase):
                  ' info, not "{0}"').format(plugin))
         payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
         payload = payload.format(plugin)
-        url = '%s/pluginManager/installNecessaryPlugins'%(self.baseurl,)
+        url = '%s/pluginManager/installNecessaryPlugins' % (self.baseurl,)
         return self.requester.post_xml_and_confirm_status(
             url, data=payload)
 
