@@ -13,7 +13,7 @@ try:
 except ImportError:
     import unittest
 
-from requests import HTTPError
+from requests import HTTPError, ConnectionError
 from jenkinsapi_tests.systests.base import BaseSystemTest
 
 log = logging.getLogger(__name__)
@@ -31,8 +31,8 @@ class TestRestart(BaseSystemTest):
             try:
                 self.jenkins.poll()
                 success = True
-            except HTTPError:
-                msg = ("Jenkins has not restarted!  (This is"
+            except (HTTPError, ConnectionError):
+                msg = ("Jenkins has not restarted yet!  (This is"
                        " try {0} of {1}, waited {2} seconds so far)"
                        "  Sleeping and trying again..")
                 msg = msg.format(count, max_count, count*wait)
@@ -43,6 +43,7 @@ class TestRestart(BaseSystemTest):
                    "Waited {0} seconds altogether.  This "
                    "failure may cause other failures.")
             log.critical(msg.format(count*wait))
+            self.fail("msg")
 
     def test_safe_restart(self):
         self.jenkins. poll()  # jenkins should be alive
