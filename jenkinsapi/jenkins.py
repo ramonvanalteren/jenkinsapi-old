@@ -13,11 +13,6 @@ except ImportError:
     import urllib.parse as urlparse
     from urllib.parse import quote as urlquote, urlencode
 
-try:
-    basestring
-except NameError:
-    # Python3
-    basestring = str
 import logging
 
 from jenkinsapi import config
@@ -364,10 +359,12 @@ class Jenkins(JenkinsBase):
         return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
 
     def install_plugin(self, plugin):
-        if not isinstance(plugin, basestring) or '@' not in plugin:
-            raise ValueError(
-                ('argument must be a string like "plugin-name@version",'
-                 ' info, not "{0}"').format(plugin))
+        plugin = str(plugin)
+        if '@' not in plugin or len(plugin.split('@'))!=2:
+            usage_err = ('argument must be a string like '
+                         '"plugin-name@version", not "{0}"')
+            usage_err = usage_err.format(plugin)
+            raise ValueError(err)
         payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
         payload = payload.format(plugin)
         url = '%s/pluginManager/installNecessaryPlugins' % (self.baseurl,)
