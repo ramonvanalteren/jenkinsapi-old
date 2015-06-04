@@ -360,11 +360,11 @@ class Jenkins(JenkinsBase):
 
     def install_plugin(self, plugin):
         plugin = str(plugin)
-        if '@' not in plugin or len(plugin.split('@'))!=2:
+        if '@' not in plugin or len(plugin.split('@')) != 2:
             usage_err = ('argument must be a string like '
                          '"plugin-name@version", not "{0}"')
             usage_err = usage_err.format(plugin)
-            raise ValueError(err)
+            raise ValueError(usage_err)
         payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
         payload = payload.format(plugin)
         url = '%s/pluginManager/installNecessaryPlugins' % (self.baseurl,)
