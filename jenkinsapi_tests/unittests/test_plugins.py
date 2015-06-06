@@ -172,11 +172,10 @@ class TestPlugins(unittest.TestCase):
         self.assertEquals('http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin',
                           plugin.url)
 
-    def test_install_plugin_bad_input(self):
+    @mock.patch.object(Requester, 'post_xml_and_confirm_status')
+    def test_install_plugin_bad_input(self, _post):
         with self.assertRaises(ValueError):
             self.J.install_plugin('test')
-        with self.assertRaises(ValueError):
-            self.J.install_plugin(['test@1.0'])
 
     @mock.patch.object(Requester, 'post_xml_and_confirm_status')
     def test_install_plugin_good_input(self, _post):
