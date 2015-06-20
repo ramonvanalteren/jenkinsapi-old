@@ -17,5 +17,4 @@ bin/
 include/
 lib/
 *.egg
-
-
+.tox/*
