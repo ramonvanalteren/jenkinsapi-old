@@ -46,7 +46,7 @@ class TestRestart(BaseSystemTest):
             self.fail("msg")
 
     def test_safe_restart(self):
-        self.jenkins. poll()  # jenkins should be alive
+        self.jenkins.poll()  # jenkins should be alive
         self.jenkins.safe_restart()
         with self.assertRaises(HTTPError):
             # this is a 503: jenkins is still restarting
