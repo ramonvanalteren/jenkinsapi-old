@@ -44,7 +44,7 @@ class JenkinsInvoke(object):
         try:
             assert len(args) > 0, "Need to specify at least one job name"
         except AssertionError as err:
-            log.critical(err[0])
+            log.critical(err.message)
             parser.print_help()
             sys.exit(1)
         invoker = cls(options, args)
