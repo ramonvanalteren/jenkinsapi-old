@@ -34,10 +34,15 @@ log = logging.getLogger(__name__)
 
 
 class Jenkins(JenkinsBase):
+
     """
     Represents a jenkins environment.
     """
-    def __init__(self, baseurl, username=None, password=None, requester=None, lazy=False):
+
+    def __init__(
+            self, baseurl,
+            username=None, password=None,
+            requester=None, lazy=False):
         """
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
@@ -46,7 +51,10 @@ class Jenkins(JenkinsBase):
         """
         self.username = username
         self.password = password
-        self.requester = requester or Requester(username, password, baseurl=baseurl)
+        self.requester = requester or Requester(
+            username,
+            password,
+            baseurl=baseurl)
         self.lazy = lazy
         JenkinsBase.__init__(self, baseurl, poll=not lazy)
 
@@ -104,8 +112,8 @@ class Jenkins(JenkinsBase):
         """
         Fetch all the build-names on this Jenkins server.
         """
-        self._poll_if_needed()
-        for info in self._data["jobs"]:
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
+        for info in jobs:
             yield info["name"], \
                 Job(info["url"], info["name"], jenkins_obj=self)
 
@@ -114,8 +122,8 @@ class Jenkins(JenkinsBase):
         Get the jobs information
         :return url, name
         """
-        self._poll_if_needed()
-        for info in self._data["jobs"]:
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
+        for info in jobs:
             yield info["url"], info["name"]
 
     def get_job(self, jobname):
@@ -134,7 +142,7 @@ class Jenkins(JenkinsBase):
         """
         return jobname in self.jobs
 
-    def create_job(self, jobname, config_):
+    def create_job(self, jobname, xml):
         """
         Create a job
 
@@ -144,7 +152,7 @@ class Jenkins(JenkinsBase):
         :param config: configuration of new job, xml
         :return: new Job obj
         """
-        return self.jobs.create(jobname, config_)
+        return self.jobs.create(jobname, xml)
 
     def copy_job(self, jobname, newjobname):
         return self.jobs.copy(jobname, newjobname)
@@ -176,8 +184,8 @@ class Jenkins(JenkinsBase):
         return self.jobs.rename(jobname, newjobname)
 
     def iterkeys(self):
-        self._poll_if_needed()
-        for info in self._data["jobs"]:
+        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
+        for info in jobs:
             yield info["name"]
 
     def iteritems(self):
@@ -189,7 +197,8 @@ class Jenkins(JenkinsBase):
 
     def items(self):
         """
-        :param return: A list of pairs. Each pair will be (job name, Job object)
+        :param return: A list of pairs.
+            Each pair will be (job name, Job object)
         """
         return list(self.get_jobs())
 
@@ -223,16 +232,17 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        self._poll_if_needed()
-
-        for info in self._data["jobs"]:
+        # We have to ask for 'color' here because folder resolution
+        # relies on it
+        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
+        for info in jobs:
             if info["name"] == jobname:
                 return Job(info["url"], info["name"], jenkins_obj=self)
         raise UnknownJob(jobname)
 
     def __len__(self):
-        self._poll_if_needed()
-        return len(self._data["jobs"])
+        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
+        return len(jobs)
 
     def __contains__(self, jobname):
         """
@@ -251,7 +261,10 @@ class Jenkins(JenkinsBase):
 
     def get_node_url(self, nodename=""):
         """Return the url for nodes"""
-        url = urlparse.urljoin(self.base_server_url(), 'computer/%s' % urlquote(nodename))
+        url = urlparse.urljoin(
+            self.base_server_url(),
+            'computer/%s' %
+            urlquote(nodename))
         return url
 
     def get_queue_url(self):
@@ -283,7 +296,8 @@ class Jenkins(JenkinsBase):
         :param nodename: string holding a hostname
         :return: None
         """
-        assert self.has_node(nodename), "This node: %s is not registered as a slave" % nodename
+        assert self.has_node(nodename), \
+            "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
         url = "%s/doDelete" % self.get_node_url(nodename)
         try:
@@ -293,7 +307,8 @@ class Jenkins(JenkinsBase):
             self.requester.post_and_confirm_status(url, data={})
 
     def create_node(self, name, num_executors=2, node_description=None,
-                    remote_fs='/var/lib/jenkins', labels=None, exclusive=False):
+                    remote_fs='/var/lib/jenkins',
+                    labels=None, exclusive=False):
         """
         Create a new slave node by name.
 
@@ -306,11 +321,11 @@ class Jenkins(JenkinsBase):
         :return: node obj
         """
         NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
-        MODE = 'NORMAL'
+        MODE = 'NORMAL' if not exclusive else 'EXCLUSIVE'
         if self.has_node(name):
-            return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
-        if exclusive:
-            MODE = 'EXCLUSIVE'
+            return Node(nodename=name,
+                        baseurl=self.get_node_url(nodename=name),
+                        jenkins_obj=self)
         params = {
             'name': name,
             'type': NODE_TYPE,
@@ -322,19 +337,54 @@ class Jenkins(JenkinsBase):
                 'labelString': labels,
                 'mode': MODE,
                 'type': NODE_TYPE,
-                'retentionStrategy': {'stapler-class': 'hudson.slaves.RetentionStrategy$Always'},
-                'nodeProperties': {'stapler-class-bag': 'true'},
-                'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
+                'retentionStrategy': {
+                    'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
+                },
+                'nodeProperties': {
+                    'stapler-class-bag': 'true'
+                },
+                'launcher': {
+                    'stapler-class': 'hudson.slaves.JNLPLauncher'
+                }
             })
         }
         url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
         self.requester.get_and_confirm_status(url)
 
-        return Node(nodename=name, baseurl=self.get_node_url(nodename=name), jenkins_obj=self)
+        return Node(nodename=name, baseurl=self.get_node_url(
+            nodename=name), jenkins_obj=self)
 
     def get_plugins_url(self, depth):
         # This only ever needs to work on the base object
         return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
+
+    def install_plugin(self, plugin):
+        plugin = str(plugin)
+        if '@' not in plugin or len(plugin.split('@')) != 2:
+            usage_err = ('argument must be a string like '
+                         '"plugin-name@version", not "{0}"')
+            usage_err = usage_err.format(plugin)
+            raise ValueError(usage_err)
+        payload = '<jenkins> <install plugin="{0}" /> </jenkins>'
+        payload = payload.format(plugin)
+        url = '%s/pluginManager/installNecessaryPlugins' % (self.baseurl,)
+        return self.requester.post_xml_and_confirm_status(
+            url, data=payload)
+
+    def install_plugins(self, plugin_list, restart=False):
+        for plugin in plugin_list:
+            self.install_plugin(plugin)
+        if restart:
+            self.safe_restart()
+
+    def safe_restart(self):
+        """ restarts jenkins when no jobs are running """
+        # NB: unlike other methods, the value of resp.status_code
+        # here can be 503 even when everything is normal
+        url = '%s/safeRestart' % (self.baseurl,)
+        valid = self.requester.VALID_STATUS_CODES + [503]
+        resp = self.requester.post_and_confirm_status(url, data='', valid=valid)
+        return resp
 
     def get_plugins(self, depth=1):
         url = self.get_plugins_url(depth=depth)

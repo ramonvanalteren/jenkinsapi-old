@@ -9,6 +9,7 @@ from jenkinsapi.jenkins import JenkinsBase
 
 
 class TestJobFolders(unittest.TestCase):
+
     def setUp(self):
         self.jb = JenkinsBase('http://localhost:8080/', poll=False)
 
@@ -82,17 +83,18 @@ class TestJobFolders(unittest.TestCase):
         ]
 
         self.assertEquals(self.jb.resolve_job_folders(jobs), [])
-        get_data_mock.assert_called_once_with('http://localhost:8080/job/Folder1/api/python')
+        get_data_mock.assert_called_once_with(
+            'http://localhost:8080/job/Folder1/api/python')
 
     @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
     def test_folder_job_mix(self, get_data_mock):
         get_data_mock.return_value = {'jobs': [
-                {
-                    'name': "Bar",
-                    'url': "http://localhost:8080/job/Folder1/job/Bar",
-                    'color': "disabled",
-                },
-            ]
+            {
+                'name': "Bar",
+                'url': "http://localhost:8080/job/Folder1/job/Bar",
+                'color': "disabled",
+            },
+        ]
         }
         jobs = [
             {
@@ -121,7 +123,8 @@ class TestJobFolders(unittest.TestCase):
                 },
             ]
         )
-        get_data_mock.assert_called_once_with('http://localhost:8080/job/Folder1/api/python')
+        get_data_mock.assert_called_once_with(
+            'http://localhost:8080/job/Folder1/api/python')
 
     @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
     def test_multiple_folders(self, get_data_mock):
@@ -251,6 +254,7 @@ class TestJobFolders(unittest.TestCase):
             get_data_mock.call_args_list,
             [
                 mock.call('http://localhost:8080/job/Folder1/api/python'),
-                mock.call('http://localhost:8080/job/Folder1/job/Folder2/api/python'),
+                mock.call(
+                    'http://localhost:8080/job/Folder1/job/Folder2/api/python'),
             ]
         )

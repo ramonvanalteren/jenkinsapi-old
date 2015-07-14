@@ -4,6 +4,7 @@ Module for jenkinsapi Plugin
 
 
 class Plugin(object):
+
     """
     Plugin class
     """

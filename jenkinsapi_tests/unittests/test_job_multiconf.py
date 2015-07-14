@@ -1,9 +1,9 @@
 # import mock
 # To run unittests on python 2.6 please use unittest2 library
 # try:
-    # import unittest2 as unittest
+# import unittest2 as unittest
 # except ImportError:
-    # import unittest
+# import unittest
 
 # from jenkinsapi.job import Job
 # from jenkinsapi.jenkinsbase import JenkinsBase

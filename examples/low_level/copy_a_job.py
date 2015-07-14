@@ -12,10 +12,11 @@ J = Jenkins('http://localhost:8080')
 jobName = random_string()
 jobName2 = '%s_2' % jobName
 
-url = 'http://localhost:8080/createItem?from=%s&name=%s&mode=copy' % (jobName, jobName2)
+url = 'http://localhost:8080/createItem?from=%s&name=%s&mode=copy' % (
+    jobName, jobName2)
 
 xml = resource_string('examples', 'addjob.xml')
-j = J.create_job(jobname=jobName, config=xml)
+j = J.create_job(jobname=jobName, xml=xml)
 
 
 h = {'Content-Type': 'application/x-www-form-urlencoded'}

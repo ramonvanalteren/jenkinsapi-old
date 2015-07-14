@@ -10,7 +10,7 @@ from jenkinsapi.job import Job
 from jenkinsapi.jenkinsbase import JenkinsBase
 
 
-#TODO: Make JOB_DATA to be one coming from Hg job
+# TODO: Make JOB_DATA to be one coming from Hg job
 class TestHgJob(unittest.TestCase):
     JOB_DATA = {
         "actions": [],
@@ -28,11 +28,14 @@ class TestHgJob(unittest.TestCase):
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/foo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png",
+             "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},
         "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
         "lastFailedBuild": None,
         "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -50,7 +53,7 @@ class TestHgJob(unittest.TestCase):
 
     URL_DATA = {'http://halob:8080/job/foo/%s' % config.JENKINS_API: JOB_DATA}
 
-    def fakeGetData(self, url, *args):
+    def fakeGetData(self, url, *args, **kwargs):
         try:
             return TestHgJob.URL_DATA[url]
         except KeyError:
@@ -92,16 +95,16 @@ class TestHgJob(unittest.TestCase):
         '''
         return config_node
 
-    @mock.patch.object(Job,'get_config',configtree_with_branch)
+    @mock.patch.object(Job, 'get_config', configtree_with_branch)
     def test_hg_attributes(self):
         expected_url = ['http://cm5/hg/sandbox/v01.0/int']
-        self.assertEquals(self.j.get_scm_type(),'hg')
-        self.assertEquals(self.j.get_scm_url(),expected_url)
-        self.assertEquals(self.j.get_scm_branch(),['testme'])
+        self.assertEquals(self.j.get_scm_type(), 'hg')
+        self.assertEquals(self.j.get_scm_url(), expected_url)
+        self.assertEquals(self.j.get_scm_branch(), ['testme'])
 
-    @mock.patch.object(Job,'get_config',configtree_with_default_branch)
+    @mock.patch.object(Job, 'get_config', configtree_with_default_branch)
     def test_hg_attributes_default_branch(self):
-        self.assertEquals(self.j.get_scm_branch(),['default'])
+        self.assertEquals(self.j.get_scm_branch(), ['default'])
 
 if __name__ == '__main__':
     unittest.main()

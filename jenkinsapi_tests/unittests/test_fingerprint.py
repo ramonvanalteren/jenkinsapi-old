@@ -12,6 +12,7 @@ from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.utils.requester import Requester
 
+
 class TestFingerprint(unittest.TestCase):
 
     def setUp(self):
@@ -31,7 +32,7 @@ class TestFingerprint(unittest.TestCase):
 
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(JenkinsBase, '_poll')
-    def test_valid_with_requests_HTTPError_404(self,_poll,_basepoll):
+    def test_valid_with_requests_HTTPError_404(self, _poll, _basepoll):
         resp_obj = requests.models.Response()
         resp_obj.status_code = 404
         _poll.side_effect = requests.exceptions.HTTPError(response=resp_obj)
@@ -41,7 +42,7 @@ class TestFingerprint(unittest.TestCase):
 
     @mock.patch.object(Jenkins, '_poll')
     @mock.patch.object(JenkinsBase, '_poll')
-    def test_valid_with_requests_HTTPError_Not404(self,_poll,_basepoll):
+    def test_valid_with_requests_HTTPError_Not404(self, _poll, _basepoll):
         resp_obj = requests.models.Response()
         resp_obj.status_code = 401
         _poll.side_effect = requests.exceptions.HTTPError(response=resp_obj)

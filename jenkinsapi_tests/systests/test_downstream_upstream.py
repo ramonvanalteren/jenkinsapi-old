@@ -105,7 +105,9 @@ class TestDownstreamUpstream(BaseSystemTest):
             try:
                 self.jenkins['C'].get_last_completed_buildnumber() > 0
             except NoBuildData:
-                log.info("Waiting %i seconds for until the final job has run", self.DELAY)
+                log.info(
+                    "Waiting %i seconds for until the final job has run",
+                    self.DELAY)
                 time.sleep(self.DELAY)
             else:
                 break

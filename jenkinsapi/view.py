@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class View(JenkinsBase):
+
     """
     View class
     """
@@ -116,7 +117,9 @@ class View(JenkinsBase):
                 top_jenkins = self.get_jenkins_obj().get_jenkins_obj_from_url(
                     self.baseurl.split('view/')[0])
                 if not top_jenkins.has_job(str_job_name):
-                    log.error(msg='Job "%s" is not known to Jenkins' % str_job_name)
+                    log.error(
+                        msg='Job "%s" is not known to Jenkins' %
+                        str_job_name)
                     return False
                 else:
                     job = top_jenkins.get_job(str_job_name)
@@ -167,6 +170,35 @@ class View(JenkinsBase):
     def get_nested_view_dict(self):
         return dict(self._get_nested_views())
 
+    def get_config_xml_url(self):
+        return '%s/config.xml' % self.baseurl
+
+    def get_config(self):
+        """
+        Return the config.xml from the view
+        """
+        url = self.get_config_xml_url()
+        response = self.get_jenkins_obj().requester.get_and_confirm_status(url)
+        return response.text
+
+    def update_config(self, config):
+        """
+        Update the config.xml to the view
+        """
+        url = self.get_config_xml_url()
+        try:
+            if isinstance(
+                    config, unicode):  # pylint: disable=undefined-variable
+                config = str(config)
+        except NameError:
+            # Python3 already a str
+            pass
+
+        response = self.get_jenkins_obj().requester.post_url(
+            url, params={}, data=config)
+        return response.text
+
     @property
     def views(self):
-        return self.get_jenkins_obj().get_jenkins_obj_from_url(self.baseurl).views
+        return self.get_jenkins_obj().get_jenkins_obj_from_url(
+            self.baseurl).views

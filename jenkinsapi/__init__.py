@@ -45,6 +45,7 @@ Project Authors
 Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
+import sys
 import pkg_resources
 from jenkinsapi import (
     # Modules
@@ -62,4 +63,10 @@ __all__ = [
     "fingerprint", "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"
 ]
 __docformat__ = "epytext"
-__version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
+
+# In case of jenkinsapi is not installed in 'develop' mode
+if not sys.argv[0].endswith('nosetests'):
+    __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
+else:
+    # Return bogus version
+    __version__ = '99.99.99'

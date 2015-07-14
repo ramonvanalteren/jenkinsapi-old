@@ -35,7 +35,8 @@ class TestQueue(unittest.TestCase):
                 data=None,
                 headers=None
             )
-        self.assertTrue(str(na.exception) == "Params must be a dict, got 'wrong'")
+        self.assertTrue(
+            str(na.exception) == "Params must be a dict, got 'wrong'")
 
     def test_get_request_dict_correct_params(self):
         req = Requester('foo', 'bar')
@@ -59,7 +60,8 @@ class TestQueue(unittest.TestCase):
                 data=None,
                 headers='wrong'
             )
-        self.assertTrue(str(na.exception) == "headers must be a dict, got 'wrong'")
+        self.assertTrue(
+            str(na.exception) == "headers must be a dict, got 'wrong'")
 
     def test_get_request_dict_correct_headers(self):
         req = Requester('foo', 'bar')
@@ -122,7 +124,7 @@ class TestQueue(unittest.TestCase):
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_empty_xml(self, _post):
-        _post.return_value = 'SUCCESS'
+        _post.return_value = mock.Mock()
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_xml_and_confirm_status(
@@ -130,8 +132,6 @@ class TestQueue(unittest.TestCase):
                 params={'param': 'value'},
                 data=None
             )
-
-        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': %s. Expected (str, dict)" % type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_xml_and_confirm_status_some_xml(self, _post):
@@ -148,7 +148,8 @@ class TestQueue(unittest.TestCase):
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_empty_data(self, _post):
-        _post.return_value = 'SUCCESS'
+        mock_response = mock.Mock()
+        _post.return_value = mock_response
         req = Requester('foo', 'bar')
         with self.assertRaises(AssertionError) as ae:
             req.post_and_confirm_status(
@@ -157,7 +158,6 @@ class TestQueue(unittest.TestCase):
                 data=None
             )
 
-        self.assertTrue(str(ae.exception) == "Unexpected type of parameter 'data': %s. Expected (str, dict)" % type(None))
 
     @mock.patch.object(requests, 'post')
     def test_post_and_confirm_status_some_data(self, _post):

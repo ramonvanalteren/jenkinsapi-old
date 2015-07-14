@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import logging
 from pkg_resources import resource_string
-
-from jenkinsapi.view import View
 from jenkinsapi.views import Views
 from jenkinsapi.jenkins import Jenkins
 
@@ -18,7 +16,7 @@ api = Jenkins(jenkins_url)
 
 jobName = 'foo_job2'
 xml = resource_string('examples', 'addjob.xml')
-j = api.create_job(jobname=jobName, config=xml)
+j = api.create_job(jobname=jobName, xml=xml)
 
 # Create ListView in main view
 logger.info('Attempting to create new nested view')

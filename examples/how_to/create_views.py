@@ -1,14 +1,11 @@
 import logging
-
-from jenkinsapi.view import View
 from jenkinsapi.jenkins import Jenkins
 
 log_level = getattr(logging, 'DEBUG')
 logging.basicConfig(level=log_level)
 logger = logging.getLogger()
 
-jenkins_url = "http://192.168.1.64:8080/"
-#jenkins_url = "http://localhost:7080/"
+jenkins_url = "http://localhost:8080/"
 
 api = Jenkins(jenkins_url)
 

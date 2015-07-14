@@ -25,11 +25,14 @@ class TestJobGetAllBuilds(unittest.TestCase):
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/foo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png",
+             "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},  # build running
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/foo/4/"},
         "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
         "lastFailedBuild": None,
         "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/foo/3/"},
@@ -102,11 +105,14 @@ class TestJobGetAllBuilds(unittest.TestCase):
         "color": "blue",
         "firstBuild": {"number": 1, "url": "http://halob:8080/job/fullfoo/1/"},
         "healthReport": [
-            {"description": "Build stability: No recent builds failed.", "iconUrl": "health-80plus.png", "score": 100}
+            {"description": "Build stability: No recent builds failed.",
+             "iconUrl": "health-80plus.png",
+             "score": 100}
         ],
         "inQueue": False,
         "keepDependencies": False,
-        "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"},  # build running
+        # build running
+        "lastBuild": {"number": 4, "url": "http://halob:8080/job/fullfoo/4/"},
         "lastCompletedBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
         "lastFailedBuild": None,
         "lastStableBuild": {"number": 3, "url": "http://halob:8080/job/fullfoo/3/"},
@@ -130,14 +136,14 @@ class TestJobGetAllBuilds(unittest.TestCase):
 
     URL_DATA = {
         JOB1_API_URL: JOB1_DATA,
-        (JOB1_API_URL, str({'tree': 'allBuilds[number,url]'})): JOB1_ALL_BUILDS_DATA,
+        (JOB1_API_URL, 'allBuilds[number,url]'): JOB1_ALL_BUILDS_DATA,
         JOB2_API_URL: JOB2_DATA,
         JOB3_API_URL: JOB3_DATA,
         # this one below should never be used
-        (JOB3_API_URL, str({'tree': 'allBuilds[number,url]'})): JOB3_ALL_BUILDS_DATA,
+        (JOB3_API_URL, 'allBuilds[number,url]'): JOB3_ALL_BUILDS_DATA,
     }
 
-    def fakeGetData(self, url, params=None):
+    def fakeGetData(self, url, params=None, tree=None):
         TestJobGetAllBuilds.__get_data_call_count += 1
         if params is None:
             try:
@@ -148,14 +154,34 @@ class TestJobGetAllBuilds(unittest.TestCase):
             try:
                 return dict(TestJobGetAllBuilds.URL_DATA[(url, str(params))])
             except KeyError:
-                raise Exception("Missing data for url: %s with parameters %s" % (url, repr(params)))
+                raise Exception(
+                    "Missing data for url: %s with parameters %s" %
+                    (url, repr(params)))
 
-    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    def fakeGetDataTree(self, url, **args):
+        TestJobGetAllBuilds.__get_data_call_count += 1
+        try:
+            if args['tree']:
+                if 'builds' in args['tree']:
+                    return {
+                        'builds': TestJobGetAllBuilds.URL_DATA[url]['builds']}
+                elif 'allBuilds' in args['tree']:
+                    return TestJobGetAllBuilds.URL_DATA[(url, args['tree'])]
+                elif 'lastBuild' in args['tree']:
+                    return {
+                        'lastBuild': TestJobGetAllBuilds.URL_DATA[url]['lastBuild']}
+            else:
+                return dict(TestJobGetAllBuilds.URL_DATA[url])
+        except KeyError:
+            raise Exception("Missing data for %s" % url)
+
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def setUp(self):
         TestJobGetAllBuilds.__get_data_call_count = 0
         self.J = mock.MagicMock()  # Jenkins object
         self.j = Job('http://halob:8080/job/foo/', 'foo', self.J)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_get_build_dict(self):
         # The job data contains only one build, so we expect that the
         # remaining jobs will be fetched automatically
@@ -163,7 +189,7 @@ class TestJobGetAllBuilds(unittest.TestCase):
         self.assertTrue(isinstance(ret, dict))
         self.assertEquals(len(ret), 4)
 
-    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_incomplete_builds_list_will_call_jenkins_twice(self):
         # The job data contains only one build, so we expect that the
         # remaining jobs will be fetched automatically, and to have two calls to
@@ -172,21 +198,26 @@ class TestJobGetAllBuilds(unittest.TestCase):
         self.j = Job('http://halob:8080/job/foo/', 'foo', self.J)
         self.assertEquals(TestJobGetAllBuilds.__get_data_call_count, 2)
 
-    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_complete_builds_list_will_call_jenkins_once(self):
-        # The job data contains all builds, so we will not gather remaining builds
+        # The job data contains all builds, so we will not gather remaining
+        # builds
         TestJobGetAllBuilds.__get_data_call_count = 0
         self.j = Job('http://halob:8080/job/fullfoo/', 'fullfoo', self.J)
         self.assertEquals(TestJobGetAllBuilds.__get_data_call_count, 1)
 
-    @mock.patch.object(JenkinsBase, 'get_data', fakeGetData)
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_nobuilds_get_build_dict(self):
-        j = Job('http://halob:8080/job/look_ma_no_builds/', 'look_ma_no_builds', self.J)
+        j = Job(
+            'http://halob:8080/job/look_ma_no_builds/',
+            'look_ma_no_builds',
+            self.J)
 
         ret = j.get_build_dict()
         self.assertTrue(isinstance(ret, dict))
         self.assertEquals(len(ret), 0)
 
+    @mock.patch.object(JenkinsBase, 'get_data', fakeGetDataTree)
     def test_get_build_ids(self):
         # The job data contains only one build, so we expect that the
         # remaining jobs will be fetched automatically

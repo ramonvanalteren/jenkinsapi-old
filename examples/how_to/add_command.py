@@ -1,5 +1,5 @@
 from jenkinsapi.jenkins import Jenkins
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 
 J = Jenkins('http://localhost:8080')
 EMPTY_JOB_CONFIG = '''
@@ -26,15 +26,14 @@ jobname = 'foo_job'
 new_job = J.create_job(jobname, EMPTY_JOB_CONFIG)
 new_conf = new_job.get_config()
 
-root = ET.fromstring(new_conf.strip())
+root = et.fromstring(new_conf.strip())
 
 builders = root.find('builders')
-shell = ET.SubElement(builders, 'hudson.tasks.Shell')
-command = ET.SubElement(shell, 'command')
+shell = et.SubElement(builders, 'hudson.tasks.Shell')
+command = et.SubElement(shell, 'command')
 command.text = "ls"
 
-print ET.tostring(root)
-J[jobname].update_config(ET.tostring(root))
+print(et.tostring(root))
+J[jobname].update_config(et.tostring(root))
 
-#J.delete_job(jobname)
-
+# J.delete_job(jobname)

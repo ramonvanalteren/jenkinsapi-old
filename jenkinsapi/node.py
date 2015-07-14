@@ -16,8 +16,10 @@ log = logging.getLogger(__name__)
 
 
 class Node(JenkinsBase):
+
     """
-    Class to hold information on nodes that are attached as slaves to the master jenkins instance
+    Class to hold information on nodes that are attached as slaves
+    to the master jenkins instance
     """
 
     def __init__(self, baseurl, nodename, jenkins_obj):
@@ -39,12 +41,10 @@ class Node(JenkinsBase):
         return self.name
 
     def is_online(self):
-        self.poll()
-        return not self._data['offline']
+        return not self.poll(tree='offline')['offline']
 
     def is_temporarily_offline(self):
-        self.poll()
-        return self._data['temporarilyOffline']
+        return self.poll(tree='temporarilyOffline')['temporarilyOffline']
 
     def is_jnlpagent(self):
         return self._data['jnlpAgent']
@@ -55,53 +55,68 @@ class Node(JenkinsBase):
     def set_online(self):
         """
         Set node online.
-        Before change state verify client state: if node set 'offline' but 'temporarilyOffline'
-        is not set - client has connection problems and AssertionError raised.
+        Before change state verify client state: if node set 'offline'
+        but 'temporarilyOffline' is not set - client has connection problems
+        and AssertionError raised.
         If after run node state has not been changed raise AssertionError.
         """
         self.poll()
         # Before change state check if client is connected
         if self._data['offline'] and not self._data['temporarilyOffline']:
-            raise AssertionError("Node is offline and not marked as temporarilyOffline" +
-                                 ", check client connection: " +
-                                 "offline = %s , temporarilyOffline = %s" %
-                                 (self._data['offline'], self._data['temporarilyOffline']))
+            raise AssertionError("Node is offline and not marked as "
+                                 "temporarilyOffline, check client "
+                                 "connection: offline = %s, "
+                                 "temporarilyOffline = %s" %
+                                 (self._data['offline'],
+                                  self._data['temporarilyOffline']))
         elif self._data['offline'] and self._data['temporarilyOffline']:
             self.toggle_temporarily_offline()
             if self._data['offline']:
-                raise AssertionError("The node state is still offline, check client connection:" +
-                                     " offline = %s , temporarilyOffline = %s" %
-                                     (self._data['offline'], self._data['temporarilyOffline']))
+                raise AssertionError("The node state is still offline, "
+                                     "check client connection:"
+                                     " offline = %s, "
+                                     "temporarilyOffline = %s" %
+                                     (self._data['offline'],
+                                      self._data['temporarilyOffline']))
 
     def set_offline(self, message="requested from jenkinsapi"):
         """
         Set node offline.
         If after run node state has not been changed raise AssertionError.
-        : param message: optional string explain why you are taking this node offline
+        : param message: optional string explain why you are taking this
+            node offline
         """
         if not self._data['offline']:
             self.toggle_temporarily_offline(message)
-            self.poll()
-            if not self._data['offline']:
+            data = self.poll(tree='offline,temporarilyOffline')
+            if not data['offline']:
                 raise AssertionError("The node state is still online:" +
                                      "offline = %s , temporarilyOffline = %s" %
-                                     (self._data['offline'], self._data['temporarilyOffline']))
+                                     (data['offline'],
+                                      data['temporarilyOffline']))
 
     def toggle_temporarily_offline(self, message="requested from jenkinsapi"):
         """
-        Switches state of connected node (online/offline) and set 'temporarilyOffline' property (True/False)
+        Switches state of connected node (online/offline) and
+        set 'temporarilyOffline' property (True/False)
         Calling the same method again will bring node status back.
-        : param message: optional string can be used to explain why you are taking this node offline
+        :param message: optional string can be used to explain why you
+            are taking this node offline
         """
         initial_state = self.is_temporarily_offline()
-        url = self.baseurl + "/toggleOffline?offlineMessage=" + urlquote(message)
+        url = self.baseurl + \
+            "/toggleOffline?offlineMessage=" + urlquote(message)
         try:
             html_result = self.jenkins.requester.get_and_confirm_status(url)
         except PostRequired:
-            html_result = self.jenkins.requester.post_and_confirm_status(url, data={})
+            html_result = self.jenkins.requester.post_and_confirm_status(
+                url,
+                data={})
 
         self.poll()
         log.debug(html_result)
         state = self.is_temporarily_offline()
         if initial_state == state:
-            raise AssertionError("The node state has not changed: temporarilyOffline = %s" % state)
+            raise AssertionError(
+                "The node state has not changed: temporarilyOffline = %s" %
+                state)

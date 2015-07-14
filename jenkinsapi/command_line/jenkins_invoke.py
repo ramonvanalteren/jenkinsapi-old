@@ -44,7 +44,7 @@ class JenkinsInvoke(object):
         try:
             assert len(args) > 0, "Need to specify at least one job name"
         except AssertionError as err:
-            log.critical(err[0])
+            log.critical(err.message)
             parser.print_help()
             sys.exit(1)
         invoker = cls(options, args)
@@ -65,8 +65,8 @@ class JenkinsInvoke(object):
                 job, block=self.options.block, token=self.options.token)
 
     def invokejob(self, jobname, block, token):
-        assert type(block) == bool
-        assert type(jobname) == str
+        assert isinstance(block, bool)
+        assert isinstance(jobname, str)
         assert token is None or isinstance(token, str)
         job = self.api.get_job(jobname)
         job.invoke(securitytoken=token, block=block)

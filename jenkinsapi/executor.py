@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class Executor(JenkinsBase):
+
     """
     Class to hold information on nodes that are attached as slaves to the
     master jenkins instance
@@ -36,33 +37,28 @@ class Executor(JenkinsBase):
 
     def get_progress(self):
         """Returns percentage"""
-        self.poll()
-        return self._data['progress']
+        return self.poll(tree='progress')['progress']
 
     def get_number(self):
         """
         Get Executor number.
         """
-        self.poll()
-        return self._data['number']
+        return self.poll(tree='number')['number']
 
     def is_idle(self):
         """
         Returns Boolean: whether Executor is idle or not.
         """
-        self.poll()
-        return self._data['idle']
+        return self.poll(tree='idle')['idle']
 
     def likely_stuck(self):
         """
         Returns Boolean: whether Executor is likely stuck or not.
         """
-        self.poll()
-        return self._data['likelyStuck']
+        return self.poll(tree='likelyStuck')['likelyStuck']
 
     def get_current_executable(self):
         """
         Returns the current Queue.Task this executor is running.
         """
-        self.poll()
-        return self._data['currentExecutable']
+        return self.poll(tree='currentExecutable')['currentExecutable']

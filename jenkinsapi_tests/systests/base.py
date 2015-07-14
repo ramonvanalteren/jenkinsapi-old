@@ -13,13 +13,16 @@ log = logging.getLogger(__name__)
 
 DEFAULT_JENKINS_PORT = 8080
 
+
 class BaseSystemTest(unittest.TestCase):
 
     def setUp(self):
         try:
             port = jenkinsapi_tests.systests.state['launcher'].http_port
         except KeyError:
-            log.warning("Jenkins was not launched from the test-framework, assuming port %i" % DEFAULT_JENKINS_PORT)
+            log.warning(
+                "Jenkins was not launched from the test-framework, assuming port %i" %
+                DEFAULT_JENKINS_PORT)
             port = DEFAULT_JENKINS_PORT
         self.jenkins = Jenkins('http://localhost:%d' % port)
         self._delete_all_jobs()
