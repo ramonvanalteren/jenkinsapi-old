@@ -107,7 +107,7 @@ def search_artifacts(jenkinsurl, jobid, artifact_ids=None,
 
 
 def grab_artifact(jenkinsurl, jobid, artifactid, targetdir,
-                  username=None, password=None):
+                  username=None, password=None, strict_validation=False):
     """
     Convenience method to find the latest good version of an artifact and
     save it to a target directory.
@@ -118,7 +118,7 @@ def grab_artifact(jenkinsurl, jobid, artifactid, targetdir,
     artifact = artifacts[artifactid]
     if not os.path.exists(targetdir):
         os.makedirs(targetdir)
-    artifact.save_to_dir(targetdir)
+    artifact.save_to_dir(targetdir, strict_validation)
 
 
 def block_until_complete(jenkinsurl, jobs, maxwait=12000, interval=30,
@@ -169,7 +169,7 @@ def get_nested_view_from_url(url, username=None, password=None):
     return jenkinsci.get_view_by_url(url)
 
 
-def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
+def install_artifacts(artifacts, dirstruct, installdir, basestaticurl, strict_validation=False):
     """
     Install the artifacts.
     """
@@ -192,7 +192,7 @@ def install_artifacts(artifacts, dirstruct, installdir, basestaticurl):
                 # we can get it from the static collection
                 staticurl = urlparse.urljoin(basestaticurl, artifactname)
                 theartifact = Artifact(artifactname, staticurl, None)
-            theartifact.save(destpath)
+            theartifact.save(destpath, strict_validation)
             installed.append(destpath)
     return installed
 
