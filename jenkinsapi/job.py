@@ -526,10 +526,13 @@ class Job(JenkinsBase, MutableJenkinsThing):
     def get_config_xml_url(self):
         return '%s/config.xml' % self.baseurl
 
-    def update_config(self, config):
+    def update_config(self, config, full_response=False):
         """
         Update the config.xml to the job
         Also refresh the ElementTree object since the config has changed
+        :param full_response (optional): if True, it will return the full
+            response object instead of just the response text.
+            Useful for debugging and validation workflows.
         """
         url = self.get_config_xml_url()
         try:
@@ -542,6 +545,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         response = self.jenkins.requester.post_url(url, params={}, data=config)
         self._element_tree = ET.fromstring(config)
+
+        if full_response:
+            return response
+
         return response.text
 
     def get_downstream_jobs(self):
