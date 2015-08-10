@@ -97,6 +97,8 @@ You can use Jenkins to get information about recently completed builds. For exam
 
 When used with the Git source-control system line 20 will print out something like '8b4f4e6f6d0af609bb77f95d8fb82ff1ee2bba0d' - which looks suspiciously like a Git revision number.
 
+Note: As of Jenkins version 1.426, and above, an API token can be specified instead of your real password, while authenticating the user against the Jenkins instance. Refer to the the Jenkis wiki page [Authenticating scripted clients](https://wiki.jenkins-ci.org/display/JENKINS/Authenticating+scripted+clients) for details about how a user can generate an API token. Once you have obtained an API token you can pass the API token instead of real password while creating an Jenkins server instance using Jenkins API.
+
 Tips & Tricks
 -------------
 
