@@ -31,8 +31,7 @@ Example 2: Get details of jobs running on Jenkins server
     def get_job_details():
         # Refer Example #1 for definition of function 'get_server_instance'
         server = get_server_instance()
-        for j in server.get_jobs():
-            job_instance = server.get_job(j[0])
+        for job_name, job_instance in server.get_jobs():
             print 'Job Name:%s' %(job_instance.name)
             print 'Job Description:%s' %(job_instance.get_description())
             print 'Is Job running:%s' %(job_instance.is_running())
