@@ -66,9 +66,9 @@ __docformat__ = "epytext"
 # In case of jenkinsapi is not installed in 'develop' mode
 __version__ = '99.99.99'
 try:
-  import pkg_resources
-  __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
+    import pkg_resources
+    __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
 except ImportError:
-  pass
+    pass
 except KeyError:
-  pass
+    pass
