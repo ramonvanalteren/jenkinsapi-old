@@ -46,7 +46,6 @@ Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
 import sys
-import pkg_resources
 from jenkinsapi import (
     # Modules
     command_line,
@@ -65,8 +64,11 @@ __all__ = [
 __docformat__ = "epytext"
 
 # In case of jenkinsapi is not installed in 'develop' mode
-if not sys.argv[0].endswith('nosetests'):
-    __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
-else:
-    # Return bogus version
-    __version__ = '99.99.99'
+__version__ = '99.99.99'
+try:
+  import pkg_resources
+  __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
+except ImportError:
+  pass
+except KeyError:
+  pass
