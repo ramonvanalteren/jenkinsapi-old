@@ -23,7 +23,7 @@ class test_build(unittest.TestCase):
         'builtOn': '',
         'changeSet': {'items': [], 'kind': None},
         'culprits': [],
-        'description': None,
+        'description': 'Best build ever!',
         "duration": 5782,
         'estimatedDuration': 106,
         'executor': None,
@@ -85,6 +85,10 @@ class test_build(unittest.TestCase):
                           [{'shortDescription': 'Started by user anonymous',
                             'userId': None,
                             'userName': 'anonymous'}])
+
+    def test_get_description(self):
+        self.assertEquals(self.b.get_description(),
+                          'Best build ever!')
 
     @mock.patch.object(Build, 'get_data')
     def test_build_depth(self, get_data_mock):

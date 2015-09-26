@@ -71,6 +71,9 @@ class Build(JenkinsBase):
     def name(self):
         return str(self)
 
+    def get_description(self):
+        return self._data["description"]
+
     def get_number(self):
         return self._data["number"]
 
