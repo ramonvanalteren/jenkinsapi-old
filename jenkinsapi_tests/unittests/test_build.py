@@ -20,7 +20,7 @@ class test_build(unittest.TestCase):
                     {'causes': []}],
         'artifacts': [],
         'building': False,
-        'builtOn': '',
+        'builtOn': 'localhost',
         'changeSet': {'items': [], 'kind': None},
         'culprits': [],
         'description': 'Best build ever!',
@@ -89,6 +89,10 @@ class test_build(unittest.TestCase):
     def test_get_description(self):
         self.assertEquals(self.b.get_description(),
                           'Best build ever!')
+    
+    def test_get_slave(self):
+        self.assertEquals(self.b.get_slave(),
+                          'localhost')
 
     @mock.patch.object(Build, 'get_data')
     def test_build_depth(self, get_data_mock):
