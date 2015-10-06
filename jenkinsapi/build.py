@@ -80,6 +80,9 @@ class Build(JenkinsBase):
     def get_status(self):
         return self._data["result"]
 
+    def get_slave(self):
+        return self._data["builtOn"]
+
     def get_revision(self):
         vcs = self._data['changeSet']['kind'] or 'git'
         return getattr(self, '_get_%s_rev' % vcs, lambda: None)()
