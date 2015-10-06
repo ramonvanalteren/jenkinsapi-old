@@ -89,7 +89,7 @@ class test_build(unittest.TestCase):
     def test_get_description(self):
         self.assertEquals(self.b.get_description(),
                           'Best build ever!')
-    
+
     def test_get_slave(self):
         self.assertEquals(self.b.get_slave(),
                           'localhost')
