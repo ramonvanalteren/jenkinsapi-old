@@ -42,7 +42,8 @@ class Jenkins(JenkinsBase):
     def __init__(
             self, baseurl,
             username=None, password=None,
-            requester=None, lazy=False):
+            requester=None, lazy=False,
+            ssl_verify=True):
         """
         :param baseurl: baseurl for jenkins instance including port, str
         :param username: username for jenkins auth, str
@@ -54,7 +55,8 @@ class Jenkins(JenkinsBase):
         self.requester = requester or Requester(
             username,
             password,
-            baseurl=baseurl)
+            baseurl=baseurl,
+            ssl_verify=ssl_verify)
         self.lazy = lazy
         JenkinsBase.__init__(self, baseurl, poll=not lazy)
 
@@ -383,7 +385,8 @@ class Jenkins(JenkinsBase):
         # here can be 503 even when everything is normal
         url = '%s/safeRestart' % (self.baseurl,)
         valid = self.requester.VALID_STATUS_CODES + [503]
-        resp = self.requester.post_and_confirm_status(url, data='', valid=valid)
+        resp = self.requester.post_and_confirm_status(url, data='',
+                                                      valid=valid)
         return resp
 
     def get_plugins(self, depth=1):
