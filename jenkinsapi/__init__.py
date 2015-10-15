@@ -63,7 +63,6 @@ __all__ = [
     "fingerprint", "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"
 ]
 __docformat__ = "epytext"
-import sys
 # In case of jenkinsapi is not installed in 'develop' mode
 if not sys.argv[0].endswith('nosetests'):
     __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version

@@ -38,12 +38,17 @@ class TestNodes(BaseSystemTest):
 
     def test_create_jnlp_node(self):
         node_name = random_string()
-        node = self.jenkins.create_node(node_name, 2, 'test')
-
+        node_dict = {
+            'num_executors': 1,
+            'node_description': 'Test JNLP Node',
+            'remote_fs': '/tmp',
+            'labels': 'systest_jnlp',
+            'exclusive': True
+        }
+        node = self.jenkins.nodes.create_node(node_name, node_dict)
         self.assertTrue(isinstance(node, Node))
 
-        node2 = self.jenkins.create_node(node_name, 2, 'test')
-        self.assertEquals(node, node2)
+        del self.jenkins.nodes[node_name]
 
     def test_create_ssh_node(self):
         node_name = random_string()
@@ -63,24 +68,36 @@ class TestNodes(BaseSystemTest):
             'jvm_options': '',
             'java_path': '',
             'prefix_start_slave_cmd': '',
-            'suffix_start_slave_cmd': ''
+            'suffix_start_slave_cmd': '',
+            'retention': 'ondemand',
+            'ondemand_delay': 0,
+            'ondemand_idle_delay': 5
         }
-        self.jenkins.nodes[node_name] = Node(baseurl=None,
-                                             nodename=node_name,
-                                             jenkins_obj=self.jenkins,
-                                             node_dict=node_dict)
-
-        node = self.jenkins.nodes[node_name]
-
+        node = self.jenkins.nodes.create_node(node_name, node_dict)
         self.assertTrue(isinstance(node, Node))
+        del self.jenkins.nodes[node_name]
+
+        self.jenkins.nodes[node_name] = node_dict
+        self.assertTrue(isinstance(self.jenkins.nodes[node_name], Node))
+        del self.jenkins.nodes[node_name]
 
     def test_delete_node(self):
         node_name = random_string()
-        self.jenkins.create_node(node_name, 2, 'test')
+        node_dict = {
+            'num_executors': 1,
+            'node_description': 'Test JNLP Node',
+            'remote_fs': '/tmp',
+            'labels': 'systest_jnlp',
+            'exclusive': True
+        }
+        self.jenkins.nodes.create_node(node_name, node_dict)
         del self.jenkins.nodes[node_name]
 
         with self.assertRaises(KeyError):
             self.jenkins.nodes[node_name]
+
+        with self.assertRaises(KeyError):
+            del self.jenkins.nodes['not_exist']
 
     def test_delete_all_nodes(self):
         nodes = self.jenkins.nodes

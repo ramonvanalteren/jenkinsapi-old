@@ -24,20 +24,19 @@ class Node(JenkinsBase):
     to the master jenkins instance
     """
 
-    def __init__(self, baseurl, nodename, jenkins_obj,
-                 poll=True, node_dict=None):
+    def __init__(self, jenkins_obj, baseurl, nodename, node_dict, poll=True):
         """
         Init a node object by providing all relevant pointers to it
+        :param jenkins_obj: ref to the jenkins obj
         :param baseurl: basic url for querying information on a node
             If url is not set - object will construct it itself. This is
             useful when node is being created and not exists in Jenkins yet
         :param nodename: hostname of the node
-        :param jenkins_obj: ref to the jenkins obj
+        :param dict node_dict: Dict with node parameters as described below
         :param bool poll: set to False if node does not exist or automatic
             refresh from Jenkins is not required. Default is True.
             If baseurl parameter is set to None - poll parameter will be
             set to False
-        :param dict node_dict: Dict with node parameters as described below
 
         JNLP Node:
             {
@@ -49,7 +48,7 @@ class Node(JenkinsBase):
             }
 
         SSH Node:
-            {
+        {
             'num_executors': int,
             'node_description': str,
             'remote_fs': str,
@@ -62,7 +61,22 @@ class Node(JenkinsBase):
             'java_path': str,
             'prefix_start_slave_cmd': str,
             'suffix_start_slave_cmd': str
-            }
+            'max_num_retries': int,
+            'retry_wait_time': int,
+            'retention': str ('Always' or 'OnDemand')
+            'ondemand_delay': int (only for OnDemand retention)
+            'ondemand_idle_delay': int (only for OnDemand retention)
+            'env': [
+                {
+                    'key':'TEST',
+                    'value':'VALUE'
+                },
+                {
+                    'key':'TEST2',
+                    'value':'value2'
+                }
+            ]
+        }
 
         :return: None
         :return: Node obj
@@ -91,20 +105,52 @@ class Node(JenkinsBase):
             launcher = {'stapler-class': 'hudson.slaves.JNLPLauncher'}
         else:
             try:
-                credential = self.jenkins.credentials[na['credential_description']]
+                credential = self.jenkins.credentials[
+                    na['credential_description']
+                ]
             except KeyError:
                 raise JenkinsAPIException('Credential with description "%s"'
                                           ' not found'
                                           % na['credential_descr'])
+
+            retries = na['max_num_retries'] if 'max_num_retries' in na else ''
+            re_wait = na['retry_wait_time'] if 'retry_wait_time' in na else ''
             launcher = {
                 'stapler-class': 'hudson.plugins.sshslaves.SSHLauncher',
+                '$class': 'hudson.plugins.sshslaves.SSHLauncher',
                 'host': na['host'],
                 'port': na['port'],
                 'credentialsId': credential.credential_id,
                 'jvmOptions': na['jvm_options'],
                 'javaPath': na['java_path'],
                 'prefixStartSlaveCmd': na['prefix_start_slave_cmd'],
-                'suffixStartSlaveCmd': na['suffix_start_slave_cmd']
+                'suffixStartSlaveCmd': na['suffix_start_slave_cmd'],
+                'maxNumRetries': retries,
+                'retryWaitTime': re_wait
+            }
+
+        retention = {
+            'stapler-class': 'hudson.slaves.RetentionStrategy$Always',
+            '$class': 'hudson.slaves.RetentionStrategy$Always'
+        }
+        if 'retention' in na and na['retention'].lower() == 'ondemand':
+            retention = {
+                'stapler-class': 'hudson.slaves.RetentionStrategy$Demand',
+                '$class': 'hudson.slaves.RetentionStrategy$Demand',
+                'inDemandDelay': na['ondemand_delay'],
+                'idleDelay': na['ondemand_idle_delay']
+            }
+
+        if 'env' in na:
+            node_props = {
+                'stapler-class-bag': 'true',
+                'hudson-slaves-EnvironmentVariablesNodeProperty': {
+                    'env': na['env']
+                }
+            }
+        else:
+            node_props = {
+                'stapler-class-bag': 'true'
             }
 
         params = {
@@ -117,11 +163,9 @@ class Node(JenkinsBase):
                 'remoteFS': na['remote_fs'],
                 'labelString': na['labels'],
                 'mode': 'EXCLUSIVE' if na['exclusive'] else 'NORMAL',
-                'type': 'hudson.slaves.DumbSlave$DescriptorImpl',
-                'retentionStrategy': {'stapler-class':
-                                      'hudson.slaves.'
-                                      'RetentionStrategy$Always'},
-                'nodeProperties': {'stapler-class-bag': 'true'},
+                'retentionStrategy': retention,
+                'type': 'hudson.slaves.DumbSlave',
+                'nodeProperties': node_props,
                 'launcher': launcher
             })
         }

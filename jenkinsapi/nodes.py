@@ -12,6 +12,7 @@ from jenkinsapi.node import Node
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 from jenkinsapi.custom_exceptions import UnknownNode
+from jenkinsapi.custom_exceptions import PostRequired
 
 log = logging.getLogger(__name__)
 
@@ -53,8 +54,8 @@ class Nodes(JenkinsBase):
             else:
                 nodeurl = '%s/%s' % (self.baseurl, nodename)
             try:
-                yield item['displayName'], Node(nodeurl,
-                                                nodename, self.jenkins)
+                yield item['displayName'], Node(self.jenkins, nodeurl,
+                                                nodename, node_dict={})
             except Exception:
                 raise JenkinsAPIException('Unable to iterate nodes')
 
@@ -68,57 +69,44 @@ class Nodes(JenkinsBase):
     def __len__(self):
         return len(self.keys())
 
-    def create_jnlp_node(self, name, num_executors=2, node_description=None,
-                         remote_fs='/var/lib/jenkins', labels=None,
-                         exclusive=False):
-        """
-        Create a new JNLP slave node
-
-        To create SSH slave use Nodes['new_slave'] = Node()
-
-        :param str name: name of slave
-        :param int num_executors: number of executors
-        :param str node_description: a freetext field describing the node
-        :param str remote_fs: jenkins path
-        :param str labels: labels to associate with slave
-        :param bool exclusive: tied to specific job
-        :return: node obj
-        """
-        if name in self:
-            return self[name]
-
-        # For backwards compatibility we save this old function, but let it
-        # use new way of adding node
-        node_dict = {
-            'num_executors': num_executors,
-            'node_description': node_description,
-            'remote_fs': remote_fs,
-            'labels': labels,
-            'exclusive': exclusive
-        }
-
-        self[name] = Node(baseurl=None, nodename=name,
-                          jenkins_obj=self, poll=False,
-                          node_dict=node_dict)
-
-        # url = ('%sdoCreateItem?%s"
-        #        % (self.jenkins.get_node_url(), urllib.urlencode(params)))
-        # self.jenkins.requester.get_and_confirm_status(url)
-        self.poll()
-        return self[name]
-
     def __delitem__(self, item):
         if item in self and item != 'master':
             url = "%s/doDelete" % self[item].baseurl
-            self.jenkins.requester.post_and_confirm_status(url, data={})
+            try:
+                self.jenkins.requester.get_and_confirm_status(url)
+            except PostRequired:
+                # Latest Jenkins requires POST here. GET kept for compatibility
+                self.jenkins.requester.post_and_confirm_status(url, data={})
             self.poll()
+        else:
+            if item != 'master':
+                raise KeyError('Node %s does not exist' % item)
 
-    def __setitem__(self, name, node):
+    def __setitem__(self, name, node_dict):
+        if not isinstance(node_dict, dict):
+            raise ValueError('"node_dict" parameter must be a Node dict')
         if name not in self:
-            url = ('%s/computer/doCreateItem?%s'
-                   % (self.jenkins.baseurl,
-                      urlencode(node.get_node_attributes())))
-            data = {'json': urlencode(node.get_node_attributes())}
-            self.jenkins.requester.post_and_confirm_status(url,
-                                                           data=data)
-            self.poll()
+            self.create_node(name, node_dict)
+        self.poll()
+
+    def create_node(self, name, node_dict):
+        """
+        Create a new slave node
+
+        :param str name: name of slave
+        :param dict node_dict: node dict (See Node class)
+        :return: node obj
+        """
+        if name in self:
+            return
+
+        node = Node(jenkins_obj=self.jenkins, baseurl=None, nodename=name,
+                    node_dict=node_dict, poll=False)
+
+        url = ('%s/computer/doCreateItem?%s'
+               % (self.jenkins.baseurl,
+                  urlencode(node.get_node_attributes())))
+        data = {'json': urlencode(node.get_node_attributes())}
+        self.jenkins.requester.post_and_confirm_status(url, data=data)
+        self.poll()
+        return self[name]

@@ -24,7 +24,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob, PostRequired
+from jenkinsapi.custom_exceptions import UnknownJob
 
 log = logging.getLogger(__name__)
 
@@ -288,7 +288,7 @@ class Jenkins(JenkinsBase):
         :return: boolean
         """
         self.poll()
-        return nodename in self.get_nodes()
+        return nodename in self.nodes
 
     def delete_node(self, nodename):
         """
@@ -301,12 +301,7 @@ class Jenkins(JenkinsBase):
         assert self.has_node(nodename), \
             "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
-        url = "%s/doDelete" % self.get_node_url(nodename)
-        try:
-            self.requester.get_and_confirm_status(url)
-        except PostRequired:
-            # Latest Jenkins requires POST here. GET kept for compatibility
-            self.requester.post_and_confirm_status(url, data={})
+        del self.nodes[nodename]
 
     def create_node(self, name, num_executors=2, node_description=None,
                     remote_fs='/var/lib/jenkins',
@@ -314,23 +309,7 @@ class Jenkins(JenkinsBase):
         """
         Create a new JNLP slave node by name.
 
-        To create SSH node, please use new method::
-
-            new_node_dict = {
-                'num_executors': 2,
-                'node_description': 'My new shiny node',
-                'remote_fs': '/var/lib/jenkins',
-                'labels': 'nodea, nodeb',
-                'exclusive': False,
-                'host': 'hostname',
-                'port': '22'
-                'credential_description': 'creds for nodename',
-                'jvm_options': '-Xmx=1024m',
-                'java_path': '/var/lib/java/bin',
-                'prefix_start_slave_cmd': '',
-                'suffix_start_slave_cmd': ''
-            }
-            jenkins.nodes['new_node_name'] = new_node_dict
+        To create SSH node, please see description in Node class
 
         :param name: fqdn of slave, str
         :param num_executors: number of executors, int
@@ -340,8 +319,14 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        return self.nodes.create_jnlp_node(name, num_executors, node_description,
-                                           remote_fs, labels, exclusive)
+        node_dict = {
+            'num_executors': num_executors,
+            'node_description': node_description,
+            'remote_fs': remote_fs,
+            'labels': labels,
+            'exclusive': exclusive
+        }
+        return self.nodes.create_node(name, node_dict)
 
     def get_plugins_url(self, depth):
         # This only ever needs to work on the base object
