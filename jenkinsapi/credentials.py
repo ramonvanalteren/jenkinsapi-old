@@ -11,6 +11,7 @@ except ImportError:
     from urllib.parse import urlencode
 from jenkinsapi.credential import Credential
 from jenkinsapi.credential import UsernamePasswordCredential
+from jenkinsapi.credential import SSHKeyCredential
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 
@@ -32,25 +33,12 @@ class Credentials(JenkinsBase):
         self.credentials = self._data['credentials']
 
     def _poll(self, tree=None):
-        url = self.python_api_url(self.baseurl)
+        url = self.python_api_url(self.baseurl) + '?depth=2'
         data = self.get_data(url, tree=tree)
         credentials = data['credentials']
-        for cred_id in credentials.keys():
-            cred_url = self.python_api_url('%s/credential/%s' % (self.baseurl, cred_id))
-            cred_dict = self.get_data(cred_url)
-
-            cr = None
-            if cred_dict['typeName'] == 'Username with password':
-                cr = UsernamePasswordCredential(None, None)
-            else:
-                cr = Credential(None, None)
-
-            cr.credential_id = cred_id
-            cr.description = cred_dict['description']
-            cr.fullname = cred_dict['fullName']
-            cr.typename = cred_dict['typeName']
-            cr.displayname = cred_dict['displayName']
-            credentials[cred_id] = cr
+        for cred_id, cred_dict in credentials.items():
+            cred_dict['credential_id'] = cred_id
+            credentials[cred_id] = self._make_credential(cred_dict)
 
         return data
 
@@ -94,71 +82,26 @@ class Credentials(JenkinsBase):
         Description must be unique in Jenkins instance
         because it is used to find Credential later.
 
-        If description already exists - this method is going to update existing Credential
+        If description already exists - this method is going to update
+        existing Credential
 
         :param str description: Credential description
         :param tuple credential_tuple: (username, password, description) tuple.
         """
         if description not in self:
-            if isinstance(credential, UsernamePasswordCredential):
-                params = {
-                    # 'stapler-class': 'com.cloudbees.plugins.credentials.impl.CertificateCredentialsImpl',
-                    # '_.id': '',
-                    # 'keyStoreSource': '0',
-                    # '_.keyStoreFile': '',
-                    # 'stapler-class': ('com.cloudbees.plugins.credentials.'
-                    # 'impl.CertificateCredentialsImpl%24FileOnMasterKeyStoreSource'),
-                    # '_.uploadedKeystore': ' ',
-                    # 'stapler-class':
-                    # 'com.cloudbees.plugins.credentials.impl.'
-                    # 'CertificateCredentialsImpl%24UploadedKeyStoreSource',
-                    # '_.password': ' ',
-                    # '_.description': ' ',
-                    # 'stapler-class': 'com.cloudbees.jenkins.plugins.'
-                    # 'sshcredentials.impl.BasicSSHUserPassword',
-                    # '_.id': ' ',
-                    # '_.username': username,
-                    # '_.password': password,
-                    # '_.description': description,
-                    # 'stapler-class': 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey',
-                    'stapler-class': 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-                    'Submit': 'OK',
-                    'json': {
-                        "": "1",
-                        "credentials": {
-                            "stapler-class": "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl",
-                            "id": "",
-                            "username": credential.username,
-                            "password": credential.password,
-                            "description": description
-                        }
-                    }
-                }
-            url = '%s/credential-store/domain/_/createCredentials' % self.jenkins.baseurl
+            params = credential.get_attributes()
+            url = (
+                '%s/credential-store/domain/_/createCredentials'
+                % self.jenkins.baseurl
+            )
         else:
-            # update existing credentials
-            cred = self[description]
-            if isinstance(cred, UsernamePasswordCredential):
-                params = {
-                    'stapler-class': 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-                    '_.id': cred.credential_id,
-                    '_.username': cred.username,
-                    '_.password': cred.password,
-                    '_.description': description,
-                    'json': {
-                        "stapler-class": "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl",
-                        "id": cred.credential_id,
-                        "username": cred.username,
-                        "password": cred.password,
-                        "description": description
-                    },
-                    'Submit': 'Save'
-                }
-            url = '%s/credential-store/domain/_/credential/%s/updateSubmit' \
-                % (self.jenkins.baseurl, cred.credential_id)
+            raise JenkinsAPIException('Updating credentials is not supported '
+                                      'by jenkinsapi')
 
         try:
-            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urlencode(params))
+            self.jenkins.requester.post_and_confirm_status(
+                url, params={}, data=urlencode(params)
+            )
         except JenkinsAPIException as jae:
             raise JenkinsAPIException('Latest version of Credentials '
                                       'plugin is required to be able '
@@ -181,7 +124,9 @@ class Credentials(JenkinsBase):
         url = ('%s/credential-store/domain/_/credential/%s/doDelete'
                % (self.jenkins.baseurl, self[description].credential_id))
         try:
-            self.jenkins.requester.post_and_confirm_status(url, params={}, data=urlencode(params))
+            self.jenkins.requester.post_and_confirm_status(
+                url, params={}, data=urlencode(params)
+            )
         except JenkinsAPIException as jae:
             raise JenkinsAPIException('Latest version of Credentials '
                                       'required to be able to create '
@@ -191,3 +136,13 @@ class Credentials(JenkinsBase):
         self.credentials = self._data['credentials']
         if description in self:
             raise JenkinsAPIException('Problem deleting credential.')
+
+    def _make_credential(self, cred_dict):
+        if cred_dict['typeName'] == 'Username with password':
+            cr = UsernamePasswordCredential(cred_dict)
+        elif cred_dict['typeName'] == 'SSH Username with private key':
+            cr = SSHKeyCredential(cred_dict)
+        else:
+            cr = Credential(cred_dict)
+
+        return cr

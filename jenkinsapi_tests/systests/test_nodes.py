@@ -8,7 +8,7 @@ try:
 except ImportError:
     import unittest
 from jenkinsapi.node import Node
-from jenkinsapi.credential import UsernamePasswordCredential
+from jenkinsapi.credential import SSHKeyCredential
 from jenkinsapi_tests.systests.base import BaseSystemTest
 from jenkinsapi_tests.test_utils.random_strings import random_string
 
@@ -55,7 +55,13 @@ class TestNodes(BaseSystemTest):
         creds = self.jenkins.get_credentials()
 
         cred_descr = random_string()
-        creds[cred_descr] = UsernamePasswordCredential('username', 'password')
+        cred_dict = {
+            'description': cred_descr,
+            'userName': 'username',
+            'passphrase': '',
+            'private_key': '~'
+        }
+        creds[cred_descr] = SSHKeyCredential(cred_dict)
         node_dict = {
             'num_executors': 1,
             'node_description': 'Description %s' % node_name,
