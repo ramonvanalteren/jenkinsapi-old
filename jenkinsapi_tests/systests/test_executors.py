@@ -21,7 +21,14 @@ class TestNodes(BaseSystemTest):
 
     def test_get_executors(self):
         node_name = random_string()
-        self.jenkins.create_node(node_name)
+        node_dict = {
+            'num_executors': 2,
+            'node_description': 'Test JNLP Node',
+            'remote_fs': '/tmp',
+            'labels': 'systest_jnlp',
+            'exclusive': True
+        }
+        self.jenkins.nodes.create_node(node_name, node_dict)
         executors = self.jenkins.get_executors(node_name)
         self.assertEqual(executors.count, 2)
         for count, execs in enumerate(executors):
@@ -30,7 +37,14 @@ class TestNodes(BaseSystemTest):
 
     def test_running_executor(self):
         node_name = random_string()
-        self.jenkins.create_node(node_name)
+        node_dict = {
+            'num_executors': 1,
+            'node_description': 'Test JNLP Node',
+            'remote_fs': '/tmp',
+            'labels': 'systest_jnlp',
+            'exclusive': True
+        }
+        self.jenkins.nodes.create_node(node_name, node_dict)
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, LONG_RUNNING_JOB)
         qq = job.invoke()
@@ -55,7 +69,14 @@ class TestNodes(BaseSystemTest):
 
     def test_idle_executors(self):
         node_name = random_string()
-        self.jenkins.create_node(node_name)
+        node_dict = {
+            'num_executors': 1,
+            'node_description': 'Test JNLP Node',
+            'remote_fs': '/tmp',
+            'labels': 'systest_jnlp',
+            'exclusive': True
+        }
+        self.jenkins.nodes.create_node(node_name, node_dict)
         executors = self.jenkins.get_executors(node_name)
 
         for execs in executors:

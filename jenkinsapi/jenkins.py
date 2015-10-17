@@ -1,25 +1,21 @@
 """
 Module for jenkinsapi Jenkins object
 """
-
-
-import json
-
 try:
     import urlparse
-    from urllib import quote as urlquote, urlencode
+    from urllib import quote as urlquote
 except ImportError:
     # Python3
     import urllib.parse as urlparse
-    from urllib.parse import quote as urlquote, urlencode
+    from urllib.parse import quote as urlquote
 
 import logging
 
 from jenkinsapi import config
+from jenkinsapi.credentials import Credentials
 from jenkinsapi.executors import Executors
 from jenkinsapi.job import Job
 from jenkinsapi.jobs import Jobs
-from jenkinsapi.node import Node
 from jenkinsapi.view import View
 from jenkinsapi.nodes import Nodes
 from jenkinsapi.plugins import Plugins
@@ -28,7 +24,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob, PostRequired
+from jenkinsapi.custom_exceptions import UnknownJob
 
 log = logging.getLogger(__name__)
 
@@ -281,6 +277,10 @@ class Jenkins(JenkinsBase):
         url = self.get_nodes_url()
         return Nodes(url, self)
 
+    @property
+    def nodes(self):
+        return self.get_nodes()
+
     def has_node(self, nodename):
         """
         Does a node by the name specified exist
@@ -288,7 +288,7 @@ class Jenkins(JenkinsBase):
         :return: boolean
         """
         self.poll()
-        return nodename in self.get_nodes()
+        return nodename in self.nodes
 
     def delete_node(self, nodename):
         """
@@ -301,18 +301,15 @@ class Jenkins(JenkinsBase):
         assert self.has_node(nodename), \
             "This node: %s is not registered as a slave" % nodename
         assert nodename != "master", "you cannot delete the master node"
-        url = "%s/doDelete" % self.get_node_url(nodename)
-        try:
-            self.requester.get_and_confirm_status(url)
-        except PostRequired:
-            # Latest Jenkins requires POST here. GET kept for compatibility
-            self.requester.post_and_confirm_status(url, data={})
+        del self.nodes[nodename]
 
     def create_node(self, name, num_executors=2, node_description=None,
                     remote_fs='/var/lib/jenkins',
                     labels=None, exclusive=False):
         """
-        Create a new slave node by name.
+        Create a new JNLP slave node by name.
+
+        To create SSH node, please see description in Node class
 
         :param name: fqdn of slave, str
         :param num_executors: number of executors, int
@@ -322,39 +319,14 @@ class Jenkins(JenkinsBase):
         :param exclusive: tied to specific job, boolean
         :return: node obj
         """
-        NODE_TYPE = 'hudson.slaves.DumbSlave$DescriptorImpl'
-        MODE = 'NORMAL' if not exclusive else 'EXCLUSIVE'
-        if self.has_node(name):
-            return Node(nodename=name,
-                        baseurl=self.get_node_url(nodename=name),
-                        jenkins_obj=self)
-        params = {
-            'name': name,
-            'type': NODE_TYPE,
-            'json': json.dumps({
-                'name': name,
-                'nodeDescription': node_description,
-                'numExecutors': num_executors,
-                'remoteFS': remote_fs,
-                'labelString': labels,
-                'mode': MODE,
-                'type': NODE_TYPE,
-                'retentionStrategy': {
-                    'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
-                },
-                'nodeProperties': {
-                    'stapler-class-bag': 'true'
-                },
-                'launcher': {
-                    'stapler-class': 'hudson.slaves.JNLPLauncher'
-                }
-            })
+        node_dict = {
+            'num_executors': num_executors,
+            'node_description': node_description,
+            'remote_fs': remote_fs,
+            'labels': labels,
+            'exclusive': exclusive
         }
-        url = self.get_node_url() + "doCreateItem?%s" % urlencode(params)
-        self.requester.get_and_confirm_status(url)
-
-        return Node(nodename=name, baseurl=self.get_node_url(
-            nodename=name), jenkins_obj=self)
+        return self.nodes.create_node(name, node_dict)
 
     def get_plugins_url(self, depth):
         # This only ever needs to work on the base object
@@ -412,3 +384,14 @@ class Jenkins(JenkinsBase):
         response = self.requester.get_and_confirm_status(self.baseurl)
         version_key = 'X-Jenkins'
         return response.headers.get(version_key, '0.0')
+
+    def get_credentials(self):
+        """
+        Return credentials
+        """
+        url = '%s/credential-store/domain/_/' % self.baseurl
+        return Credentials(url, self)
+
+    @property
+    def credentials(self):
+        return self.get_credentials()

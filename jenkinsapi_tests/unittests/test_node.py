@@ -41,7 +41,7 @@ class TestNode(unittest.TestCase):
         # def __init__(self, baseurl, nodename, jenkins_obj):
 
         self.J = mock.MagicMock()  # Jenkins object
-        self.n = Node('http://', 'bobnit', self.J)
+        self.n = Node(self.J, 'http://', 'bobnit', {})
 
     def testRepr(self):
         # Can we produce a repr string for this object
