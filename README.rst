@@ -7,12 +7,9 @@ jenkinsapi
 .. image:: https://travis-ci.org/salimfadhley/jenkinsapi.png?branch=master
         :target: https://travis-ci.org/salimfadhley/jenkinsapi
 
-.. image:: https://pypip.in/d/jenkinsapi/badge.png
-        :target: https://crate.io/packages/jenkinsapi/
-
 .. image:: https://landscape.io/github/salimfadhley/jenkinsapi/master/landscape.png
         :target: https://landscape.io/github/salimfadhley/jenkinsapi
-        
+
 .. image:: https://requires.io/github/salimfadhley/jenkinsapi/requirements.png?branch=master
         :target: https://requires.io/github/salimfadhley/jenkinsapi/requirements/?branch=master
         :alt: Requirements Status
@@ -43,7 +40,7 @@ The project have been tested and working on Python 2.6, 2.7 and 3.3
 
 Known bugs
 ----------
-* Currently incompatible with Jenkins > 1.518. Job deletion operations fail unless Cross-Site scripting protection is disabled.
+* Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
 For other issues, please refer to the support URL below.
 
@@ -128,8 +125,7 @@ missing test dependencies:
 
         virtualenv
         source .venv/bin/active
-        (venv) python setup.py test
-
+        (venv) python setup.py test 
 Project Contributors
 --------------------
 
