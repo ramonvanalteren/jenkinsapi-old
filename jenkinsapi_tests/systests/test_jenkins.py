@@ -71,6 +71,7 @@ class JobTests(BaseSystemTest):
         self._create_job(job1_name)
         self._create_job(job2_name)
         job_list = self.jenkins.get_jobs_list()
+        self.assertGreaterEqual(len(self.jenkins.jobs), 2)
         self.assertEqual([job1_name, job2_name], job_list)
 
     def test_delete_job(self):

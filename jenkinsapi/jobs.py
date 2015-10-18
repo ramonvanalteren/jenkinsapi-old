@@ -23,7 +23,7 @@ class Jobs(object):
         self.jenkins.poll()
 
     def __len__(self):
-        return len(self.keys)
+        return len(self.keys())
 
     def __delitem__(self, job_name):
         """
