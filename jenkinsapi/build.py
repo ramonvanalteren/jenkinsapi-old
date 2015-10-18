@@ -91,6 +91,36 @@ class Build(JenkinsBase):
         vcs = self._data['changeSet']['kind'] or 'git'
         return getattr(self, '_get_%s_rev_branch' % vcs, lambda: None)()
 
+    def get_changeset_items(self):
+        """
+        Returns a list of changeSet items.
+
+        Each item has structure as in following example:
+        {
+            "affectedPaths": [
+                "content/rcm/v00-rcm-xccdf.xml"
+            ],
+            "author" : {
+                "absoluteUrl": "http://jenkins_url/user/username79",
+                "fullName": "username"
+            },
+            "commitId": "3097",
+            "timestamp": 1414398423091,
+            "date": "2014-10-27T08:27:03.091288Z",
+            "msg": "commit message",
+            "paths": [{
+                "editType": "edit",
+                "file": "/some/path/of/changed_file"
+            }],
+            "revision": 3097,
+            "user": "username"
+        }
+        """
+        if 'items' in self._data['changeSet']:
+            return self._data['changeSet']['items']
+        else:
+            return []
+
     def _get_svn_rev(self):
         warnings.warn(
             "This untested function may soon be removed from Jenkinsapi "
@@ -138,7 +168,8 @@ class Build(JenkinsBase):
     def get_artifacts(self):
         data = self.poll(tree='artifacts[relativePath,fileName]')
         for afinfo in data["artifacts"]:
-            url = "%s/artifact/%s" % (self.baseurl, quote(afinfo["relativePath"]))
+            url = "%s/artifact/%s" % (self.baseurl,
+                                      quote(afinfo["relativePath"]))
             af = Artifact(afinfo["fileName"], url, self)
             yield af
 
