@@ -413,6 +413,8 @@ class Build(JenkinsBase):
         if isinstance(content, str):
             return content
         elif isinstance(content, bytes):
+            return content.decode('ISO-8859-1')
+        elif isinstance(content, bytes):
             return content.decode('utf-8')
         else:
             raise JenkinsAPIException('Unknown content type for console')
