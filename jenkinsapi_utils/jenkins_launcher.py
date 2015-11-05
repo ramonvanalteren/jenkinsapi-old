@@ -104,7 +104,7 @@ class JenkinsLancher(object):
             os.mkdir(plugin_dir)
 
         log.info("Downloading %s", hpi_url)
-        log.info("Plugins will be installed in '%s'" % plugin_dir)
+        log.info("Plugins will be installed in '%s'", plugin_dir)
         # FIXME: This is kinda ugly but works
         filename = "plugin_%s.hpi" % i
         plugin_path = os.path.join(plugin_dir, filename)
