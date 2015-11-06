@@ -21,8 +21,6 @@ This library can help you:
  * Ability to search for builds by subversion revision
  * Ability to add/remove/query jenkins slaves
 
-For more information please view this project on GitHub: https://github.com/salimfadhley/jenkinsapi
-
 Installing JenkinsAPI
 =====================
 
@@ -31,7 +29,20 @@ to automatically install this project.
 
 Most users can do the following:
 
-pip install jenkinsapi
+easy_install jenkinsapi
+
+If you'd like to install in multi-version mode:
+
+easy_install -m jenkinsapi
+
+Project Authors
+===============
+
+ * Salim Fadhley (sal@stodge.org)
+ * Ramon van Alteren (ramon@vanalteren.nl)
+ * Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
+
+Current code lives on github: https://github.com/salimfadhley/jenkinsapi
 
 """
 import sys
@@ -52,9 +63,11 @@ __all__ = [
 ]
 __docformat__ = "epytext"
 # In case of jenkinsapi is not installed in 'develop' mode
-
+__version__ = '99.99.99'
 try:
     import pkg_resources
     __version__ = pkg_resources.working_set.by_key['jenkinsapi'].version
-except (ImportError, KeyError):
-    __version__ = '99.99.99'
+except ImportError:
+    pass
+except KeyError:
+    pass
