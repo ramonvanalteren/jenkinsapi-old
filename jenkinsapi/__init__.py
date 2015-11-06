@@ -34,9 +34,13 @@ Most users can do the following:
 pip install jenkinsapi
 
 """
+import sys
 from jenkinsapi import (
+    # Modules
     command_line,
     utils,
+
+    # Files
     api, artifact, build, config, constants, custom_exceptions, fingerprint, executors, executor,
     jenkins, jenkinsbase, job, node, result_set, result, view
 )
@@ -47,6 +51,7 @@ __all__ = [
     "fingerprint", "jenkins", "jenkinsbase", "job", "node", "result_set", "result", "view"
 ]
 __docformat__ = "epytext"
+# In case of jenkinsapi is not installed in 'develop' mode
 
 try:
     import pkg_resources
