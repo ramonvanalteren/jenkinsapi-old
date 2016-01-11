@@ -11,7 +11,7 @@ Example 1: Get version of Jenkins
     
     def get_server_instance():
         jenkins_url = 'http://jenkins_host:8080'
-        server = Jenkins(jenkins_url, username = 'foouser', password = 'foopassword')
+        server = Jenkins(jenkins_url, username='foouser', password='foopassword')
         return server
     
     if __name__ == '__main__':
@@ -32,10 +32,10 @@ Example 2: Get details of jobs running on Jenkins server
         # Refer Example #1 for definition of function 'get_server_instance'
         server = get_server_instance()
         for job_name, job_instance in server.get_jobs():
-            print 'Job Name:%s' %(job_instance.name)
-            print 'Job Description:%s' %(job_instance.get_description())
-            print 'Is Job running:%s' %(job_instance.is_running())
-            print 'Is Job enabled:%s' %(job_instance.is_enabled())
+            print 'Job Name:%s' % (job_instance.name)
+            print 'Job Description:%s' % (job_instance.get_description())
+            print 'Is Job running:%s' % (job_instance.is_running())
+            print 'Is Job enabled:%s' % (job_instance.is_enabled())
 
 Example 3: Disable/Enable a Jenkins Job
 ---------------------------------------
@@ -50,7 +50,7 @@ Example 3: Disable/Enable a Jenkins Job
         if (server.has_job(job_name)):
             job_instance = server.get_job(job_name)
             job_instance.disable()
-            print 'Name:%s,Is Job Enabled ?:%s' %(job_name,job_instance.is_enabled())
+            print 'Name:%s,Is Job Enabled ?:%s' % (job_name,job_instance.is_enabled())
             
 Use the call ``job_instance.enable()`` to enable a Jenkins Job.
 
@@ -66,12 +66,12 @@ Jenkins instance.
         # Refer Example #1 for definition of function 'get_server_instance'
         server = get_server_instance()
         for plugin in server.get_plugins().values():
-            print "Short Name:%s" %(plugin.shortName)
-            print "Long Name:%s" %(plugin.longName)
-            print "Version:%s" %(plugin.version)
-            print "URL:%s" %(plugin.url)
-            print "Active:%s" %(plugin.active)
-            print "Enabled:%s" %(plugin.enabled)
+            print "Short Name:%s" % (plugin.shortName)
+            print "Long Name:%s" % (plugin.longName)
+            print "Version:%s" % (plugin.version)
+            print "URL:%s" % (plugin.url)
+            print "Active:%s" % (plugin.active)
+            print "Enabled:%s" % (plugin.enabled)
     
 Example 5: Getting version information from a completed build
 -------------------------------------------------------------
