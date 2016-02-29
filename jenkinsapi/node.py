@@ -8,6 +8,8 @@ from jenkinsapi.custom_exceptions import JenkinsAPIException
 import json
 import logging
 
+import xml.etree.ElementTree as ET
+
 try:
     from urllib import quote as urlquote
 except ImportError:
@@ -88,6 +90,8 @@ class Node(JenkinsBase):
             baseurl = '%s/computer/%s' % (self.jenkins.baseurl, self.name)
         JenkinsBase.__init__(self, baseurl, poll=poll)
         self.node_attributes = node_dict
+        self._element_tree = None
+        self._config = None
 
     def get_node_attributes(self):
         """
@@ -258,3 +262,39 @@ class Node(JenkinsBase):
             raise AssertionError(
                 "The node state has not changed: temporarilyOffline = %s" %
                 state)
+
+    def _get_config_element_tree(self):
+        """
+        Returns an xml element tree for the node's config.xml. The
+        resulting tree is cached for quick lookup.
+        """
+        if self._config is None:
+            self.load_config()
+
+        if self._element_tree is None:
+            self._element_tree = ET.fromstring(self._config)
+        return self._element_tree
+
+    def get_config(self):
+        """
+        Returns the config.xml from the node.
+        """
+        response = self.jenkins.requester.get_and_confirm_status(
+            "%(baseurl)s/config.xml" % self.__dict__)
+        return response.text
+
+    def load_config(self):
+        """
+        Loads the config.xml for the node allowing it to be re-queried
+        without generating new requests.
+        """
+        self._config = self.get_config()
+
+    def get_labels(self):
+        """
+        Returns the labels for a slave as a string with each label
+        separated by the ' ' character.
+        """
+        element_tree = self._get_config_element_tree()
+        label_element = element_tree.find('label')
+        return label_element.text
