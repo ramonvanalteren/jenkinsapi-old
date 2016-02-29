@@ -123,8 +123,9 @@ class TestNodes(BaseSystemTest):
             'labels': node_labels,
             'exclusive': True
         }
-        node = self.jenkins.create_node(node_name, node_dict)
+        node = self.jenkins.nodes.create_node(node_name, node_dict)
         self.assertEquals(node.get_labels(), node_labels)
+        del self.jenkins.nodes[node_name]
 
 
 if __name__ == '__main__':
