@@ -113,6 +113,20 @@ class TestNodes(BaseSystemTest):
 
         self.assertTrue(len(self.jenkins.nodes) == 1)
 
+    def test_get_node_labels(self):
+        node_name = random_string()
+        node_labels = 'LABEL1 LABEL2'
+        node_dict = {
+            'num_executors': 1,
+            'node_description': 'Test Node with Labels',
+            'remote_fs': '/tmp',
+            'labels': node_labels,
+            'exclusive': True
+        }
+        node = self.jenkins.nodes.create_node(node_name, node_dict)
+        self.assertEquals(node.get_labels(), node_labels)
+        del self.jenkins.nodes[node_name]
+
 
 if __name__ == '__main__':
     logging.basicConfig()
