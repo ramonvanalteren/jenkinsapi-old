@@ -59,7 +59,7 @@ class JenkinsLancher(object):
     """
     Launch jenkins
     """
-    JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
+    JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war"
 
     def __init__(self, war_path, plugin_urls=None, jenkins_url=None):
         self.jenkins_url = jenkins_url
