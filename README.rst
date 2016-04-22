@@ -47,6 +47,7 @@ It was tested previously on Python 2.6, so it may work on this version too.
 
 Known issues
 ------------
+* Not yet tested with Jenkins 2.0
 * Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
 For other issues, please refer to the support URL below.
