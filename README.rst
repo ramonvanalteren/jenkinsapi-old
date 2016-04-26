@@ -45,9 +45,13 @@ Python versions
 The project have been tested and working on Python 2.7, 3.3 and 3.4.
 It was tested previously on Python 2.6, so it may work on this version too.
 
+Jenkins versions
+----------------
+
+Project tested on both stable (LTS) and latest Jenkins versions.
+
 Known issues
 ------------
-* Not yet tested with Jenkins 2.0
 * Job deletion operations fail unless Cross-Site scripting protection is disabled.
 
 For other issues, please refer to the support URL below.
