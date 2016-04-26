@@ -12,7 +12,8 @@ import tempfile
 import requests
 import threading
 import subprocess
-from pkg_resources import resource_string
+from pkg_resources import resource_stream
+from tarfile import TarFile
 try:
     from urlparse import urlparse
 except ImportError:
@@ -59,7 +60,7 @@ class JenkinsLancher(object):
     """
     Launch jenkins
     """
-    JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war"
+    JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
     def __init__(self, war_path, plugin_urls=None, jenkins_url=None):
         self.jenkins_url = jenkins_url
@@ -71,6 +72,10 @@ class JenkinsLancher(object):
         self.jenkins_process = None
         self.q = Queue.Queue()
         self.plugin_urls = plugin_urls or []
+        if os.environ.get('JENKINS_VERSION', 'stable') == 'stable':
+            self.JENKINS_WAR_URL = (
+                'http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war'
+            )
 
     def update_war(self):
         os.chdir(self.war_directory)
@@ -84,15 +89,9 @@ class JenkinsLancher(object):
                                    self.JENKINS_WAR_URL, self.war_directory])
 
     def update_config(self):
-        config_dest = os.path.join(self.jenkins_home, 'config.xml')
-        config_dest_file = open(config_dest, 'w')
-        config_source = resource_string('jenkinsapi_tests.systests',
-                                        'config.xml')
-        try:
-            config_dest_file.write(config_source.encode('UTF-8'))
-        except AttributeError:
-            # Python 3.x
-            config_dest_file.write(config_source.decode('UTF-8'))
+        tarball = TarFile.open(fileobj=resource_stream(
+            'jenkinsapi_tests.systests', 'jenkins_home.tar.gz'))
+        tarball.extractall(path=self.jenkins_home)
 
     def install_plugins(self):
         for i, url in enumerate(self.plugin_urls):
