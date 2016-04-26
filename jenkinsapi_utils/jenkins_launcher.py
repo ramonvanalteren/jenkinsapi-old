@@ -72,6 +72,10 @@ class JenkinsLancher(object):
         self.jenkins_process = None
         self.q = Queue.Queue()
         self.plugin_urls = plugin_urls or []
+        if os.environ.get('JENKINS_VERSION', 'stable') == 'stable':
+            self.JENKINS_WAR_URL = (
+                'http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war'
+            )
 
     def update_war(self):
         os.chdir(self.war_directory)
