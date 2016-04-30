@@ -9,6 +9,7 @@ import shutil
 import logging
 import datetime
 import tempfile
+import posixpath
 import requests
 import threading
 import subprocess
@@ -68,7 +69,11 @@ class JenkinsLancher(object):
             else urlparse(jenkins_url).port
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
-        self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
+
+        if 'JENKINS_HOME' not in os.environ:
+            self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
+            os.environ['JENKINS_HOME'] = self.jenkins_home
+
         self.jenkins_process = None
         self.q = Queue.Queue()
         self.plugin_urls = plugin_urls or []
@@ -104,8 +109,8 @@ class JenkinsLancher(object):
 
         log.info("Downloading %s", hpi_url)
         log.info("Plugins will be installed in '%s'", plugin_dir)
-        # FIXME: This is kinda ugly but works
-        filename = "plugin_%s.hpi" % i
+        path = urlparse(hpi_url).path
+        filename = posixpath.basename(path)
         plugin_path = os.path.join(plugin_dir, filename)
         with open(plugin_path, 'wb') as h:
             request = requests.get(hpi_url)
@@ -116,7 +121,9 @@ class JenkinsLancher(object):
             log.info("Shutting down jenkins.")
             self.jenkins_process.terminate()
             self.jenkins_process.wait()
-            shutil.rmtree(self.jenkins_home)
+            # Do not remove jenkins home if JENKINS_URL is set
+            if 'JENKINS_URL' not in os.environ:
+                shutil.rmtree(self.jenkins_home)
 
     def block_until_jenkins_ready(self, timeout):
         start_time = datetime.datetime.now()
@@ -134,11 +141,12 @@ class JenkinsLancher(object):
 
     def start(self, timeout=60):
         if not self.jenkins_url:
+            self.jenkins_home = os.environ.get('JENKINS_HOME',
+                                               self.jenkins_home)
             self.update_war()
             self.update_config()
             self.install_plugins()
 
-            os.environ['JENKINS_HOME'] = self.jenkins_home
             os.chdir(self.war_directory)
 
             jenkins_command = ['java', '-jar', self.war_filename,
