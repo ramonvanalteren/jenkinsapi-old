@@ -69,7 +69,11 @@ class JenkinsLancher(object):
             else urlparse(jenkins_url).port
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
-        self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
+
+        if 'JENKINS_HOME' not in os.environ:
+            self.jenkins_home = tempfile.mkdtemp(prefix='jenkins-home-')
+            os.environ['JENKINS_HOME'] = self.jenkins_home
+
         self.jenkins_process = None
         self.q = Queue.Queue()
         self.plugin_urls = plugin_urls or []
@@ -119,7 +123,6 @@ class JenkinsLancher(object):
             self.jenkins_process.wait()
             # Do not remove jenkins home if JENKINS_URL is set
             if 'JENKINS_URL' not in os.environ:
-                import pudb; pudb.set_trace()  # XXX BREAKPOINT
                 shutil.rmtree(self.jenkins_home)
 
     def block_until_jenkins_ready(self, timeout):
