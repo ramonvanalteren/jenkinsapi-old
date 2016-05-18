@@ -163,6 +163,12 @@ class Jobs(object):
             self.jenkins.get_create_url(),
             params=params,
             data='')
+
+        self._data.append({
+            'name': new_job_name,
+            'color': 'notbuilt'
+        })
+
         return self[new_job_name]
 
     def rename(self, job_name, new_job_name):

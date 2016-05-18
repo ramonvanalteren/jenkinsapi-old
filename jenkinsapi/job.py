@@ -71,8 +71,27 @@ class Job(JenkinsBase, MutableJenkinsThing):
             None: lambda element_tree: []
         }
         if url is None:
-            url = jenkins_obj.baseurl + '/job/' + name
+            url = self._find_job_url(name)
         JenkinsBase.__init__(self, url)
+
+    def _find_job_url(self, job_name):
+        search_result = self.jenkins.requester.get_url(
+            self.jenkins.baseurl + '/search/suggest?query=' + job_name,
+            headers={
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            allow_redirects=False)
+        if search_result.status_code != 200:
+            raise NotFound('Job %s not found in Jenkins', job_name)
+        full_job_name = search_result.json()['suggestions'][0]['name']
+        search_result = self.jenkins.requester.get_url(
+            self.jenkins.baseurl + '/search/?q=' + full_job_name,
+            allow_redirects=False)
+        if search_result.status_code != 302:
+            raise NotFound('Job %s not found in Jenkins', job_name)
+
+        return search_result.headers['Location']
 
     def __str__(self):
         return self.name
