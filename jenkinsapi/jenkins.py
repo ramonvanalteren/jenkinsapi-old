@@ -24,7 +24,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob
+
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +55,10 @@ class Jenkins(JenkinsBase):
             ssl_verify=ssl_verify)
         self.lazy = lazy
         JenkinsBase.__init__(self, baseurl, poll=not lazy)
+
+    def _poll(self, tree=None):
+        url = self.python_api_url(self.baseurl)
+        return self.get_data(url, tree='jobs[name,color]')
 
     def _poll_if_needed(self):
         if self.lazy and self._data is None:
@@ -230,13 +234,7 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        # We have to ask for 'color' here because folder resolution
-        # relies on it
-        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
-        for info in jobs:
-            if info["name"] == jobname:
-                return Job(info["url"], info["name"], jenkins_obj=self)
-        raise UnknownJob(jobname)
+        return self.jobs[jobname]
 
     def __len__(self):
         jobs = self.poll(tree='jobs[name,color,url]')['jobs']

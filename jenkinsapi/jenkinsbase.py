@@ -97,18 +97,21 @@ class JenkinsBase(object):
         for job in list(jobs):
             if 'color' not in job.keys():
                 jobs.remove(job)
-                jobs += self.process_job_folder(job)
+                jobs += self.process_job_folder(job, self.baseurl)
 
         return jobs
 
-    def process_job_folder(self, folder):
-        data = self.get_data(self.python_api_url(folder['url']))
+    def process_job_folder(self, folder, folder_path):
+        folder_path += '/job/%s' % folder['name']
+        data = self.get_data(self.python_api_url(folder_path),
+                             tree='jobs[name,color]')
         result = []
 
         for job in data.get('jobs', []):
             if 'color' not in job.keys():
-                result += self.process_job_folder(job)
+                result += self.process_job_folder(job, folder_path)
             else:
+                job['url'] = '%s/job/%s' % (folder_path, job['name'])
                 result.append(job)
 
         return result
