@@ -115,7 +115,7 @@ class Node(JenkinsBase):
             except KeyError:
                 raise JenkinsAPIException('Credential with description "%s"'
                                           ' not found'
-                                          % na['credential_descr'])
+                                          % na['credential_description'])
 
             retries = na['max_num_retries'] if 'max_num_retries' in na else ''
             re_wait = na['retry_wait_time'] if 'retry_wait_time' in na else ''

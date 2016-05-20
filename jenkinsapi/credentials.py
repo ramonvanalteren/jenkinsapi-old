@@ -117,6 +117,9 @@ class Credentials(JenkinsBase):
         return self[item] if item in self else default
 
     def __delitem__(self, description):
+        if description not in self:
+            raise KeyError(
+                'Credential with description "%s" not found' % description)
         params = {
             'Submit': 'OK',
             'json': {}
