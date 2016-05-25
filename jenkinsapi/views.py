@@ -23,6 +23,10 @@ class Views(object):
 
     def __init__(self, jenkins):
         self.jenkins = jenkins
+        self._data = None
+
+    def poll(self, tree=None):
+        self._data = self.jenkins.poll(tree='views[name,url]')
 
     def __len__(self):
         return len(self.keys())
@@ -33,7 +37,7 @@ class Views(object):
 
         if view_name in self:
             self[view_name].delete()
-            self.jenkins.poll()
+            self.poll()
 
     def __setitem__(self, view_name, job_names_list):
         new_view = self.create(view_name)
@@ -46,8 +50,8 @@ class Views(object):
                 raise TypeError('Job %s does not exist in Jenkins' % job_name)
 
     def __getitem__(self, view_name):
-        self.jenkins.poll()
-        for row in self.jenkins._data.get('views', []):
+        self.poll()
+        for row in self._data.get('views', []):
             if row['name'] == view_name:
                 return View(row['url'], row['name'], self.jenkins)
 
@@ -55,8 +59,8 @@ class Views(object):
         """
         Get the names & objects for all views
         """
-        self.jenkins.poll()
-        for row in self.jenkins._data.get('views', []):
+        self.poll()
+        for row in self._data.get('views', []):
             name = row['name']
             url = row['url']
 
@@ -72,8 +76,8 @@ class Views(object):
         """
         Get the names of all available views
         """
-        self.jenkins.poll()
-        for row in self.jenkins._data.get('views', []):
+        self.poll()
+        for row in self._data.get('views', []):
             yield row['name']
 
     def keys(self):
@@ -108,5 +112,5 @@ class Views(object):
             url,
             data=data,
             headers=headers)
-        self.jenkins.poll()
+        self.poll()
         return self[view_name]
