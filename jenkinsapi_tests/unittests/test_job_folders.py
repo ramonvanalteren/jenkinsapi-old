@@ -84,7 +84,9 @@ class TestJobFolders(unittest.TestCase):
 
         self.assertEquals(self.jb.resolve_job_folders(jobs), [])
         get_data_mock.assert_called_once_with(
-            'http://localhost:8080/job/Folder1/api/python')
+            'http://localhost:8080/job/Folder1/api/python',
+            tree='jobs[name,color]'
+        )
 
     @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
     def test_folder_job_mix(self, get_data_mock):
@@ -124,7 +126,9 @@ class TestJobFolders(unittest.TestCase):
             ]
         )
         get_data_mock.assert_called_once_with(
-            'http://localhost:8080/job/Folder1/api/python')
+            'http://localhost:8080/job/Folder1/api/python',
+            tree='jobs[name,color]'
+        )
 
     @mock.patch('jenkinsapi.jenkins.JenkinsBase.get_data')
     def test_multiple_folders(self, get_data_mock):
@@ -182,8 +186,14 @@ class TestJobFolders(unittest.TestCase):
         self.assertEquals(
             get_data_mock.call_args_list,
             [
-                mock.call('http://localhost:8080/job/Folder1/api/python'),
-                mock.call('http://localhost:8080/job/Folder2/api/python'),
+                mock.call(
+                    'http://localhost:8080/job/Folder1/api/python',
+                    tree='jobs[name,color]'
+                ),
+                mock.call(
+                    'http://localhost:8080/job/Folder2/api/python',
+                    tree='jobs[name,color]'
+                ),
             ]
         )
 
@@ -244,7 +254,8 @@ class TestJobFolders(unittest.TestCase):
                 },
                 {
                     'name': "Baz",
-                    'url': "http://localhost:8080/job/Folder1/job/Folder2/job/Baz",
+                    'url': ("http://localhost:8080/job/Folder1"
+                            "/job/Folder2/job/Baz"),
                     'color': "disabled",
                 },
             ]
@@ -253,8 +264,14 @@ class TestJobFolders(unittest.TestCase):
         self.assertEquals(
             get_data_mock.call_args_list,
             [
-                mock.call('http://localhost:8080/job/Folder1/api/python'),
                 mock.call(
-                    'http://localhost:8080/job/Folder1/job/Folder2/api/python'),
+                    'http://localhost:8080/job/Folder1/api/python',
+                    tree='jobs[name,color]'
+                ),
+                mock.call(
+                    'http://localhost:8080/job/Folder1'
+                    '/job/Folder2/api/python',
+                    tree='jobs[name,color]'
+                ),
             ]
         )
