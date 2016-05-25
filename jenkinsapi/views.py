@@ -26,7 +26,8 @@ class Views(object):
         self._data = None
 
     def poll(self, tree=None):
-        self._data = self.jenkins.poll(tree='views[name,url]')
+        self._data = self.jenkins.poll(tree='views[name,url]'
+                                       if tree is None else tree)
 
     def __len__(self):
         return len(self.keys())
