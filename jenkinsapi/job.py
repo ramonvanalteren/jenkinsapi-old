@@ -70,9 +70,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
             'hg': self._get_hg_branch,
             None: lambda element_tree: []
         }
-        if url is None:
-            url = self._find_job_url(name)
-        JenkinsBase.__init__(self, url)
+        self.url = url
+        if self.url is None:
+            self.url = self._find_job_url(name)
+        JenkinsBase.__init__(self, self.url)
 
     def _find_job_url(self, job_name):
         search_result = self.jenkins.requester.get_url(
