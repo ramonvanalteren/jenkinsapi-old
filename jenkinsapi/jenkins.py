@@ -14,7 +14,6 @@ import logging
 from jenkinsapi import config
 from jenkinsapi.credentials import Credentials
 from jenkinsapi.executors import Executors
-from jenkinsapi.job import Job
 from jenkinsapi.jobs import Jobs
 from jenkinsapi.view import View
 from jenkinsapi.nodes import Nodes
@@ -24,7 +23,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
-from jenkinsapi.custom_exceptions import UnknownJob
+
 
 log = logging.getLogger(__name__)
 
@@ -54,7 +53,13 @@ class Jenkins(JenkinsBase):
             baseurl=baseurl,
             ssl_verify=ssl_verify)
         self.lazy = lazy
+        self.jobs_container = None
         JenkinsBase.__init__(self, baseurl, poll=not lazy)
+
+    def _poll(self, tree=None):
+        url = self.python_api_url(self.baseurl)
+        return self.get_data(url, tree='jobs[name,color]'
+                             if not tree else tree)
 
     def _poll_if_needed(self):
         if self.lazy and self._data is None:
@@ -104,25 +109,24 @@ class Jenkins(JenkinsBase):
 
     @property
     def jobs(self):
-        return Jobs(self)
+        if self.jobs_container is None:
+            self.jobs_container = Jobs(self)
+
+        return self.jobs_container
 
     def get_jobs(self):
         """
         Fetch all the build-names on this Jenkins server.
         """
-        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
-        for info in jobs:
-            yield info["name"], \
-                Job(info["url"], info["name"], jenkins_obj=self)
+        return self.jobs.iteritems()
 
     def get_jobs_info(self):
         """
         Get the jobs information
         :return url, name
         """
-        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
-        for info in jobs:
-            yield info["url"], info["name"]
+        for name, job in self.jobs.iteritems():
+            yield job.url, name
 
     def get_job(self, jobname):
         """
@@ -181,30 +185,24 @@ class Jenkins(JenkinsBase):
         """
         return self.jobs.rename(jobname, newjobname)
 
-    def iterkeys(self):
-        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
-        for info in jobs:
-            yield info["name"]
-
-    def iteritems(self):
-        """
-        :param return: An iterator of pairs.
-            Each pair will be (job name, Job object)
-        """
-        return self.get_jobs()
-
     def items(self):
         """
         :param return: A list of pairs.
             Each pair will be (job name, Job object)
         """
-        return list(self.get_jobs())
+        return list(self.iteritems())
+
+    def get_jobs_list(self):
+        return self.jobs.keys()
+
+    def iterkeys(self):
+        return self.jobs.iterkeys()
+
+    def iteritems(self):
+        return self.jobs.iteritems()
 
     def keys(self):
-        return [a for a in self.iterkeys()]
-
-    # This is a function alias we retain for historical compatibility
-    get_jobs_list = keys
+        return self.jobs.keys()
 
     def __str__(self):
         return "Jenkins server at %s" % self.baseurl
@@ -230,17 +228,10 @@ class Jenkins(JenkinsBase):
         :param jobname: name of job, str
         :return: Job obj
         """
-        # We have to ask for 'color' here because folder resolution
-        # relies on it
-        jobs = self.poll(tree='jobs[name,url,color]')['jobs']
-        for info in jobs:
-            if info["name"] == jobname:
-                return Job(info["url"], info["name"], jenkins_obj=self)
-        raise UnknownJob(jobname)
+        return self.jobs[jobname]
 
     def __len__(self):
-        jobs = self.poll(tree='jobs[name,color,url]')['jobs']
-        return len(jobs)
+        return len(self.jobs)
 
     def __contains__(self, jobname):
         """

@@ -70,7 +70,29 @@ class Job(JenkinsBase, MutableJenkinsThing):
             'hg': self._get_hg_branch,
             None: lambda element_tree: []
         }
-        JenkinsBase.__init__(self, url)
+        self.url = url
+        if self.url is None:
+            self.url = self._find_job_url(name)
+        JenkinsBase.__init__(self, self.url)
+
+    def _find_job_url(self, job_name):
+        search_result = self.jenkins.requester.get_url(
+            self.jenkins.baseurl + '/search/suggest?query=' + job_name,
+            headers={
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            allow_redirects=False)
+        if search_result.status_code != 200:
+            raise NotFound('Job %s not found in Jenkins', job_name)
+        full_job_name = search_result.json()['suggestions'][0]['name']
+        search_result = self.jenkins.requester.get_url(
+            self.jenkins.baseurl + '/search/?q=' + full_job_name,
+            allow_redirects=False)
+        if search_result.status_code != 302:
+            raise NotFound('Job %s not found in Jenkins', job_name)
+
+        return search_result.headers['Location']
 
     def __str__(self):
         return self.name
@@ -667,9 +689,11 @@ class Job(JenkinsBase, MutableJenkinsThing):
         """
         If job has parameters, returns True, else False
         """
-        if any("parameterDefinitions" in a for a in (self._data["actions"]) if a):
+        if any("parameterDefinitions" in a for a in (self._data["actions"])
+               if a):
             return True
-        if any("parameterDefinitions" in a for a in (self._data["property"]) if a):
+        if any("parameterDefinitions" in a for a in (self._data["property"])
+               if a):
             return True
         return False
 
