@@ -86,7 +86,7 @@ class TestParameterizedBuilds(BaseSystemTest):
         self.assertIn(param_B, build.get_console())
 
     def test_parameterized_multiple_builds_get_the_same_queue_item(self):
-        """Multiple attempts to run the same parameteized
+        """Multiple attempts to run the same parameterized
         build will get the same queue item."""
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, JOB_WITH_PARAMETERS)
@@ -105,22 +105,19 @@ class TestParameterizedBuilds(BaseSystemTest):
 
         job_name = 'create_%s' % random_string()
         job = self.jenkins.create_job(job_name, JOB_WITH_FILE_AND_PARAMS)
-        with self.assertRaises(ValueError) as ve:
-            job.invoke(
-                block=True,
-                files={'file.txt': param_file},
-                build_params={'B': param_data}
-            )
+        qi = job.invoke(
+            block=True,
+            files={'file.txt': param_file},
+            build_params={'B': param_data}
+        )
 
-        # Following test is disabled because file parameters do not work
-        #
-        # build = job.get_last_build()
-        # artifacts = build.get_artifact_dict()
-        # self.assertIsInstance(artifacts, dict)
-        # art_file = artifacts['file.txt']
-        # self.assertTrue(art_file.get_data().strip(), file_data)
-        # art_param = artifacts['file1.txt']
-        # self.assertTrue(art_param.get_data().strip(), param_data)
+        build = qi.get_build()
+        artifacts = build.get_artifact_dict()
+        self.assertIsInstance(artifacts, dict)
+        art_file = artifacts['file.txt']
+        self.assertTrue(art_file.get_data().strip(), file_data)
+        art_param = artifacts['file1.txt']
+        self.assertTrue(art_param.get_data().strip(), param_data)
 
 
 if __name__ == '__main__':

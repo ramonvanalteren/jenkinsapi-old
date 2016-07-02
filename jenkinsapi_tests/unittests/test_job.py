@@ -134,7 +134,7 @@ class TestJob(unittest.TestCase):
         self.assertEquals(self.j.get_description(), 'test job')
 
     def test_get_build_triggerurl(self):
-        self.assertEquals(self.j.get_build_triggerurl(None),
+        self.assertEquals(self.j.get_build_triggerurl(),
                           'http://halob:8080/job/foo/buildWithParameters')
 
     def test_wrong__mk_json_from_build_parameters(self):

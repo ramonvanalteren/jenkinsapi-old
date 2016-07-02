@@ -160,11 +160,8 @@ class Job(JenkinsBase, MutableJenkinsThing):
             self._element_tree = ET.fromstring(self._config)
         return self._element_tree
 
-    def get_build_triggerurl(self, files, build_params=None):
-        if (files and build_params) or (not self.has_params()):
-            # If job has file parameters and non-file parameters - it must be
-            # triggered using "/build", not by "/buildWithParameters"
-            # "/buildWithParameters" will ignore non-file parameters
+    def get_build_triggerurl(self):
+        if not self.has_params():
             return "%s/build" % self.baseurl
         return "%s/buildWithParameters" % self.baseurl
 
@@ -216,7 +213,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         build_params = build_params and dict(
             build_params.items()) or {}  # Via POSTed JSON
 
-        url = self.get_build_triggerurl(files, build_params)
+        url = self.get_build_triggerurl()
         if cause:
             build_params['cause'] = cause
 
@@ -241,12 +238,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
         redirect_url = response.headers['location']
 
         if not redirect_url.startswith("%s/queue/item" % self.jenkins.baseurl):
-            if files:
-                raise ValueError('Builds with file parameters are not '
-                                 'supported by this jenkinsapi version. '
-                                 'Please use previous version.')
-            else:
-                raise ValueError("Not a Queue URL: %s" % redirect_url)
+            raise ValueError("Not a Queue URL: %s" % redirect_url)
 
         qi = QueueItem(redirect_url, self.jenkins)
         if block:
