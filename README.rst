@@ -4,14 +4,14 @@ jenkinsapi
 .. image:: https://badge.fury.io/py/jenkinsapi.png
     :target: http://badge.fury.io/py/jenkinsapi
 
-.. image:: https://travis-ci.org/salimfadhley/jenkinsapi.png?branch=master
-        :target: https://travis-ci.org/salimfadhley/jenkinsapi
+.. image:: https://travis-ci.org/pycontribs/jenkinsapi.png?branch=master
+        :target: https://travis-ci.org/pycontribs/jenkinsapi
 
-.. image:: https://landscape.io/github/salimfadhley/jenkinsapi/master/landscape.png
-        :target: https://landscape.io/github/salimfadhley/jenkinsapi
+.. image:: https://landscape.io/github/pycontribs/jenkinsapi/master/landscape.png
+        :target: https://landscape.io/github/pycontribs/jenkinsapi
 
-.. image:: https://requires.io/github/salimfadhley/jenkinsapi/requirements.png?branch=master
-        :target: https://requires.io/github/salimfadhley/jenkinsapi/requirements/?branch=master
+.. image:: https://requires.io/github/pycontribs/jenkinsapi/requirements.png?branch=master
+        :target: https://requires.io/github/pycontribs/jenkinsapi/requirements/?branch=master
         :alt: Requirements Status
 
 About this library
@@ -59,9 +59,9 @@ For other issues, please refer to the support URL below.
 Important Links
 ---------------
 
-Support and bug-reports: https://github.com/salimfadhley/jenkinsapi/issues?direction=desc&sort=comments&state=open
+Support and bug-reports: https://github.com/pycontribs/jenkinsapi/issues?direction=desc&sort=comments&state=open
 
-Project source code: github: https://github.com/salimfadhley/jenkinsapi
+Project source code: github: https://github.com/pycontribs/jenkinsapi
 
 Project documentation: https://jenkinsapi.readthedocs.org/en/latest/
 
@@ -120,7 +120,7 @@ JenkinsAPI is intended to map the objects in Jenkins (e.g. Builds, Views, Jobs) 
 	<jenkinsapi.build.Build test_jenkinsapi #77>
 	...
 
-More examples available on Github: https://github.com/salimfadhley/jenkinsapi/tree/master/examples
+More examples available on Github: https://github.com/pycontribs/jenkinsapi/tree/master/examples
 
 Testing
 -------
