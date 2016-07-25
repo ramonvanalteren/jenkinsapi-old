@@ -18,3 +18,4 @@ include/
 lib/
 *.egg
 .tox/*
+*.sw?
