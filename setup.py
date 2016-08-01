@@ -2,22 +2,27 @@ from setuptools import setup
 import os
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.2.29'
+REVISION = '0.3.00'
 PROJECT_NAME = 'JenkinsAPI'
-PROJECT_AUTHORS = "Salim Fadhley, Aleksey Maksimov"
+PROJECT_AUTHORS = 'Salim Fadhley, Aleksey Maksimov'
 # Please see readme.rst for a complete list of contributors
 PROJECT_EMAILS = 'salimfadhley@gmail.com, ctpeko3a@gmail.com'
-PROJECT_URL = "https://github.com/salimfadhley/jenkinsapi"
-SHORT_DESCRIPTION = 'A Python API for accessing resources on a Jenkins continuous-integration server.'
+PROJECT_URL = 'https://github.com/salimfadhley/jenkinsapi'
+SHORT_DESCRIPTION = (
+    'A Python API for accessing resources on a Jenkins '
+    'continuous-integration server.'
+)
 
 try:
-    DESCRIPTION = open(os.path.join(PROJECT_ROOT, "README.rst")).read()
+    DESCRIPTION = open(os.path.join(PROJECT_ROOT, 'README.rst')).read()
 except IOError:
     DESCRIPTION = SHORT_DESCRIPTION
 
 GLOBAL_ENTRY_POINTS = {
-    "console_scripts": ["jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main",
-                        "jenkinsapi_version=jenkinsapi.command_line.jenkinsapi_version:main"]
+    'console_scripts': [
+        'jenkins_invoke=jenkinsapi.command_line.jenkins_invoke:main',
+        'jenkinsapi_version=jenkinsapi.command_line.jenkinsapi_version:main'
+    ]
 }
 
 setup(
