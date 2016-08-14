@@ -13,14 +13,5 @@ script:
 - pep8 --ignore=E501 jenkinsapi/*.py
 - pylint --rcfile=pylintrc jenkinsapi/*.py --disable R0912
 - nosetests -v --with-coverage --cover-xml jenkinsapi_tests
-deploy:
-  provider: pypi
-  user: lechat
-  password:
-    secure: g6chT8yoYaSUxFafk1U291Voy+aYJuiOfEvDWKS7LUEajmifpUOHq/65/XDZp0sGhrxIl440vTN+Fz27kbOpH8KXX9yZ2BsZ6o2+I+5vW+unQqNzrFfm1kWtCRo6QJ7YGzWHYyd8V1AKh6aD0Ey7sfYT6Zwpg4aKD5RgnK71+do=
-  on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: pycontribs/jenkinsapi
 after_success:
   - bash <(curl -s https://codecov.io/bash)
