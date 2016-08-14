@@ -12,7 +12,7 @@ install:
 script:
 - pep8 --ignore=E501 jenkinsapi/*.py
 - pylint --rcfile=pylintrc jenkinsapi/*.py --disable R0912
-- nosetests -v jenkinsapi_tests
+- nosetests -v --with-coverage --cover-xml jenkinsapi_tests
 deploy:
   provider: pypi
   user: lechat
@@ -22,3 +22,5 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: pycontribs/jenkinsapi
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
