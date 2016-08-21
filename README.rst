@@ -7,8 +7,8 @@ jenkinsapi
 .. image:: https://travis-ci.org/pycontribs/jenkinsapi.png?branch=master
         :target: https://travis-ci.org/pycontribs/jenkinsapi
 
-.. image:: https://landscape.io/github/pycontribs/jenkinsapi/master/landscape.png
-        :target: https://landscape.io/github/pycontribs/jenkinsapi
+.. image:: https://codecov.io/gh/pycontribs/jenkinsapi/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/pycontribs/jenkinsapi
 
 .. image:: https://requires.io/github/pycontribs/jenkinsapi/requirements.png?branch=master
         :target: https://requires.io/github/pycontribs/jenkinsapi/requirements/?branch=master
@@ -144,8 +144,8 @@ missing test dependencies:
 Project Contributors
 --------------------
 
-* Salim Fadhley (sal@stodge.org)
 * Aleksey Maksimov (ctpeko3a@gmail.com)
+* Salim Fadhley (sal@stodge.org)
 * Ramon van Alteren (ramon@vanalteren.nl)
 * Ruslan Lutsenko (ruslan.lutcenko@gmail.com)
 * Cleber J Santos (cleber@simplesconsultoria.com.br)
