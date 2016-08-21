@@ -77,8 +77,11 @@ class Artifact(object):
         """
         Download the the artifact to a path.
         """
+        data = self.get_jenkins_obj().requester.get_and_confirm_status(
+            self.url, stream=True)
         with open(fspath, "wb") as out:
-            out.write(self.get_data())
+            for chunk in data.iter_content(chunk_size=1024):
+                out.write(chunk)
         return fspath
 
     def _verify_download(self, fspath, strict_validation):
@@ -93,8 +96,12 @@ class Artifact(object):
             self.build.job.jenkins)
         valid = fp.validate_for_build(
             os.path.basename(fspath), self.build.job.name, self.build.buildno)
-        if not valid or (fp.unknown and strict_validation):  # strict = 404 as invalid
-            raise ArtifactBroken("Artifact %s seems to be broken, check %s" % (local_md5, baseurl))
+        if not valid or (fp.unknown and strict_validation):
+            # strict = 404 as invalid
+            raise ArtifactBroken(
+                "Artifact %s seems to be broken, check %s"
+                % (local_md5, baseurl)
+            )
         return True
 
     def _md5sum(self, fspath, chunksize=2 ** 20):
