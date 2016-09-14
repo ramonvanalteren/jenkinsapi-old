@@ -296,14 +296,18 @@ class Job(JenkinsBase, MutableJenkinsThing):
     def get_build_by_params(self, build_params, order=1):
         first_build_number = self.get_first_buildnumber()
         last_build_number = self.get_last_buildnumber()
-        assert order == 1 or order == -1, 'Direction should be ascending or descending (1/-1)'
+        assert order == 1 or order == -1, (
+            'Direction should be ascending or descending (1/-1)'
+        )
 
-        for number in range(first_build_number, last_build_number + 1)[::order]:
+        for number in range(first_build_number,
+                            last_build_number + 1)[::order]:
             build = self.get_build(number)
             if build.get_params() == build_params:
                 return build
 
-        raise NoBuildData('No build with such params {params}'.format(params=build_params))
+        raise NoBuildData(
+            'No build with such params {params}'.format(params=build_params))
 
     def get_revision_dict(self):
         """
@@ -390,8 +394,26 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
     def get_build(self, buildnumber):
         assert isinstance(buildnumber, int)
-        url = self.get_build_dict()[buildnumber]
-        return Build(url, buildnumber, job=self)
+        try:
+            url = self.get_build_dict()[buildnumber]
+            return Build(url, buildnumber, job=self)
+        except KeyError:
+            raise NotFound('Build #%s not found' % buildnumber)
+
+    def delete_build(self, build_number):
+        """
+        Remove build
+
+        :param int build_number:    Build number
+        :raises NotFound:           When build is not found
+        """
+        try:
+            url = self.get_build_dict()[build_number]
+            url = "%s/doDelete" % url
+            self.jenkins.requester.post_and_confirm_status(url, data='')
+            self.jenkins.poll()
+        except KeyError:
+            raise NotFound('Build #%s not found' % build_number)
 
     def get_build_metadata(self, buildnumber):
         """
@@ -400,8 +422,14 @@ class Job(JenkinsBase, MutableJenkinsThing):
         data.
         """
         assert isinstance(buildnumber, int)
-        url = self.get_build_dict()[buildnumber]
-        return Build(url, buildnumber, job=self, depth=0)
+        try:
+            url = self.get_build_dict()[buildnumber]
+            return Build(url, buildnumber, job=self, depth=0)
+        except KeyError:
+            raise NotFound('Build #%s not found' % buildnumber)
+
+    def __delitem__(self, build_number):
+        self.delete_build(build_number)
 
     def __getitem__(self, buildnumber):
         return self.get_build(buildnumber)
