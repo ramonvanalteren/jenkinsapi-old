@@ -12,6 +12,6 @@ install:
 script:
 - pep8 --ignore=E501 jenkinsapi/*.py
 - pylint --rcfile=pylintrc jenkinsapi/*.py --disable R0912
-- nosetests -v --with-coverage --cover-xml jenkinsapi_tests
+- py.test -v --cov=jenkinsapi --cov-report=term-missing --cov-report=xml jenkinsapi_tests
 after_success:
   - bash <(curl -s https://codecov.io/bash)

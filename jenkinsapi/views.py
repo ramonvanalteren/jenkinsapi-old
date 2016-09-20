@@ -17,7 +17,8 @@ class Views(object):
     """
     LIST_VIEW = 'hudson.model.ListView'
     NESTED_VIEW = 'hudson.plugins.nested_view.NestedView'
-    CATEGORIZED_VIEW = 'org.jenkinsci.plugins.categorizedview.CategorizedJobsView'
+    CATEGORIZED_VIEW = \
+        'org.jenkinsci.plugins.categorizedview.CategorizedJobsView'
     MY_VIEW = 'hudson.model.MyView'
     DASHBOARD_VIEW = 'hudson.plugins.view.dashboard.Dashboard'
     PIPELINE_VIEW = ('au.com.centrumsystems.hudson.'
@@ -107,7 +108,8 @@ class Views(object):
 
         if view_type == self.CATEGORIZED_VIEW:
             if config is None or len(config) == 0:
-                raise JenkinsAPIException('Job XML config cannot be empty for CATEGORIZED_VIEW')
+                raise JenkinsAPIException(
+                    'Job XML config cannot be empty for CATEGORIZED_VIEW')
 
             params = {'name': view_name}
 

@@ -64,9 +64,15 @@ class JenkinsLancher(object):
     JENKINS_WAR_URL = "http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
     def __init__(self, war_path, plugin_urls=None, jenkins_url=None):
-        self.jenkins_url = jenkins_url
-        self.http_port = random.randint(9000, 10000) if not jenkins_url \
-            else urlparse(jenkins_url).port
+        if jenkins_url is not None:
+            self.jenkins_url = jenkins_url
+            self.http_port = urlparse(jenkins_url).port
+            self.start_new_instance = False
+        else:
+            self.http_port = random.randint(9000, 10000)
+            self.jenkins_url = 'http://localhost:%s' % self.http_port
+            self.start_new_instance = True
+
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
 
@@ -137,7 +143,7 @@ class JenkinsLancher(object):
 
         while True:
             try:
-                Jenkins('http://localhost:8080')
+                Jenkins(self.jenkins_url)
                 log.info('Jenkins is finally ready for use.')
             except JenkinsAPIException:
                 log.info('Jenkins is not yet ready...')
@@ -146,7 +152,7 @@ class JenkinsLancher(object):
             time.sleep(5)
 
     def start(self, timeout=60):
-        if not self.jenkins_url:
+        if self.start_new_instance:
             self.jenkins_home = os.environ.get('JENKINS_HOME',
                                                self.jenkins_home)
             self.update_war()
