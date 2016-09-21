@@ -11,7 +11,7 @@ from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
 
 
-class TestDataMissing(Exception):
+class DataMissingException(Exception):
     pass
 
 
@@ -57,7 +57,7 @@ class TestViews(unittest.TestCase):
 
                 return result
             except KeyError:
-                raise TestDataMissing(url)
+                raise DataMissingException(url)
 
         with mock.patch.object(JenkinsBase, 'get_data', mockGetData):
 
@@ -69,16 +69,3 @@ class TestViews(unittest.TestCase):
             new_view = J.views.create('NewView')
 
             self.assertIsInstance(new_view, View)
-
-    # @mock.patch.object(Jenkins, '_poll')
-    # def test_delete_inexisting_view(self, _poll):
-    #     mock_requester = Requester(username='foouser', password='foopassword')
-    #     mock_requester.get_url = mock.MagicMock(return_value='<div/>')
-    #     J = Jenkins('http://localhost:8080/',
-    #                 username='foouser', password='foopassword',
-    #                 requester=mock_requester)
-    #     delete_result = J.delete_view(str_view_name='NewView')
-    #     self.assertFalse(delete_result)
-
-if __name__ == '__main__':
-    unittest.main()
