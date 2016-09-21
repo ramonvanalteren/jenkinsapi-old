@@ -42,17 +42,27 @@ class StreamThread(threading.Thread):
         self.q = q
         self.stream = stream
         self.fn_log = fn_log
+        self._stop = threading.Event()
+
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
 
     def run(self):
         log.info("Starting %s", self.name)
 
         while True:
+            if self._stop.isSet():
+                break
             line = self.stream.readline()
             if line:
                 self.fn_log(line.rstrip())
                 self.q.put((self.name, line))
             else:
                 break
+
         self.q.put((self.name, None))
 
 
@@ -73,6 +83,7 @@ class JenkinsLancher(object):
             self.jenkins_url = 'http://localhost:%s' % self.http_port
             self.start_new_instance = True
 
+        self.threads = []
         self.war_path = war_path
         self.war_directory, self.war_filename = os.path.split(self.war_path)
 
@@ -107,16 +118,17 @@ class JenkinsLancher(object):
         tarball.extractall(path=self.jenkins_home)
 
     def install_plugins(self):
-        for url in self.plugin_urls:
-            self.install_plugin(url)
-
-    def install_plugin(self, hpi_url):
         plugin_dir = os.path.join(self.jenkins_home, 'plugins')
+        log.info("Plugins will be installed in '%s'", plugin_dir)
+
         if not os.path.exists(plugin_dir):
             os.mkdir(plugin_dir)
 
+        for url in self.plugin_urls:
+            self.install_plugin(url, plugin_dir)
+
+    def install_plugin(self, hpi_url, plugin_dir):
         log.info("Downloading %s", hpi_url)
-        log.info("Plugins will be installed in '%s'", plugin_dir)
         path = urlparse(hpi_url).path
         filename = posixpath.basename(path)
         plugin_path = os.path.join(plugin_dir, filename)
@@ -129,8 +141,12 @@ class JenkinsLancher(object):
         open(plugin_path + ".pinned", 'a').close()
 
     def stop(self):
-        if not self.jenkins_url:
+        if self.start_new_instance:
             log.info("Shutting down jenkins.")
+            # Start the threads
+            for t in self.threads:
+                t.stop()
+
             self.jenkins_process.terminate()
             self.jenkins_process.wait()
             # Do not remove jenkins home if JENKINS_URL is set
@@ -174,7 +190,7 @@ class JenkinsLancher(object):
                 jenkins_command, stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            threads = [
+            self.threads = [
                 StreamThread('out', self.q, self.jenkins_process.stdout,
                              log.info),
                 StreamThread('err', self.q, self.jenkins_process.stderr,
@@ -182,7 +198,7 @@ class JenkinsLancher(object):
             ]
 
             # Start the threads
-            for t in threads:
+            for t in self.threads:
                 t.start()
 
             while True:
