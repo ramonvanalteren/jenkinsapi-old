@@ -10,6 +10,8 @@ state = {}
 # Extra plugins required by the systests
 PLUGIN_DEPENDENCIES = [
     "http://updates.jenkins-ci.org/latest/display-url-api.hpi",
+    "http://updates.jenkins-ci.org/latest/workflow-step-api.hpi",
+    "http://updates.jenkins-ci.org/latest/workflow-scm-step.hpi",
     "http://updates.jenkins-ci.org/latest/icon-shim.hpi",
     "http://updates.jenkins-ci.org/latest/junit.hpi",
     "http://updates.jenkins-ci.org/latest/script-security.hpi",
@@ -60,7 +62,7 @@ def launched_jenkins():
     launcher.stop()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def jenkins(launched_jenkins):
     url = launched_jenkins.jenkins_url
 
