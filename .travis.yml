@@ -1,13 +1,13 @@
 language: python
 python:
 - '2.7'
-- '3.3'
 - '3.4'
+- '3.5'
 env:
 - JENKINS_VERSION=1.x
 - JENKINS_VERSION=2.x
 install:
-- pip install pytest mock pytest-cov pep8 "astroid<1.3.0" "pylint<1.4"
+- pip install pytest-cov pep8 "astroid<1.3.0" "pylint<1.4"
 - python setup.py develop
 script:
 - pep8 --ignore=E501 jenkinsapi/*.py
