@@ -1,8 +1,8 @@
 language: python
 python:
 - '2.7'
-- '3.3'
 - '3.4'
+- '3.5'
 env:
 - JENKINS_VERSION=1.x
 - JENKINS_VERSION=2.x

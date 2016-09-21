@@ -136,6 +136,7 @@ class JenkinsLancher(object):
             # Do not remove jenkins home if JENKINS_URL is set
             if 'JENKINS_URL' not in os.environ:
                 shutil.rmtree(self.jenkins_home)
+            log.info("Jenkins stopped.")
 
     def block_until_jenkins_ready(self, timeout):
         start_time = datetime.datetime.now()
@@ -163,6 +164,7 @@ class JenkinsLancher(object):
 
             jenkins_command = ['java',
                                '-Djenkins.install.runSetupWizard=false',
+                               '-Dhudson.DNSMultiCast.disabled=true',
                                '-jar', self.war_filename,
                                '--httpPort=%d' % self.http_port]
 
