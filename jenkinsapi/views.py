@@ -98,10 +98,10 @@ class Views(object):
         :param config: XML configuration of the new view
         :return: new View obj or None if view was not created
         """
-        log.info(msg='Creating "%s" view "%s"' % (view_type, view_name))
+        log.info('Creating "%s" view "%s"', view_type, view_name)
 
         if view_name in self:
-            log.warn(msg='View "%s" already exists' % view_name)
+            log.warning('View "%s" already exists', view_name)
             return self[view_name]
 
         url = '%s/createView' % self.jenkins.baseurl
