@@ -95,4 +95,4 @@ def test_invoke_job_with_file(crumbed_jenkins):
     artifacts = build.get_artifact_dict()
     assert isinstance(artifacts, dict) is True
     art_file = artifacts['file.txt']
-    assert art_file.get_data().strip() == file_data
+    assert art_file.get_data().decode('utf-8').strip() == file_data
