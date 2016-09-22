@@ -45,7 +45,7 @@ class JenkinsBase(object):
         """
         if not isinstance(other, self.__class__):
             return False
-        if not other.baseurl == self.baseurl:
+        if other.baseurl != self.baseurl:
             return False
         return True
 
