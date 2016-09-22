@@ -152,7 +152,7 @@ class JenkinsLancher(object):
             # self.jenkins_process.wait()
             # Do not remove jenkins home if JENKINS_URL is set
             if 'JENKINS_URL' not in os.environ:
-                shutil.rmtree(self.jenkins_home)
+                shutil.rmtree(self.jenkins_home, ignore_errors=True)
             log.info("Jenkins stopped.")
 
     def block_until_jenkins_ready(self, timeout):
