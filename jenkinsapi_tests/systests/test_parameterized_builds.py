@@ -31,7 +31,7 @@ def test_invoke_job_with_file(jenkins):
     artifacts = build.get_artifact_dict()
     assert isinstance(artifacts, dict) is True
     art_file = artifacts['file.txt']
-    assert art_file.get_data().strip() == file_data
+    assert art_file.get_data().decode('utf-8').strip() == file_data
 
 
 def test_invoke_job_parameterized(jenkins):
@@ -44,7 +44,7 @@ def test_invoke_job_parameterized(jenkins):
 
     artifacts = build.get_artifact_dict()
     artB = artifacts['b.txt']
-    assert artB.get_data().strip().decode('UTF-8', 'replace') == param_B
+    assert artB.get_data().decode('UTF-8', 'replace').strip() == param_B
 
     assert param_B in build.get_console()
 
@@ -73,7 +73,7 @@ def test_parameterized_job_build_queuing(jenkins):
     artifacts = build.get_artifact_dict()
     assert isinstance(artifacts, dict) is True
     artB = artifacts['b.txt']
-    assert artB.get_data().strip() == param_B
+    assert artB.get_data().decode('utf-8').strip() == param_B
 
     assert param_B in build.get_console()
 
@@ -113,6 +113,6 @@ def test_invoke_job_with_file_and_params(jenkins):
     artifacts = build.get_artifact_dict()
     assert isinstance(artifacts, dict) is True
     art_file = artifacts['file.txt']
-    assert art_file.get_data().strip() == file_data
+    assert art_file.get_data().decode('utf-8').strip() == file_data
     art_param = artifacts['file1.txt']
-    assert art_param.get_data().strip() == param_data
+    assert art_param.get_data().decode('utf-8').strip() == param_data
