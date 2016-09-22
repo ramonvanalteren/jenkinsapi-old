@@ -147,8 +147,9 @@ class JenkinsLancher(object):
             for t in self.threads:
                 t.stop()
 
-            self.jenkins_process.terminate()
-            self.jenkins_process.wait()
+            Jenkins(self.jenkins_url).shutdown()
+            # self.jenkins_process.terminate()
+            # self.jenkins_process.wait()
             # Do not remove jenkins home if JENKINS_URL is set
             if 'JENKINS_URL' not in os.environ:
                 shutil.rmtree(self.jenkins_home)
