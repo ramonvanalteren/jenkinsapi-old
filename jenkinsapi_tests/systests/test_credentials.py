@@ -77,31 +77,6 @@ def test_create_ssh_credential(jenkins):
     }
     creds[cred_descr] = SSHKeyCredential(cred_dict)
 
-
-def test_create_secret_text_credential(jenkins):
-    """
-    Tests the creation of a secret text.
-    """
-    creds = jenkins.credentials
-
-    cred_descr = random_string()
-    cred_dict = {
-        'description': cred_descr,
-        'secret': 'newsecret'
-    }
-    creds[cred_descr] = SecretTextCredential(cred_dict)
-
-    self.assertTrue(cred_descr in creds)
-    cred = creds[cred_descr]
-    self.assertIsInstance(cred, SecretTextCredential)
-    self.assertEquals(cred.secret, None)
-    self.assertEquals(cred.description, cred_descr)
-
-    del creds[cred_descr]
-
-    def test_delete_credential(self):
-        creds = self.jenkins.credentials
-=======
     assert cred_descr in creds
 
     cred = creds[cred_descr]
@@ -148,7 +123,6 @@ def test_create_secret_text_credential(jenkins):
     }
     with pytest.raises(ValueError):
         creds[cred_descr] = SSHKeyCredential(cred_dict)
->>>>>>> Converted systests to pytest
 
 
 def test_delete_credential(jenkins):
@@ -165,3 +139,25 @@ def test_delete_credential(jenkins):
     assert cred_descr in creds
     del creds[cred_descr]
     assert cred_descr not in creds
+
+
+def test_create_secret_text_credential(jenkins):
+    """
+    Tests the creation of a secret text.
+    """
+    creds = jenkins.credentials
+
+    cred_descr = random_string()
+    cred_dict = {
+        'description': cred_descr,
+        'secret': 'newsecret'
+    }
+    creds[cred_descr] = SecretTextCredential(cred_dict)
+
+    assert cred_descr in creds
+    cred = creds[cred_descr]
+    assert isinstance(cred, SecretTextCredential) is True
+    assert cred.secret is None
+    assert cred.description == cred_descr
+
+    del creds[cred_descr]
