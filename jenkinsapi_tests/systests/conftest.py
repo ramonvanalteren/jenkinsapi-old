@@ -24,7 +24,8 @@ PLUGIN_DEPENDENCIES = [
     "http://updates.jenkins-ci.org/latest/git-client.hpi",
     "https://updates.jenkins-ci.org/latest/nested-view.hpi",
     "https://updates.jenkins-ci.org/latest/ssh-slaves.hpi",
-    "https://updates.jenkins-ci.org/latest/structs.hpi"
+    "https://updates.jenkins-ci.org/latest/structs.hpi",
+    "http://updates.jenkins-ci.org/latest/plain-credentials.hpi"
 ]
 
 
@@ -62,7 +63,7 @@ def launched_jenkins():
     launcher.stop()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def jenkins(launched_jenkins):
     url = launched_jenkins.jenkins_url
 
