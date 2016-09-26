@@ -1,5 +1,5 @@
 import pytest
-import configs
+from . import configs
 from jenkinsapi.build import Build
 from jenkinsapi.job import Job
 

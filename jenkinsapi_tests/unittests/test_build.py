@@ -1,7 +1,7 @@
 import pytest
 import pytz
 import mock
-import configs
+from . import configs
 # To run unittests on python 2.6 please use unittest2 library
 try:
     import unittest2 as unittest
