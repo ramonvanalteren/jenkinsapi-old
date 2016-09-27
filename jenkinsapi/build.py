@@ -98,7 +98,11 @@ class Build(JenkinsBase):
         """
         actions = self._data.get('actions')
         if actions:
-            parameters = actions[0].get('parameters', {})
+            parameters = {}
+            for elem in actions:
+                if 'parameters' in elem:
+                    parameters = elem['parameters']
+                    break
             return {pair['name']: pair['value'] for pair in parameters}
 
     def get_changeset_items(self):
@@ -420,12 +424,12 @@ class Build(JenkinsBase):
         return all_actions
 
     def get_causes(self):
-        '''
+        """
         Returns a list of causes. There can be multiple causes lists and
         some of the can be empty. For instance, when a build is manually
         aborted, Jenkins could add an empty causes list to the actions
         dict. Empty ones are ignored.
-        '''
+        """
         all_causes = []
         for dct_action in self._data["actions"]:
             if dct_action is None:
@@ -435,9 +439,9 @@ class Build(JenkinsBase):
         return all_causes
 
     def get_timestamp(self):
-        '''
+        """
         Returns build timestamp in UTC
-        '''
+        """
         # Java timestamps are given in miliseconds since the epoch start!
         naive_timestamp = datetime.datetime(
             *time.gmtime(self._data['timestamp'] / 1000.0)[:6])
