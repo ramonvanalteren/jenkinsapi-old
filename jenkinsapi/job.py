@@ -431,7 +431,9 @@ class Job(JenkinsBase, MutableJenkinsThing):
         tons of tests, this method is faster than get_build by returning less
         data.
         """
-        assert isinstance(buildnumber, int)
+        if not isinstance(buildnumber, int):
+            raise ValueError('Parameter "buildNumber" must be int')
+
         try:
             url = self.get_build_dict()[buildnumber]
             return Build(url, buildnumber, job=self, depth=0)
