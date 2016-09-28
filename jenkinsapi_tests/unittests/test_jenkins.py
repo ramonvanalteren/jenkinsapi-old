@@ -162,20 +162,24 @@ def test_get_jenkins_obj(mocker, monkeypatch):
     assert new_jenkins == jenkins
 
 
-def test_get_version(mocker):
+def test_get_version(monkeypatch):
     class MockResponse(object):
-
         def __init__(self):
             self.headers = {}
             self.headers['X-Jenkins'] = '1.542'
 
-    mock_requester = Requester(username='foouser', password='foopassword')
-    mock_requester.get_and_confirm_status = mocker.MagicMock(
-        return_value=MockResponse()
-    )
-    jenkins = Jenkins('http://localhost:8080/',
-                      username='foouser', password='foopassword',
-                      requester=mock_requester)
+    def fake_poll(cls, tree=None):   # pylint: disable=unused-argument
+        return {}
+
+    monkeypatch.setattr(Jenkins, '_poll', fake_poll)
+
+    def fake_get(cls, *arga, **kwargs):  # pylint: disable=unused-argument
+        return MockResponse()
+
+    monkeypatch.setattr(Requester, 'get_and_confirm_status', fake_get)
+
+    jenkins = Jenkins('http://foobar:8080/',
+                      username='foouser', password='foopassword')
     assert jenkins.version == '1.542'
 
 
