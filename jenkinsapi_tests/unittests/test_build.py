@@ -115,3 +115,50 @@ class OldTest(unittest.TestCase):
             continue
         build_init_mock.assert_called_once_with(
             'http//localhost:8080/job/foo/SHARD_NUM=1/1/', 1, self.j)
+
+    def test_get_params(self):
+        expected = {
+            'first_param': 'first_value',
+            'second_param': 'second_value',
+        }
+        self.b._data = {
+            'actions': [{
+                'parameters': [
+                    {'name': 'first_param', 'value': 'first_value'},
+                    {'name': 'second_param', 'value': 'second_value'},
+                ]
+            }]
+        }
+        params = self.b.get_params()
+
+        self.assertDictEqual(params, expected)
+
+    def test_get_params_different_order(self):
+        """
+        Dictionary with `parameters` key is not always the first element in
+        `actions` list, so we need to search through whole array. This test
+        covers such a case
+        """
+        expected = {
+            'first_param': 'first_value',
+            'second_param': 'second_value',
+        }
+        self.b._data = {
+            'actions': [
+                {
+                    'not_parameters': 'some_data',
+                },
+                {
+                    'another_action': 'some_value',
+                },
+                {
+                    'parameters': [
+                        {'name': 'first_param', 'value': 'first_value'},
+                        {'name': 'second_param', 'value': 'second_value'},
+                    ]
+                }
+            ]
+        }
+        params = self.b.get_params()
+
+        self.assertDictEqual(params, expected)

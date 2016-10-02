@@ -313,3 +313,42 @@ def test_get_build_by_params(jenkins, monkeypatch, mocker):
     assert job.get_build.call_count == 3
     assert build_call_count[0] == 3
     assert result == fake_builds[2]
+    def test_get_build_by_params(self):
+        build_params = {
+            'param1': 'value1'
+        }
+        get_params_mock = mock.Mock(side_effect=({}, {}, build_params))
+        build_mock = mock.Mock(get_params=get_params_mock)
+        with mock.patch.object(self.j, 'get_first_buildnumber', return_value=1), \
+                mock.patch.object(self.j, 'get_last_buildnumber', return_value=3), \
+                mock.patch.object(self.j, 'get_build', return_value=build_mock) as get_build_mock:
+            result = self.j.get_build_by_params(build_params)
+            assert get_build_mock.call_count == 3
+            assert get_params_mock.call_count == 3
+            assert result == build_mock
+
+    def test_get_build_by_params_improper_invocation(self):
+        build_params = {
+            'param1': 'value1'
+        }
+        get_params_mock = mock.Mock(side_effect=({}, {}, {}))
+        build_mock = mock.Mock(get_params=get_params_mock)
+        with mock.patch.object(self.j, 'get_first_buildnumber'), \
+                mock.patch.object(self.j, 'get_last_buildnumber'):
+
+            with self.assertRaises(ValueError):
+                self.j.get_build_by_params(build_params, None)
+
+        with mock.patch.object(self.j, 'get_first_buildnumber', return_value=1), \
+                mock.patch.object(self.j, 'get_last_buildnumber', return_value=1), \
+                mock.patch.object(self.j, 'get_build', return_value=build_mock) as get_build_mock:
+
+            with self.assertRaises(NoBuildData):
+                self.j.get_build_by_params(build_params)
+
+            get_build_mock.assert_called_once_with(1)
+
+
+if __name__ == '__main__':
+    unittest.main()
+>>>>>>> master
