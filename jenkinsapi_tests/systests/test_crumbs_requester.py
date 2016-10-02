@@ -17,36 +17,36 @@ DEFAULT_JENKINS_PORT = 8080
 ENABLE_CRUMBS_CONFIG = {
     '': '0',
     'markupFormatter': {
-      'stapler-class': 'hudson.markup.EscapedMarkupFormatter',
-      '$class': 'hudson.markup.EscapedMarkupFormatter'
+        'stapler-class': 'hudson.markup.EscapedMarkupFormatter',
+        '$class': 'hudson.markup.EscapedMarkupFormatter'
     },
     'hudson-security-csrf-GlobalCrumbIssuerConfiguration': {
-      'csrf': {
-        'issuer': {
-          'value': '0',
-          'stapler-class': 'hudson.security.csrf.DefaultCrumbIssuer',
-          '$class': 'hudson.security.csrf.DefaultCrumbIssuer',
-          'excludeClientIPFromCrumb': False
+        'csrf': {
+            'issuer': {
+                'value': '0',
+                'stapler-class': 'hudson.security.csrf.DefaultCrumbIssuer',
+                '$class': 'hudson.security.csrf.DefaultCrumbIssuer',
+                'excludeClientIPFromCrumb': False
+            }
         }
-      }
     },
     'jenkins-model-DownloadSettings': {
-      'useBrowser': False
+        'useBrowser': False
     },
     'core:apply': '',
 }
 DISABLE_CRUMBS_CONFIG = {
     '': '0',
     'markupFormatter': {
-      'stapler-class': 'hudson.markup.EscapedMarkupFormatter',
-      '$class': 'hudson.markup.EscapedMarkupFormatter'
+        'stapler-class': 'hudson.markup.EscapedMarkupFormatter',
+        '$class': 'hudson.markup.EscapedMarkupFormatter'
     },
     'hudson-security-csrf-GlobalCrumbIssuerConfiguration': {},
     'jenkins-model-DownloadSettings': {
-      'useBrowser': False
+        'useBrowser': False
     },
     'core:apply': ''
-  }
+}
 
 
 @pytest.fixture(scope='function')
