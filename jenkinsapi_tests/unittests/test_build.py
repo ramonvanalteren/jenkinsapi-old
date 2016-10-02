@@ -82,6 +82,11 @@ def test_get_revision_no_scm(build):
     assert build.get_revision() is None
 
 
+def test_downstream(build):
+    expected = ['test1', 'test2']
+    assert build.get_downstream_job_names() == expected
+
+
 def test_get_params(build):
     expected = {
         'first_param': 'first_value',
@@ -100,9 +105,35 @@ def test_get_params(build):
     assert params == expected
 
 
-def test_downstream(build):
-    expected = ['test1', 'test2']
-    assert build.get_downstream_job_names() == expected
+def test_get_params_different_order(build):
+    """
+    Dictionary with `parameters` key is not always the first element in
+    `actions` list, so we need to search through whole array. This test
+    covers such a case
+    """
+    expected = {
+        'first_param': 'first_value',
+        'second_param': 'second_value',
+    }
+    build._data = {
+        'actions': [
+            {
+                'not_parameters': 'some_data',
+            },
+            {
+                'another_action': 'some_value',
+            },
+            {
+                'parameters': [
+                    {'name': 'first_param', 'value': 'first_value'},
+                    {'name': 'second_param', 'value': 'second_value'},
+                ]
+            }
+        ]
+    }
+    params = build.get_params()
+
+    assert params == expected
 
 
 @pytest.mark.skip(reason='@lechat: Not sure what this tests')

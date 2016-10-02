@@ -313,3 +313,34 @@ def test_get_build_by_params(jenkins, monkeypatch, mocker):
     assert job.get_build.call_count == 3
     assert build_call_count[0] == 3
     assert result == fake_builds[2]
+
+
+def test_get_build_by_params_not_found(jenkins, monkeypatch, mocker):
+    build_params = {
+        'param1': 'value1'
+    }
+    fake_builds = (
+        mocker.Mock(get_params=lambda: {}),
+        mocker.Mock(get_params=lambda: {}),
+        mocker.Mock(get_params=lambda: {})
+    )
+
+    build_call_count = [0]
+
+    def fake_get_build(cls, number):  # pylint: disable=unused-argument
+        build_call_count[0] += 1
+        return fake_builds[number - 1]
+
+    monkeypatch.setattr(Job, 'get_first_buildnumber', lambda x: 1)
+    monkeypatch.setattr(Job, 'get_last_buildnumber', lambda x: 3)
+    monkeypatch.setattr(Job, 'get_build', fake_get_build)
+    mocker.spy(Build, 'get_params')
+    mocker.spy(Job, 'get_build')
+
+    job = Job('http://localhost/jobs/foo', 'foo', jenkins)
+
+    with pytest.raises(NoBuildData):
+        job.get_build_by_params(build_params)
+
+    assert job.get_build.call_count == 3
+    assert build_call_count[0] == 3
