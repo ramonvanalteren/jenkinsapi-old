@@ -7,3 +7,15 @@
 /dist
 .settings
 *.DS_Store
+jenkins.war
+.coverage/
+.coverage
+nosetests.xml
+coverage*/
+.idea/
+bin/
+include/
+lib/
+*.egg
+.tox/*
+*.sw?

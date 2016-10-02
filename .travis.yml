@@ -1,0 +1,17 @@
+language: python
+python:
+- '2.7'
+- '3.4'
+- '3.5'
+env:
+- JENKINS_VERSION=1.x
+- JENKINS_VERSION=2.x
+install:
+- pip install -r requirements/dev-requirements.txt
+- python setup.py develop
+script:
+- pep8 --ignore=E501 jenkinsapi/*.py
+- pylint --rcfile=pylintrc jenkinsapi/*.py
+- py.test -sv --cov=jenkinsapi --cov-report=term-missing --cov-report=xml jenkinsapi_tests
+after_success:
+   - bash <(curl -s https://codecov.io/bash)
