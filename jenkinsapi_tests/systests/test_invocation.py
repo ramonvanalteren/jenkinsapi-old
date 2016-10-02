@@ -33,15 +33,15 @@ def test_get_block_until_build_running(jenkins):
     bn = qq.block_until_building(delay=3).get_number()
     assert isinstance(bn, int) is True
 
-    b = qq.get_build()
-    assert isinstance(b, Build) is True
-    assert b.is_running() is True
-    b.stop()
+    build = qq.get_build()
+    assert isinstance(build, Build) is True
+    assert build.is_running() is True
+    build.stop()
     # if we call next line right away - Jenkins have no time to stop job
     # so we wait a bit
     time.sleep(1)
-    assert b.is_running() is False
-    console = b.get_console()
+    assert build.is_running() is False
+    console = build.get_console()
     assert isinstance(console, str) is True
     assert 'Started by user' in console
 
@@ -54,7 +54,7 @@ def test_get_block_until_build_complete(jenkins):
     assert qq.get_build().is_running() is False
 
 
-def test_multiple_invocations_and_get_last_build(jenkins):
+def test_mi_and_get_last_build(jenkins):
     job_name = 'Dcreate_%s' % random_string()
 
     job = jenkins.create_job(job_name, SHORTISH_JOB)
@@ -69,8 +69,11 @@ def test_multiple_invocations_and_get_last_build(jenkins):
     build = job.get_build(build_number)
     assert isinstance(build, Build) is True
 
+    build = job.get_build_metadata(build_number)
+    assert isinstance(build, Build) is True
 
-def test_multiple_invocations_and_get_build_number(jenkins):
+
+def test_mi_and_get_build_number(jenkins):
     job_name = 'Ecreate_%s' % random_string()
 
     job = jenkins.create_job(job_name, EMPTY_JOB)
@@ -82,7 +85,7 @@ def test_multiple_invocations_and_get_build_number(jenkins):
         assert build_number == invocation + 1
 
 
-def test_multiple_invocations_and_delete_build(jenkins):
+def test_mi_and_delete_build(jenkins):
     job_name = 'Ecreate_%s' % random_string()
 
     job = jenkins.create_job(job_name, EMPTY_JOB)
@@ -100,8 +103,9 @@ def test_multiple_invocations_and_delete_build(jenkins):
         job.get_build(1)
 
     # Delete build using Job as dictionary of builds
-    job[2]
+    assert isinstance(job[2], Build)
     del job[2]
+
     with pytest.raises(NotFound):
         job.get_build(2)
 
