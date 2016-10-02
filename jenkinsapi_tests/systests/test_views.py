@@ -21,14 +21,14 @@ def create_job(jenkins, job_name='whatever'):
 def test_make_views(jenkins):
     view_name = random_string()
     assert view_name not in jenkins.views
-    v = jenkins.views.create(view_name)
+    new_view = jenkins.views.create(view_name)
     assert view_name in jenkins.views
-    assert isinstance(v, View) is True
-    assert view_name == str(v)
+    assert isinstance(new_view, View) is True
+    assert view_name == str(new_view)
 
     # Can we use the API convenience methods
-    v2 = get_view_from_url(v.baseurl)
-    assert v == v2
+    new_view_1 = get_view_from_url(new_view.baseurl)
+    assert new_view == new_view_1
 
     del jenkins.views[view_name]
 
@@ -39,29 +39,29 @@ def test_add_job_to_view(jenkins):
 
     view_name = random_string()
     assert view_name not in jenkins.views
-    v = jenkins.views.create(view_name)
+    new_view = jenkins.views.create(view_name)
     assert view_name in jenkins.views
-    assert isinstance(v, View) is True
+    assert isinstance(new_view, View) is True
 
-    assert job_name not in v
-    assert v.add_job(job_name) is True
-    assert job_name in v
-    assert isinstance(v[job_name], Job) is True
+    assert job_name not in new_view
+    assert new_view.add_job(job_name) is True
+    assert job_name in new_view
+    assert isinstance(new_view[job_name], Job) is True
 
-    assert len(v) == 1
-    for j_name, j in v.iteritems():
+    assert len(new_view) == 1
+    for j_name, j in new_view.iteritems():
         assert j_name == job_name
         assert isinstance(j, Job) is True
 
-    for j in v.values():
+    for j in new_view.values():
         assert isinstance(j, Job) is True
 
-    jobs = v.items()
+    jobs = new_view.items()
     assert isinstance(jobs, list) is True
     assert isinstance(jobs[0], tuple) is True
 
-    assert v.add_job(job_name) is False
-    assert v.add_job('unknown') is False
+    assert new_view.add_job(job_name) is False
+    assert new_view.add_job('unknown') is False
 
     del jenkins.views[view_name]
 
@@ -134,8 +134,8 @@ def test_make_nested_views(jenkins):
     assert job.name in sv2
 
     # Can we use the API convenience methods
-    v = get_view_from_url(sv2.baseurl)
-    assert v == sv2
+    new_view = get_view_from_url(sv2.baseurl)
+    assert new_view == sv2
 
 
 def test_add_to_view_after_copy(jenkins):
@@ -159,5 +159,5 @@ def test_get_job_config(jenkins):
     assert new_view.add_job(job.name) is True
 
     assert '<?xml' in jenkins.get_job(job.name).get_config()
-    for job_name, job in jenkins.views[view_name].items():
+    for _, job in jenkins.views[view_name].items():
         assert '<?xml' in job.get_config()
