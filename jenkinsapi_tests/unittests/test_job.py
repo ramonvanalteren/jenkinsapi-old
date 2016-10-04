@@ -75,6 +75,14 @@ def test_next_build_number(job):
     assert job.get_next_build_number() == 4
 
 
+def test_lastcompleted_build_number(job):
+    assert job.get_last_completed_buildnumber() == 3
+
+
+def test_lastgood_build_number(job):
+    assert job.get_last_good_buildnumber() == 3
+
+
 def test_special_urls(job):
     assert job.baseurl == 'http://halob:8080/job/foo'
     assert job.get_delete_url() == 'http://halob:8080/job/foo/doDelete'
