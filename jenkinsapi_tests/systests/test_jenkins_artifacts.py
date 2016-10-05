@@ -16,12 +16,12 @@ def test_artefacts(jenkins):
     job = jenkins.create_job(job_name, JOB_WITH_ARTIFACTS)
     job.invoke(block=True)
 
-    b = job.get_last_build()
+    build = job.get_last_build()
 
-    while b.is_running():
+    while build.is_running():
         time.sleep(1)
 
-    artifacts = b.get_artifact_dict()
+    artifacts = build.get_artifact_dict()
     assert isinstance(artifacts, dict) is True
 
     text_artifact = artifacts['out.txt']
@@ -32,6 +32,7 @@ def test_artefacts(jenkins):
     try:
         # Verify that we can handle text artifacts
         text_artifact.save_to_dir(tempDir, strict_validation=True)
+        assert os.path.exists(os.path.join(tempDir, text_artifact.filename))
         readBackText = open(
             os.path.join(tempDir, text_artifact.filename),
             'rb').read().strip()
@@ -41,6 +42,7 @@ def test_artefacts(jenkins):
 
         # Verify that we can hande binary artifacts
         binary_artifact.save_to_dir(tempDir, strict_validation=True)
+        assert os.path.exists(os.path.join(tempDir, binary_artifact.filename))
         readBackText = gzip.open(
             os.path.join(tempDir, binary_artifact.filename,),
             'rb').read().strip()
