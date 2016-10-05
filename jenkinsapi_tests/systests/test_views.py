@@ -26,6 +26,10 @@ def test_make_views(jenkins):
     assert isinstance(new_view, View) is True
     assert view_name == str(new_view)
 
+    # Can we create a view that already exists?
+    existing = jenkins.views.create(view_name)
+    assert existing == new_view
+
     # Can we use the API convenience methods
     new_view_1 = get_view_from_url(new_view.baseurl)
     assert new_view == new_view_1
