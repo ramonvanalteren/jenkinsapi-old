@@ -160,6 +160,78 @@ class TestBuildCase(unittest.TestCase):
 
         self.assertDictEqual(params, expected)
 
+    @mock.patch.object(Build, 'poll')
+    def test_get_artifacts_from_other_builds(self, poll_mock):
+        fingerprint = {
+            "fingerprint": [
+                {
+                    "fileName": "artifact1.fn",
+                    "original": {
+                        "name": 'FooJob',
+                        "number": 97,
+                    },
+                },
+                {
+                    "fileName": "artifact2.fn",
+                    "original": {
+                        "name": 'FooJob',
+                        "number": 95,
+                    },
+                },
+                {
+                    "fileName": "artifact3.fn",
+                    "original": {
+                        "name": 'BarJob',
+                        "number": 97,
+                    },
+                },
+            ],
+        }
+        artifacts = {
+            'artifacts': [
+                {
+                    "fileName": "artifact1.fn",
+                    "relativePath": "dir/artifact1.fn"
+                },
+                {
+                    "fileName": "artifact2.fn",
+                    "relativePath": "dir/artifact2.fn"
+                },
+                {
+                    "fileName": "artifact3.fn",
+                    "relativePath": "dir/artifact3.fn"
+                },
+            ],
+        }
+
+        # set up poll for get_artifacts calls
+        def poll_fn(tree):
+            if tree == 'fingerprint[fileName,original[name,number]]':
+                return fingerprint
+            elif tree == 'artifacts[relativePath,fileName]':
+                return artifacts
+            else:
+                raise ValueError('bad tree')
+        poll_mock.side_effect = poll_fn
+
+        # set up jenkins for retrieving other builds
+        foo_mock = mock.Mock()
+        bar_mock = mock.Mock()
+        self.j.get_jenkins_obj.return_value = {
+            'FooJob': foo_mock,
+            'BarJob': bar_mock,
+        }
+        foo_mock.get_build.return_value = 'FooJob95'
+        bar_mock.get_build.return_value = 'BarJob97'
+
+        # check artifacts
+        artifacts = self.b.get_artifact_dict()
+        self.assertEqual(self.b, artifacts['artifact1.fn'].build)
+        self.assertEqual('FooJob95', artifacts['artifact2.fn'].build)
+        self.assertEqual('BarJob97', artifacts['artifact3.fn'].build)
+        foo_mock.get_build.assert_called_once_with(95)
+        bar_mock.get_build.assert_called_once_with(97)
+
     # TEST DISABLED - DOES NOT WORK
     # def test_downstream(self):
     #     expected = ['SingleJob','MultipleJobs']
