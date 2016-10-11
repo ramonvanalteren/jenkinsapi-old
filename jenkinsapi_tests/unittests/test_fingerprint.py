@@ -32,9 +32,9 @@ def test_object_creation(jenkins, dummy_md5, monkeypatch):
     monkeypatch.setattr(JenkinsBase, '_poll', fake_poll)
     fp_instance = Fingerprint('http://foo:8080', dummy_md5, jenkins)
 
-    assert isinstance(fp_instance, Fingerprint) is True
+    assert isinstance(fp_instance, Fingerprint)
     assert str(fp_instance) == dummy_md5
-    assert fp_instance.valid() is True
+    assert fp_instance.valid()
 
 
 def test_valid_for_404(jenkins, dummy_md5, monkeypatch):

@@ -219,7 +219,7 @@ def test_get_master_node(nodes, monkeypatch):
     monkeypatch.setattr(Node, '_poll', fake_poll)
 
     node = nodes['master']
-    assert isinstance(node, Node) is True
+    assert isinstance(node, Node)
 
 
 def test_get_nonmaster_node(nodes, monkeypatch):
@@ -229,4 +229,4 @@ def test_get_nonmaster_node(nodes, monkeypatch):
     monkeypatch.setattr(Node, '_poll', fake_poll)
 
     node = nodes['halob']
-    assert isinstance(node, Node) is True
+    assert isinstance(node, Node)

@@ -281,8 +281,8 @@ def test_get_executors(jenkins, monkeypatch):
 
     exec_info = jenkins.get_executors(DATA3['displayName'])
 
-    assert isinstance(exec_info, object) is True
-    assert isinstance(repr(exec_info), str) is True
+    assert isinstance(exec_info, object)
+    assert isinstance(repr(exec_info), str)
 
     for ex in exec_info:
         assert ex.get_progress() == 48, 'Should return 48 %'
@@ -300,7 +300,7 @@ def testis_idle(jenkins, monkeypatch):
 
     exec_info = jenkins.get_executors('host3.host.com')
 
-    assert isinstance(exec_info, object) is True
+    assert isinstance(exec_info, object)
     for ex in exec_info:
         assert ex.get_progress() == -1, 'Should return 48 %'
         assert ex.is_idle() is True, 'Should return True'

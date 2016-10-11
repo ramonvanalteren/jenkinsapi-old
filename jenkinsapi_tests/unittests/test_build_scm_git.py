@@ -35,10 +35,10 @@ def test_git_scm(build):
     Can we extract git build revision data from a build object?
     """
     try:
-        assert isinstance(build.get_revision(), basestring) is True
+        assert isinstance(build.get_revision(), basestring)
     except NameError:
         # Python3
-        assert isinstance(build.get_revision(), str) is True
+        assert isinstance(build.get_revision(), str)
     assert build.get_revision() == '7def9ed6e92580f37d00e4980c36c4d36e68f702'
 
 
@@ -46,9 +46,9 @@ def test_git_revision_branch(build):
     """
     Can we extract git build branch from a build object?
     """
-    assert isinstance(build.get_revision_branch(), list) is True
+    assert isinstance(build.get_revision_branch(), list)
     assert len(build.get_revision_branch()) == 1
-    assert isinstance(build.get_revision_branch()[0], dict) is True
+    assert isinstance(build.get_revision_branch()[0], dict)
     assert build.get_revision_branch()[0]['SHA1'] == \
         '7def9ed6e92580f37d00e4980c36c4d36e68f702'
     assert build.get_revision_branch()[0]['name'] == 'origin/unstable'

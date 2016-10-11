@@ -39,7 +39,7 @@ def build(job, monkeypatch):
 
 
 def test_timestamp(build):
-    assert isinstance(build.get_timestamp(), datetime.datetime) is True
+    assert isinstance(build.get_timestamp(), datetime.datetime)
 
     expected = pytz.utc.localize(
         datetime.datetime(2013, 5, 31, 23, 15, 40))

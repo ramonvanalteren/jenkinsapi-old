@@ -112,7 +112,7 @@ def test_unicode_mk_json(job):
         'country': 'USA',
         'height': 1.88
     })
-    assert isinstance(json, dict) is True
+    assert isinstance(json, dict)
 
 
 def test_wrong_field__build_id_for_type(job):
@@ -147,7 +147,7 @@ def test_get_last_completed_buildnumber(job):
 
 def test_get_build_dict(job_tree):
     ret = job_tree.get_build_dict()
-    assert isinstance(ret, dict) is True
+    assert isinstance(ret, dict)
     assert len(ret) == 4
 
 
@@ -160,7 +160,7 @@ def test_get_build_ids(job):
     # We don't want to deal with listreverseiterator here
     # So we convert result to a list
     ret = list(job.get_build_ids())
-    assert isinstance(ret, list) is True
+    assert isinstance(ret, list)
     assert len(ret) == 4
 
 
@@ -243,7 +243,7 @@ def test_get_params_list(job):
     assert job.has_params() is True
     params = job.get_params_list()
 
-    assert isinstance(params, list) is True
+    assert isinstance(params, list)
     assert len(params) == 2
     assert params == ['param1', 'param2']
 
@@ -280,7 +280,7 @@ def test__mk_json_from_build_parameters(job):
         ]
     }
     result = job._mk_json_from_build_parameters(build_params=params)
-    assert isinstance(result, dict) is True
+    assert isinstance(result, dict)
 
     assert result == expected
 
