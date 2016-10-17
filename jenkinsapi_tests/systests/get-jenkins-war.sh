@@ -12,6 +12,6 @@ readonly JENKINS_PATH=$2
 if   [[ $(type -t wget) ]]; then wget -O ${JENKINS_PATH}/jenkins.war $JENKINS_WAR_URL
 elif [[ $(type -t curl) ]]; then curl -sSL -o ${JENKINS_PATH}/jenkins.war $JENKINS_WAR_URL
 else
-    error "Could not find wget or curl"
+    echo "Could not find wget or curl"
     return 1
 fi
