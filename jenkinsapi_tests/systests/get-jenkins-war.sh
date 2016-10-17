@@ -13,5 +13,5 @@ if   [[ $(type -t wget) ]]; then wget -O ${JENKINS_PATH}/jenkins.war $JENKINS_WA
 elif [[ $(type -t curl) ]]; then curl -sSL -o ${JENKINS_PATH}/jenkins.war $JENKINS_WAR_URL
 else
     echo "Could not find wget or curl"
-    return 1
+    exit 1
 fi
