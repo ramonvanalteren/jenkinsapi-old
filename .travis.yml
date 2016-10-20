@@ -14,4 +14,4 @@ script:
 - pylint --rcfile=pylintrc jenkinsapi/*.py
 - py.test -sv --cov=jenkinsapi --cov-report=term-missing --cov-report=xml jenkinsapi_tests
 after_success:
-   - bash <(curl -s https://codecov.io/bash)
+   - codecov
