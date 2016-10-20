@@ -9,11 +9,11 @@ Build objects can be associated with Results and Artifacts.g
 """
 
 import time
-import pytz
 import logging
 import warnings
 import datetime
 from time import sleep
+import pytz
 from jenkinsapi import config
 from jenkinsapi.artifact import Artifact
 from jenkinsapi.result_set import ResultSet
