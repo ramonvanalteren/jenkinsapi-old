@@ -156,9 +156,10 @@ class Job(JenkinsBase, MutableJenkinsThing):
 
         try:
             build_p = [{'name': k,
-                        'value': str(v.encode('utf-8')
-                                     if isinstance(v, unicode)  # pylint: disable=undefined-variable
-                                     else v)}
+                        'value': str(
+                            v.encode('utf-8')
+                            if isinstance(v, unicode)  # pylint: disable=undefined-variable
+                            else v)}
                        for k, v in sorted(build_params.items())]
 
         except NameError:

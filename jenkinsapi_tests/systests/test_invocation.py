@@ -19,7 +19,7 @@ def test_invocation_object(jenkins):
     job_name = 'Acreate_%s' % random_string()
     job = jenkins.create_job(job_name, SHORTISH_JOB)
     qq = job.invoke()
-    assert isinstance(qq, QueueItem) is True
+    assert isinstance(qq, QueueItem)
     # Let Jenkins catchup
     qq.block_until_building()
     assert qq.get_build_number() == 1
@@ -31,18 +31,18 @@ def test_get_block_until_build_running(jenkins):
     qq = job.invoke()
     time.sleep(3)
     bn = qq.block_until_building(delay=3).get_number()
-    assert isinstance(bn, int) is True
+    assert isinstance(bn, int)
 
     build = qq.get_build()
-    assert isinstance(build, Build) is True
-    assert build.is_running() is True
+    assert isinstance(build, Build)
+    assert build.is_running()
     build.stop()
     # if we call next line right away - Jenkins have no time to stop job
     # so we wait a bit
     time.sleep(1)
-    assert build.is_running() is False
+    assert not build.is_running()
     console = build.get_console()
-    assert isinstance(console, str) is True
+    assert isinstance(console, str)
     assert 'Started by user' in console
 
 
@@ -51,7 +51,7 @@ def test_get_block_until_build_complete(jenkins):
     job = jenkins.create_job(job_name, SHORTISH_JOB)
     qq = job.invoke()
     qq.block_until_complete()
-    assert qq.get_build().is_running() is False
+    assert not qq.get_build().is_running()
 
 
 def test_mi_and_get_last_build(jenkins):
@@ -67,10 +67,10 @@ def test_mi_and_get_last_build(jenkins):
     assert build_number == 3
 
     build = job.get_build(build_number)
-    assert isinstance(build, Build) is True
+    assert isinstance(build, Build)
 
     build = job.get_build_metadata(build_number)
-    assert isinstance(build, Build) is True
+    assert isinstance(build, Build)
 
 
 def test_mi_and_get_build_number(jenkins):

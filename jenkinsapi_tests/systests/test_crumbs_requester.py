@@ -6,6 +6,10 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.utils.crumb_requester import CrumbRequester
 from jenkinsapi_tests.test_utils.random_strings import random_string
@@ -52,7 +56,7 @@ DISABLE_CRUMBS_CONFIG = {
 @pytest.fixture(scope='function')
 def crumbed_jenkins(jenkins):
     jenkins.requester.post_and_confirm_status(
-        jenkins.baseurl + '/configureSecurity/configure',
+        urljoin(jenkins.baseurl, '/configureSecurity/configure'),
         data={
             'Submit': 'save',
             'json': json.dumps(ENABLE_CRUMBS_CONFIG)
@@ -83,8 +87,8 @@ def test_invoke_job_with_file(crumbed_jenkins):
     job_name = 'create1_%s' % random_string()
     job = crumbed_jenkins.create_job(job_name, JOB_WITH_FILE)
 
-    assert job.has_params() is True
-    assert len(job.get_params_list()) != 0
+    assert job.has_params()
+    assert len(job.get_params_list())
 
     job.invoke(block=True, files={'file.txt': param_file})
 

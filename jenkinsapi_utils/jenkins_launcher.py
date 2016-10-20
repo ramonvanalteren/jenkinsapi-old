@@ -4,7 +4,6 @@ try:
     import Queue
 except ImportError:
     import queue as Queue
-import random
 import shutil
 import logging
 import datetime
@@ -39,7 +38,7 @@ class StreamThread(threading.Thread):
     def __init__(self, name, q, stream, fn_log):
         threading.Thread.__init__(self)
         self.name = name
-        self.q = q
+        self.queue = q
         self.stream = stream
         self.fn_log = fn_log
         self._stop = threading.Event()
@@ -59,11 +58,11 @@ class StreamThread(threading.Thread):
             line = self.stream.readline()
             if line:
                 self.fn_log(line.rstrip())
-                self.q.put((self.name, line))
+                self.queue.put((self.name, line))
             else:
                 break
 
-        self.q.put((self.name, None))
+        self.queue.put((self.name, None))
 
 
 class JenkinsLancher(object):
@@ -79,7 +78,13 @@ class JenkinsLancher(object):
             self.http_port = urlparse(jenkins_url).port
             self.start_new_instance = False
         else:
-            self.http_port = random.randint(9000, 10000)
+            import socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.bind(('', 0))
+            sock.listen(1)
+            port = sock.getsockname()[1]
+            sock.close()
+            self.http_port = port
             self.jenkins_url = 'http://localhost:%s' % self.http_port
             self.start_new_instance = True
 
@@ -94,7 +99,7 @@ class JenkinsLancher(object):
             self.jenkins_home = os.environ['JENKINS_HOME']
 
         self.jenkins_process = None
-        self.q = Queue.Queue()
+        self.queue = Queue.Queue()
         self.plugin_urls = plugin_urls or []
         if os.environ.get('JENKINS_VERSION', '1.x') == '1.x':
             self.JENKINS_WAR_URL = (
@@ -132,9 +137,9 @@ class JenkinsLancher(object):
         path = urlparse(hpi_url).path
         filename = posixpath.basename(path)
         plugin_path = os.path.join(plugin_dir, filename)
-        with open(plugin_path, 'wb') as h:
+        with open(plugin_path, 'wb') as hpi:
             request = requests.get(hpi_url)
-            h.write(request.content)
+            hpi.write(request.content)
         # Create an empty .pinned file, so that the downloaded plugin
         # will be used, instead of the version bundled in jenkins.war
         # See https://wiki.jenkins-ci.org/display/JENKINS/Pinned+Plugins
@@ -144,8 +149,8 @@ class JenkinsLancher(object):
         if self.start_new_instance:
             log.info("Shutting down jenkins.")
             # Start the threads
-            for t in self.threads:
-                t.stop()
+            for thread in self.threads:
+                thread.stop()
 
             Jenkins(self.jenkins_url).shutdown()
             # self.jenkins_process.terminate()
@@ -192,19 +197,20 @@ class JenkinsLancher(object):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             self.threads = [
-                StreamThread('out', self.q, self.jenkins_process.stdout,
+                StreamThread('out', self.queue, self.jenkins_process.stdout,
                              log.info),
-                StreamThread('err', self.q, self.jenkins_process.stderr,
+                StreamThread('err', self.queue, self.jenkins_process.stderr,
                              log.warn)
             ]
 
             # Start the threads
-            for t in self.threads:
-                t.start()
+            for thread in self.threads:
+                thread.start()
 
             while True:
                 try:
-                    streamName, line = self.q.get(block=True, timeout=timeout)
+                    streamName, line = self.queue.get(
+                        block=True, timeout=timeout)
                     # Python 3.x
                     if isinstance(line, bytes):
                         line = line.decode('UTF-8')

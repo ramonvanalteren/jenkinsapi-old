@@ -151,6 +151,13 @@ def test_get_build_dict(job_tree):
     assert len(ret) == 4
 
 
+def test_get_build_metadata(job_tree):
+    with pytest.raises(ValueError) as ve:
+        job_tree.get_build_metadata('abc')
+
+    assert 'Parameter "buildNumber" must be int' in str(ve.value)
+
+
 def test_nobuilds_get_build_dict(job_tree_empty):
     with pytest.raises(NoBuildData):
         job_tree_empty.get_build_dict()
