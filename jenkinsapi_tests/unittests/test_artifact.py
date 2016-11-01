@@ -4,16 +4,15 @@ from mock import (
     patch,
     call
 )
-# To run unittests on python 2.6 please use unittest2 library
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 from requests.exceptions import HTTPError
 from jenkinsapi.artifact import Artifact
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.custom_exceptions import ArtifactBroken
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 
 @pytest.fixture()
@@ -143,8 +142,8 @@ class ArtifactTest(unittest.TestCase):
         artifact = self._artifact
         artifact._verify_download = Mock(return_value=True)
 
-        self.assertEqual(artifact.save('/tmp/artifact.zip'),
-                         '/tmp/artifact.zip')
+        assert artifact.save('/tmp/artifact.zip') == \
+                         '/tmp/artifact.zip'
 
         mock_exists.assert_called_once_with('/tmp/artifact.zip')
         artifact._verify_download.assert_called_once_with(
@@ -156,14 +155,13 @@ class ArtifactTest(unittest.TestCase):
         artifact._verify_download = Mock(side_effect=[ArtifactBroken, True])
         artifact._do_download = Mock(return_value='/tmp/artifact.zip')
 
-        self.assertEqual(artifact.save('/tmp/artifact.zip', True),
-                         '/tmp/artifact.zip')
+        assert artifact.save('/tmp/artifact.zip', True) == \
+                         '/tmp/artifact.zip'
 
         mock_exists.assert_called_once_with('/tmp/artifact.zip')
         artifact._do_download.assert_called_once_with('/tmp/artifact.zip')
-        self.assertEqual(
-            artifact._verify_download.mock_calls,
-            [call('/tmp/artifact.zip', True)] * 2)
+        assert artifact._verify_download.mock_calls == \
+            [call('/tmp/artifact.zip', True)] * 2
 
     @patch('jenkinsapi.artifact.os.path.exists', spec=True, return_value=True)
     def test_has_invalid_lcl_copy_dl_but_invalid(
@@ -173,14 +171,13 @@ class ArtifactTest(unittest.TestCase):
             side_effect=[ArtifactBroken, ArtifactBroken])
         artifact._do_download = Mock(return_value='/tmp/artifact.zip')
 
-        with self.assertRaises(ArtifactBroken):
+        with pytest.raises(ArtifactBroken):
             artifact.save('/tmp/artifact.zip', True)
 
         mock_exists.assert_called_once_with('/tmp/artifact.zip')
         artifact._do_download.assert_called_once_with('/tmp/artifact.zip')
-        self.assertEqual(
-            artifact._verify_download.mock_calls,
-            [call('/tmp/artifact.zip', True)] * 2)
+        assert artifact._verify_download.mock_calls == \
+            [call('/tmp/artifact.zip', True)] * 2
 
     @patch('jenkinsapi.artifact.os.path.exists', spec=True, return_value=False)
     def test_save_has_no_local_copy(self, mock_exists):
@@ -188,8 +185,8 @@ class ArtifactTest(unittest.TestCase):
         artifact._do_download = Mock(return_value='/tmp/artifact.zip')
         artifact._verify_download = Mock(return_value=True)
 
-        self.assertEqual(artifact.save('/tmp/artifact.zip'),
-                         '/tmp/artifact.zip')
+        assert artifact.save('/tmp/artifact.zip') == \
+                         '/tmp/artifact.zip'
 
         mock_exists.assert_called_once_with('/tmp/artifact.zip')
         artifact._do_download.assert_called_once_with('/tmp/artifact.zip')
