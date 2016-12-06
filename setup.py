@@ -2,7 +2,7 @@ import os
 from setuptools import setup
 
 PROJECT_ROOT, _ = os.path.split(__file__)
-REVISION = '0.3.2'
+REVISION = '0.3.4'
 PROJECT_NAME = 'JenkinsAPI'
 PROJECT_AUTHORS = 'Salim Fadhley, Aleksey Maksimov'
 # Please see readme.rst for a complete list of contributors
@@ -44,7 +44,9 @@ setup(
         'jenkinsapi',
         'jenkinsapi.utils',
         'jenkinsapi.command_line',
-        'jenkinsapi_tests'],
+        'jenkinsapi_tests',
+        'jenkinsapi_utils',
+        ],
     zip_safe=True,
     include_package_data=False,
     install_requires=install_requires,
