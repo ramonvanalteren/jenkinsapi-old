@@ -37,7 +37,13 @@ def test_create_jnlp_node(jenkins):
         'node_description': 'Test JNLP Node',
         'remote_fs': '/tmp',
         'labels': 'systest_jnlp',
-        'exclusive': True
+        'exclusive': True,
+        'tool_location': [
+            {
+                "key": "hudson.tasks.Maven$MavenInstallation$DescriptorImpl@Maven 3.0.5",
+                "home": "/home/apache-maven-3.0.5/"
+            },
+        ]
     }
     node = jenkins.nodes.create_node(node_name, node_dict)
     assert isinstance(node, Node) is True
@@ -72,7 +78,13 @@ def test_create_ssh_node(jenkins):
         'suffix_start_slave_cmd': '',
         'retention': 'ondemand',
         'ondemand_delay': 0,
-        'ondemand_idle_delay': 5
+        'ondemand_idle_delay': 5,
+        'tool_location': [
+            {
+                "key": "hudson.tasks.Maven$MavenInstallation$DescriptorImpl@Maven 3.0.5",
+                "home": "/home/apache-maven-3.0.5/"
+            },
+        ]
     }
     node = jenkins.nodes.create_node(node_name, node_dict)
     assert isinstance(node, Node) is True
