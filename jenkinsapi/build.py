@@ -24,6 +24,7 @@ from jenkinsapi.custom_exceptions import NoResults
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 from six.moves.urllib.parse import quote
+from requests import HTTPError
 
 
 log = logging.getLogger(__name__)
@@ -480,3 +481,19 @@ class Build(JenkinsBase):
                 url, data='', valid=[302, 200, 500, ])
             return True
         return False
+
+    def get_env_vars(self):
+        """
+        Return the environment variables.
+
+        This method is using the Environment Injector plugin:
+        https://wiki.jenkins-ci.org/display/JENKINS/EnvInject+Plugin
+        """
+        url = self.python_api_url('%s/injectedEnvVars' % self.baseurl)
+        try:
+            data = self.get_data(url, params={'depth': self.depth})
+        except HTTPError as ex:
+            warnings.warn('Make sure the Environment Injector plugin '
+                          'is installed.')
+            raise ex
+        return data['envMap']

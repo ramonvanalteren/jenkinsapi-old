@@ -1,3 +1,5 @@
+import requests
+import warnings
 import pytest
 import pytz
 from . import configs
@@ -153,4 +155,35 @@ def test_only_ParametersAction_parameters_considered(build):
     }
     params = build.get_params()
     assert params == expected
+
+def test_build_env_vars(monkeypatch, build):
+    def fake_get_data(cls, tree=None, params=None):
+        return configs.BUILD_ENV_VARS
+    monkeypatch.setattr(Build, 'get_data', fake_get_data)
+    assert build.get_env_vars() == configs.BUILD_ENV_VARS['envMap']
+
+def test_build_env_vars_wo_injected_env_vars_plugin(monkeypatch, build):
+    def fake_get_data(cls, tree=None, params=None):
+        raise requests.HTTPError('404')
+    monkeypatch.setattr(Build, 'get_data', fake_get_data)
+
+    with pytest.raises(requests.HTTPError) as excinfo:
+        with pytest.warns(None) as record:
+            build.get_env_vars()
+    assert '404' == str(excinfo.value)
+    assert len(record) == 1
+    expected = UserWarning('Make sure the Environment Injector '
+                           'plugin is installed.')
+    assert str(record[0].message) == str(expected)
+
+def test_build_env_vars_other_exception(monkeypatch, build):
+    def fake_get_data(cls, tree=None, params=None):
+        raise ValueError()
+    monkeypatch.setattr(Build, 'get_data', fake_get_data)
+
+    with pytest.raises(Exception) as excinfo:
+        with pytest.warns(None) as record:
+            build.get_env_vars()
+    assert '' == str(excinfo.value)
+    assert len(record) == 0
 
