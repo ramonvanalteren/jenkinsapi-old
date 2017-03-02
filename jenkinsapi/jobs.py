@@ -79,7 +79,8 @@ class Jobs(object):
     def __getitem__(self, job_name):
         if job_name in self:
             job_data = [job_row for job_row in self._data
-                        if job_row['name'] == job_name][0]
+                        if job_row['name'] == job_name or
+                        Job.get_full_name_from_url_and_baseurl(job_row['url'], self.jenkins.baseurl) == job_name][0]
             return Job(job_data['url'], job_data['name'], self.jenkins)
         else:
             raise UnknownJob(job_name)
@@ -90,6 +91,8 @@ class Jobs(object):
         """
         for job in self.itervalues():
             yield job.name, job
+            if job.name != job.get_full_name():
+                yield job.get_full_name(), job
 
     def __contains__(self, job_name):
         """
@@ -105,6 +108,8 @@ class Jobs(object):
             self._data = self.poll().get('jobs', [])
         for row in self._data:
             yield row['name']
+            if row['name'] != Job.get_full_name_from_url_and_baseurl(row['url'], self.jenkins.baseurl):
+                yield Job.get_full_name_from_url_and_baseurl(row['url'], self.jenkins.baseurl)
 
     def itervalues(self):
         """
