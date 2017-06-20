@@ -19,6 +19,7 @@ from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
 from jenkinsapi.utils.requester import Requester
+from jenkinsapi.utils.crumb_requester import CrumbRequester
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 
 log = logging.getLogger(__name__)
@@ -43,11 +44,17 @@ class Jenkins(JenkinsBase):
         """
         self.username = username
         self.password = password
-        self.requester = requester or Requester(
-            username,
-            password,
-            baseurl=baseurl,
-            ssl_verify=ssl_verify)
+        self.requester = requester or \
+            CrumbRequester(
+                username,
+                password,
+                baseurl=baseurl,
+                ssl_verify=ssl_verify) or \
+            Requester(
+                username,
+                password,
+                baseurl=baseurl,
+                ssl_verify=ssl_verify)
         self.lazy = lazy
         self.jobs_container = None
         JenkinsBase.__init__(self, baseurl, poll=not lazy)

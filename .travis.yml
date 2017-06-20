@@ -3,6 +3,8 @@ python:
 - '2.7'
 - '3.4'
 - '3.5'
+jdk:
+  - oraclejdk8
 env:
 - JENKINS_VERSION=1.x
 - JENKINS_VERSION=2.x

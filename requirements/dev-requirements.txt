@@ -4,5 +4,7 @@ pytest-cov
 pep8
 astroid>=1.4.8
 pylint>=1.7.1
+future>=0.16.0  # hidden dependency
+futures>=3.1.1  # hidden dependency
 tox>=2.3.1
 mock
