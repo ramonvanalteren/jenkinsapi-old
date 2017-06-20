@@ -184,8 +184,7 @@ class Job(JenkinsBase, MutableJenkinsThing):
             params['token'] = securitytoken
 
         # Either copy the params dict or make a new one.
-        build_params = build_params and dict(
-            build_params.items()) or {}  # Via POSTed JSON
+        build_params = dict(build_params.items()) if build_params else {}  # Via POSTed JSON
 
         url = self.get_build_triggerurl()
         if cause:

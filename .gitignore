@@ -19,3 +19,5 @@ lib/
 *.egg
 .tox/*
 *.sw?
+/jenkinsapi_tests/systests/coverage.xml
+/.cache
