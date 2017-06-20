@@ -21,3 +21,5 @@ lib/
 *.sw?
 /jenkinsapi_tests/systests/coverage.xml
 /.cache
+/AUTHORS
+/ChangeLog

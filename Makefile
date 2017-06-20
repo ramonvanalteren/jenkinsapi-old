@@ -4,7 +4,7 @@ test:
 	py.test -sv jenkinsapi_tests
 
 lint:
-	pep8
+	pycodestyle
 	pylint jenkinsapi/*.py
 
 tox:

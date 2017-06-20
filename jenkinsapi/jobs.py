@@ -80,7 +80,9 @@ class Jobs(object):
         if job_name in self:
             job_data = [job_row for job_row in self._data
                         if job_row['name'] == job_name or
-                        Job.get_full_name_from_url_and_baseurl(job_row['url'], self.jenkins.baseurl) == job_name][0]
+                        Job.get_full_name_from_url_and_baseurl(
+                            job_row['url'],
+                            self.jenkins.baseurl) == job_name][0]
             return Job(job_data['url'], job_data['name'], self.jenkins)
         else:
             raise UnknownJob(job_name)
@@ -108,8 +110,11 @@ class Jobs(object):
             self._data = self.poll().get('jobs', [])
         for row in self._data:
             yield row['name']
-            if row['name'] != Job.get_full_name_from_url_and_baseurl(row['url'], self.jenkins.baseurl):
-                yield Job.get_full_name_from_url_and_baseurl(row['url'], self.jenkins.baseurl)
+            if row['name'] != \
+                Job.get_full_name_from_url_and_baseurl(row['url'],
+                                                       self.jenkins.baseurl):
+                yield Job.get_full_name_from_url_and_baseurl(
+                    row['url'], self.jenkins.baseurl)
 
     def itervalues(self):
         """
