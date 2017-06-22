@@ -13,7 +13,6 @@ jenkins.war
 nosetests.xml
 coverage*/
 .idea/
-bin/
 include/
 lib/
 *.egg
