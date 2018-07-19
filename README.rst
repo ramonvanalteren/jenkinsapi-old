@@ -4,8 +4,8 @@ jenkinsapi
 .. image:: https://badge.fury.io/py/jenkinsapi.png
     :target: http://badge.fury.io/py/jenkinsapi
 
-.. image:: https://travis-ci.org/pycontribs/jenkinsapi.png?branch=master
-        :target: https://travis-ci.org/pycontribs/jenkinsapi
+.. image:: https://travis-ci.com/pycontribs/jenkinsapi.png?branch=master
+        :target: https://travis-ci.com/pycontribs/jenkinsapi
 
 .. image:: https://codecov.io/gh/pycontribs/jenkinsapi/branch/master/graph/badge.svg
         :target: https://codecov.io/gh/pycontribs/jenkinsapi
