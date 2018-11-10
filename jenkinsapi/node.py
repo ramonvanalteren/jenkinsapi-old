@@ -272,6 +272,18 @@ class Node(JenkinsBase):
                 "The node state has not changed: temporarilyOffline = %s" %
                 state)
 
+    def update_offline_reason(self, reason):
+        """
+        Update offline reason on a temporary offline clsuter
+        """
+
+        if self.is_temporarily_offline():
+            url = self.baseurl + '/changeOfflineCause?offlineMessage=' + urlquote(reason)
+            self.jenkins.requester.post_and_confirm_status(url, data={})
+
+    def offline_reason(self):
+        return self._data['offlineCauseReason']
+
     @property
     def _et(self):
         return self._get_config_element_tree()
