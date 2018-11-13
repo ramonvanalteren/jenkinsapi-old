@@ -22,7 +22,7 @@ jobs:
     - stage: test
       script: tox
     - stage: release
-      python: 2.7
+      script: skip
       if: branch = master
       deploy:
         provider: pypi
