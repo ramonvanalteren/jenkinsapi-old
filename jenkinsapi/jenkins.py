@@ -3,6 +3,7 @@ Module for jenkinsapi Jenkins object
 """
 import time
 import logging
+import warnings
 import six.moves.urllib.parse as urlparse
 
 from six.moves.urllib.parse import quote as urlquote
@@ -327,26 +328,93 @@ class Jenkins(JenkinsBase):
         # This only ever needs to work on the base object
         return '%s/pluginManager/api/python?depth=%i' % (self.baseurl, depth)
 
-    def install_plugin(self, plugin):
+    def install_plugin(self, plugin, restart=True, force_restart=False,
+                       wait_for_reboot=True, no_reboot_warning=False):
+        """
+        Install a plugin and optionally restart jenkins.
+        @param plugin: Plugin (string or Plugin object) to be installed
+        @param restart: Boolean, restart Jenkins when required by plugin
+        @param force_restart: Boolean, force Jenkins to restart, ignoring plugin
+        preferences
+        @param no_warning: Don't show warning when restart is needed and
+        restart parameters are set to False
+        """
         if not isinstance(plugin, Plugin):
             plugin = Plugin(plugin)
         self.plugins[plugin.shortName] = plugin
+        if force_restart or (restart and self.plugins.restart_required):
+            self.safe_restart(wait_for_reboot=wait_for_reboot)
+        elif self.plugins.restart_required and not no_reboot_warning:
+            warnings.warn(
+                "System reboot is required, but automatic reboot is disabled. "
+                "Please reboot manually."
+                )
 
-    def install_plugins(self, plugin_list, restart=False,
-                        wait_for_reboot=False):
+    def install_plugins(self, plugin_list, restart=True, force_restart=False,
+                        wait_for_reboot=True, no_reboot_warning=False):
         """
         Install a list of plugins and optionally restart jenkins.
-        @param plugin_list: list of plugins to be installed
-        @param restart: Boolean, restart jenkins after plugin installation
+        @param plugin_list: List of plugins (strings, Plugin objects or a mix of
+        the two) to be installed
+        @param restart: Boolean, restart Jenkins when required by plugin
+        @param force_restart: Boolean, force Jenkins to restart, ignoring plugin
+        preferences
         """
         plugins = [p if isinstance(p, Plugin) else Plugin(p)
                    for p in plugin_list]
         for plugin in plugins:
-            self.install_plugin(plugin)
-        if restart and self.plugins.restart_required:
+            self.install_plugin(plugin, restart=False, no_reboot_warning=True)
+        if force_restart or (restart and self.plugins.restart_required):
             self.safe_restart(wait_for_reboot=wait_for_reboot)
+        elif self.plugins.restart_required and not no_reboot_warning:
+            warnings.warn(
+                "System reboot is required, but automatic reboot is disabled. "
+                "Please reboot manually."
+                )
 
-    def safe_restart(self, wait_for_reboot=False):
+    def delete_plugin(self, plugin, restart=True, force_restart=False,
+                      wait_for_reboot=True, no_reboot_warning=False):
+        """
+        Delete a plugin and optionally restart jenkins. Will not delete
+        dependencies.
+        @param plugin: Plugin (string or Plugin object) to be deleted
+        @param restart: Boolean, restart Jenkins when required by plugin
+        @param force_restart: Boolean, force Jenkins to restart, ignoring plugin
+        preferences
+        """
+        if isinstance(plugin, Plugin):
+            plugin = plugin.shortName
+        del self.plugins[plugin]
+        if force_restart or (restart and self.plugins.restart_required):
+            self.safe_restart(wait_for_reboot=wait_for_reboot)
+        elif self.plugins.restart_required and not no_reboot_warning:
+            warnings.warn(
+                "System reboot is required, but automatic reboot is disabled. "
+                "Please reboot manually."
+                )
+
+    def delete_plugins(self, plugin_list, restart=True, force_restart=False,
+                       wait_for_reboot=True, no_reboot_warning=False):
+        """
+        Delete a list of plugins and optionally restart jenkins. Will not delete
+        dependencies.
+        @param plugin_list: List of plugins (strings, Plugin objects or a mix of
+        the two) to be deleted
+        @param restart: Boolean, restart Jenkins when required by plugin
+        @param force_restart: Boolean, force Jenkins to restart, ignoring plugin
+        preferences
+        """
+        for plugin in plugin_list:
+            self.delete_plugin(plugin, restart=False, no_reboot_warning=True)
+        if force_restart or (restart and self.plugins.restart_required):
+            self.safe_restart(wait_for_reboot=wait_for_reboot)
+        elif self.plugins.restart_required and not no_reboot_warning:
+            warnings.warn(
+                "System reboot is required, but automatic reboot is disabled. "
+                "Please reboot manually."
+                )
+
+    def safe_restart(self, wait_for_reboot=True):
         """ restarts jenkins when no jobs are running """
         # NB: unlike other methods, the value of resp.status_code
         # here can be 503 even when everything is normal
