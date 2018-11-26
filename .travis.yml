@@ -19,17 +19,17 @@ script:
 - tox
 jobs:
   include:
-    - stage: test
-      script: tox
-    - stage: release
-      script: skip
-      deploy:
-        on:
-          repo: pycontribs/jenkinsapi
-          tags: true
-        provider: pypi
-        user: lechat
-        password:
-            secure: "QH20CSAJtRE05y+ayzQBjrGnbtErKD+JbXNXk9ULW7RhSZphfzxCwt1HYdwm3FEziGIUKT+H/s43uXs3OqweltkCNjYMMcTfQQCEKpcuxStEUaJTrIwdgH29TW6TgycBHJemg9wet4NVFpoya68pWFaZt7K1kLUUkzk3MFNP43k="
-        distributions: "sdist bdist_wheel"
-        skip_cleanup: true
+  - stage: test
+    script: tox
+  - stage: release
+    script: skip
+    deploy:
+      on:
+        repo: pycontribs/jenkinsapi
+        tags: true
+      provider: pypi
+      user: lechat
+      password:
+        secure: bf7DVF+KH0nJv2pnNi88yxLQAVjpOmgKipDwV/T3Itpkb3kQPGkdQrt7t0uWCmI/04/GnXsEHyHukOXFmOkVVbp5RCVvCnmvyZs2kaj3dlKGb7+I9BI78AAwWEJKPqFIKnxHxEEDZQ6Y0aZZgovkZrJdCFSCwcCum++84RYf6/I=
+      distributions: sdist bdist_wheel
+      skip_cleanup: true
