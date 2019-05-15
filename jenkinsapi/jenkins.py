@@ -22,11 +22,11 @@ from jenkinsapi.label import Label
 from jenkinsapi.nodes import Nodes
 from jenkinsapi.plugins import Plugins
 from jenkinsapi.plugin import Plugin
+from jenkinsapi.utils.requester import Requester
 from jenkinsapi.views import Views
 from jenkinsapi.queue import Queue
 from jenkinsapi.fingerprint import Fingerprint
 from jenkinsapi.jenkinsbase import JenkinsBase
-from jenkinsapi.utils.requester import Requester
 from jenkinsapi.custom_exceptions import JenkinsAPIException
 from jenkinsapi.utils.crumb_requester import CrumbRequester
 
@@ -489,6 +489,68 @@ class Jenkins(JenkinsBase):
                 # so Jenkins is likely available
                 time.sleep(1)
 
+    def safe_exit(self, wait_for_exit=True, max_wait=360):
+        """ restarts jenkins when no jobs are running, except for pipeline jobs """
+        # NB: unlike other methods, the value of resp.status_code
+        # here can be 503 even when everything is normal
+        url = '%s/safeExit' % (self.baseurl,)
+        valid = self.requester.VALID_STATUS_CODES + [503, 500]
+        resp = self.requester.post_and_confirm_status(url, data='',
+                                                      valid=valid)
+        if wait_for_exit:
+            self._wait_for_exit(max_wait=max_wait)
+        return resp
+
+    def _wait_for_exit(self, max_wait=360):
+        # We need to make sure all non pipeline jobs have finished,
+        # and that jenkins is unavailable
+        self.__jenkins_is_unresponsive(max_wait=max_wait)
+
+    def __jenkins_is_unresponsive(self, max_wait=360):
+        # Blocks until jenkins returns ConnectionError or JenkinsAPIException
+        # Default wait is one hour
+        is_alive = True
+        wait = 0
+        while is_alive and wait < max_wait:
+            try:
+                self.requester.get_and_confirm_status(
+                    self.baseurl, valid=[200])
+                time.sleep(1)
+                wait += 1
+                is_alive = True
+            except (ConnectionError, JenkinsAPIException):
+                # Jenkins is finally down
+                is_alive = False
+                return True
+            except HTTPError:
+                # This is a return code that is not 503,
+                # so Jenkins is likely available, and we need to wait
+                time.sleep(1)
+                wait += 1
+                is_alive = True
+
+    def quiet_down(self):
+        """ Put Jenkins in a Quiet mode, preparation for restart. no new builds  started"""
+        # https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance-
+        # NB: unlike other methods, the value of resp.status_code
+        # here can be 503 even when everything is normal
+        url = '%s/quietDown' % (self.baseurl,)
+        valid = self.requester.VALID_STATUS_CODES + [503, 500]
+        resp = self.requester.post_and_confirm_status(url, data='',
+                                                      valid=valid)
+        return resp
+
+    def cancel_quiet_down(self):
+        """  Cancel the effect of the quiet-down command """
+        # https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance-
+        # NB: unlike other methods, the value of resp.status_code
+        # here can be 503 even when everything is normal
+        url = '%s/cancelQuietDown' % (self.baseurl,)
+        valid = self.requester.VALID_STATUS_CODES + [503, 500]
+        resp = self.requester.post_and_confirm_status(url, data='',
+                                                      valid=valid)
+        return resp
+
     @property
     def plugins(self):
         return self.get_plugins()
@@ -539,6 +601,12 @@ class Jenkins(JenkinsBase):
     @property
     def credentials_by_id(self):
         return self.get_credentials(CredentialsById)
+
+    @property
+    def is_quieting_down(self):
+        url = '%s/api/python' % (self.baseurl,)
+        data = self.get_data(url=url)
+        return data['quietingDown']
 
     def shutdown(self):
         url = "%s/exit" % self.baseurl
