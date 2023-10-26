@@ -1,95 +1,138 @@
-import urllib2
-import logging
-import pprint
-from jenkinsapi import config
-from jenkinsapi.utils.retry import retry_function
+"""
+Module for JenkinsBase class
+"""
+from __future__ import annotations
 
-log = logging.getLogger(__name__)
+import ast
+import pprint
+import logging
+from urllib.parse import quote
+from jenkinsapi import config
+from jenkinsapi.custom_exceptions import JenkinsAPIException
+
+logger = logging.getLogger(__name__)
+
 
 class JenkinsBase(object):
+
     """
-    This appears to be the base object that all other jenkins objects are inherited from
+    This appears to be the base object that all other jenkins objects are
+    inherited from
     """
-    RETRY_ATTEMPTS = 5
 
     def __repr__(self):
-        return """<%s.%s %s>""" % (self.__class__.__module__,
-                                   self.__class__.__name__,
-                                   str( self ))
-
-    def print_data(self):
-        pprint.pprint(self._data)
+        return """<%s.%s %s>""" % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            str(self),
+        )
 
     def __str__(self):
-        raise NotImplemented
+        raise NotImplementedError
 
-    def __init__(self, baseurl, poll=True, formauth=False):
+    def __init__(self, baseurl: str, poll: bool = True):
         """
         Initialize a jenkins connection
         """
-        self.baseurl = baseurl
-        self.formauth = formauth
-        if poll and not self.formauth:
-            try:
-                self.poll()
-            except urllib2.HTTPError, hte:
-                log.exception(hte)
-                log.warn( "Failed to connect to %s" % baseurl )
-                raise
-
-    def poll(self):
-        self._data = self._poll()
-
-    def _poll(self):
-        url = self.python_api_url(self.baseurl)
-        return retry_function(self.RETRY_ATTEMPTS , self.get_data, url)
+        self._data = None
+        self.baseurl = self.strip_trailing_slash(baseurl)
+        if poll:
+            self.poll()
 
     def get_jenkins_obj(self):
-        """Not implemented, abstract method implemented by child classes"""
-        raise NotImplemented("Abstract method, implemented by child classes")
+        raise NotImplementedError(
+            "Please implement this method on %s" % self.__class__.__name__
+        )
+
+    def __eq__(self, other) -> bool:
+        """
+        Return true if the other object represents a connection to the
+        same server
+        """
+        if not isinstance(other, self.__class__):
+            return False
+        return other.baseurl == self.baseurl
 
     @classmethod
-    def python_api_url(cls, url):
+    def strip_trailing_slash(cls, url: str) -> str:
+        while url.endswith("/"):
+            url = url[:-1]
+        return url
+
+    def poll(self, tree=None):
+        data = self._poll(tree=tree)
+        if "jobs" in data:
+            data["jobs"] = self.resolve_job_folders(data["jobs"])
+        if not tree:
+            self._data = data
+
+        return data
+
+    def _poll(self, tree=None):
+        url = self.python_api_url(self.baseurl)
+        return self.get_data(url, tree=tree)
+
+    def get_data(self, url, params=None, tree=None):
+        requester = self.get_jenkins_obj().requester
+        if tree:
+            if not params:
+                params = {"tree": tree}
+            else:
+                params.update({"tree": tree})
+
+        response = requester.get_url(url, params)
+        if response.status_code != 200:
+            logger.error(
+                "Failed request at %s with params: %s %s",
+                url,
+                params,
+                tree if tree else "",
+            )
+            response.raise_for_status()
+        try:
+            return ast.literal_eval(response.text)
+        except Exception:
+            logger.exception("Inappropriate content found at %s", url)
+            raise JenkinsAPIException("Cannot parse %s" % response.content)
+
+    def pprint(self):
+        """
+        Print out all the data in this object for debugging.
+        """
+        pprint.pprint(self._data)
+
+    def resolve_job_folders(self, jobs):
+        for job in list(jobs):
+            if "color" not in job.keys():
+                jobs.remove(job)
+                jobs += self.process_job_folder(job, self.baseurl)
+
+        return jobs
+
+    def process_job_folder(self, folder, folder_path):
+        logger.debug("Processing folder %s in %s", folder["name"], folder_path)
+        folder_path += "/job/%s" % quote(folder["name"])
+        data = self.get_data(
+            self.python_api_url(folder_path), tree="jobs[name,color]"
+        )
+
+        result = []
+        for job in data.get("jobs", []):
+            if "color" not in job.keys():
+                result += self.process_job_folder(job, folder_path)
+            else:
+                job["url"] = "%s/job/%s" % (folder_path, quote(job["name"]))
+                result.append(job)
+
+        return result
+
+    @classmethod
+    def python_api_url(cls, url: str) -> str:
         if url.endswith(config.JENKINS_API):
             return url
         else:
             if url.endswith(r"/"):
-                fmt="%s%s"
+                fmt = "%s%s"
             else:
                 fmt = "%s/%s"
             return fmt % (url, config.JENKINS_API)
-
-    def get_data(self, url):
-        """
-        Find out how to connect, and then grab the data.
-        """
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen(url)
-            result = eval(stream.read())
-        except urllib2.HTTPError, e:
-            log.warn("Error reading %s" % url)
-            log.exception(e)
-            raise
-        return result
-
-    def post_data(self, url, content):
-        try:
-            urlopen = self.get_jenkins_obj().get_opener()
-            result = urlopen(url, data=content).read().strip()
-        except urllib2.HTTPError, e:
-            log.warn("Error post data %s" % url)
-            log.exception(e)
-            raise
-        return result
-
-    def hit_url(self, url ):
-        fn_urlopen = self.get_jenkins_obj().get_opener()
-        try:
-            stream = fn_urlopen( url )
-            html_result = stream.read()
-        except urllib2.HTTPError, e:
-            log.debug( "Error reading %s" % url )
-            log.exception(e)
-            raise
-        return html_result
